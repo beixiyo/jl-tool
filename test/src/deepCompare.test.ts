@@ -1,0 +1,64 @@
+import { deepCompare } from '@jl-org/tool'
+
+
+const testCases = [
+    // 基本类型
+    [null, null],                                                                           // 0
+    [undefined, undefined],                                                                 // 1
+    [true, true],                                                                           // 2
+    [false, false],                                                                         // 3
+    [42, 42],                                                                               // 4
+    ['hello', 'hello'],                                                                     // 5
+
+    // 特殊值
+    [NaN, NaN],                                                                             // 6
+    [Infinity, Infinity],                                                                   // 7
+
+    // 对象
+    [{ a: 1, b: { c: 'nested' } }, { a: 1, b: { c: 'nested' } }],                           // 8
+    [{ a: 1, b: { c: 'nested' } }, { a: 1, b: { c: 'different' } }],                        // 9
+
+    // 数组
+    [[1, 2, 3], [1, 2, 3]],                                                                 // 10
+    [[1, 2, 3], [1, 2, 4]],                                                                 // 11
+
+    // Map
+    [new Map([[1, 'one'], [2, 'two']]), new Map([[1, 'one'], [2, 'two']])],                 // 12
+    // 测试失败
+    [new Map([[1, 'one'], [2, 'two']]), new Map([[1, 'one'], [2, 'three']])],               // 13
+
+    // Set
+    [new Set([1, 2, 3]), new Set([1, 2, 3])],                                               // 14
+    // 测试失败
+    [new Set([1, 2, 3]), new Set([1, 2, 4])],                                               // 15
+
+    // Symbol
+    [Symbol('foo'), Symbol('foo')],                                                         // 16
+
+    // 函数
+    [() => { }, () => { }],                                                                  // 17
+
+    // undefined
+    [undefined, undefined],                                                                 // 18
+
+    // 复杂对象                                                                              // 19
+    [
+        { a: [1, 2, { b: 'nested' }], c: { d: 'hello', e: [null, { f: 'world' }] } },
+        { a: [1, 2, { b: 'nested' }], c: { e: [null, { f: 'world' }], d: 'hello' } }
+    ],
+
+    // 循环引用                                                                              // 20
+    (() => {
+        const obj: any = { a: 1 }
+        obj.self = obj
+        return [obj, obj]
+    })(),
+
+    [                                                                                       // 21
+        { a: undefined, b: undefined },
+        { a: null, b: undefined }
+    ]
+]
+
+console.log(testCases.map(([data1, data2]) => deepCompare(data1, data2)));
+

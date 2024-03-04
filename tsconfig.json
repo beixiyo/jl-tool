@@ -1,0 +1,45 @@
+{
+    "compilerOptions": {
+        "target": "ESNext",
+        "module": "ESNext",
+        "moduleResolution": "Node",
+        "lib": [
+            "ESNext",
+            "DOM",
+            "DOM.Iterable"
+        ],
+        "baseUrl": ".",
+        "paths": {
+            "@/*": [
+                "./src/*"
+            ],
+        },
+        "outDir": "dist",
+        "declaration": true,
+        "declarationDir": "./dist/typings",
+        "skipLibCheck": true,
+    },
+    "include": [
+        "src/**/*.ts",
+        "src/**/*.d.ts",
+    ],
+    "typedocOptions": {
+        "entryPoints": [
+            "src/animation/index.ts",
+            "src/canvas/index.ts",
+            "src/dataStructure/index.ts",
+            "src/plugins/index.ts",
+            "src/shared/exportToDoc.ts",
+            "src/tools/color.ts",
+            "src/tools/tools.ts",
+            "src/tools/domTools.ts",
+            "src/tools/scheduleTask.ts",
+            "src/webApi/index.ts",
+        ],
+        "out": "./doc/type-doc",
+        "plugin": [
+            "typedoc-plugin-markdown"
+        ],
+        "excludePrivate": true
+    },
+}

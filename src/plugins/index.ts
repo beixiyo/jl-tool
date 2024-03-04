@@ -1,0 +1,1 @@
+export { autoUpdate } from './autoUpdate'

@@ -1,0 +1,5 @@
+export { createAnimation } from '@/animation/createAnimation'
+export { createAnimationByTime } from '@/animation/createAnimationByTime'
+export { genTimeFunc } from '@/animation/timeFunc'
+export { ATo } from '@/animation/ATo'
+export { applyAnimation } from '@/animation/applyAnimation'
