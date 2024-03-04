@@ -117,7 +117,8 @@ export {
     getPixel,
     fillPixel,
     parseImgData,
-    cutImg
+    cutImg,
+    compressImg
 } from '@/canvas'
 
 export {

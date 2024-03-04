@@ -648,7 +648,16 @@ export declare function fillPixel(ctx: CanvasRenderingContext2D, x: number, y: n
 export declare function cutImg<T extends TransferType>(img: HTMLImageElement, resType: T, x?: number, y?: number, width?: number, height?: number, opts?: {
     type?: 'image/png' | 'image/jpeg' | 'image/webp';
     quality?: number;
-}): CutImgReturn<T>;
+}): HandleImgReturn<T>;
+
+/**
+ * 压缩图片，`image/jpeg | image/webp` 才能压缩
+ * @param img 图片
+ * @param quality 压缩质量
+ * @param resType 需要返回的文件格式
+ * @returns base64 | blob
+ */
+export declare function compressImg<T extends TransferType>(img: HTMLImageElement, resType: T, quality?: number): HandleImgReturn<T>;
 ```
 
 

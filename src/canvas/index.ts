@@ -1,8 +1,12 @@
 export {
     calcCoord,
     createCvs,
-    cutImg,
     fillPixel,
     getPixel,
     parseImgData
 } from './tools'
+
+export {
+    cutImg,
+    compressImg
+} from './imgHandle'
