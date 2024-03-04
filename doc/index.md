@@ -4,7 +4,7 @@ layout: home
 title: 首页
 
 hero:
-  name: @jl-org/tool
+  name: '@jl-org/tool'
   text: 工具库
   actions:
     - theme: brand

@@ -1,6 +1,6 @@
 {
     "name": "@jl-org/tool",
-    "version": "1.1.87",
+    "version": "1.1.89",
     "description": "TypeScript编写的工具函数",
     "main": "dist/index.cjs",
     "module": "dist/index.js",
