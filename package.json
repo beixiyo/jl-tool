@@ -1,6 +1,6 @@
 {
     "name": "@jl-org/tool",
-    "version": "1.1.9",
+    "version": "1.1.91",
     "description": "TypeScript编写的工具函数",
     "main": "dist/index.cjs",
     "module": "dist/index.js",
@@ -24,7 +24,8 @@
         "build:only": "rollup -c && tsc-alias",
         "gen-doc": "typedoc --tsconfig tsconfig.json",
         "preview-doc": "vitepress dev ./doc",
-        "build-doc": "vitepress build ./doc"
+        "build-doc": "vitepress build ./doc",
+        "test": "pnpm -C test dev"
     },
     "keywords": [
         "jl",
