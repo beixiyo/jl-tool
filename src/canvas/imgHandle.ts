@@ -1,3 +1,4 @@
+import { ImgMIME, TransferType } from '@/types'
 import { createCvs } from './tools'
 
 /**
@@ -11,7 +12,7 @@ export function cutImg<T extends TransferType>(
     width = img.width,
     height = img.height,
     opts: {
-        type?: 'image/png' | 'image/jpeg' | 'image/webp',
+        type?: ImgMIME | string
         quality?: number,
     } = {},
 ): HandleImgReturn<T> {
@@ -41,18 +42,20 @@ export function cutImg<T extends TransferType>(
  * @param img 图片
  * @param quality 压缩质量
  * @param resType 需要返回的文件格式
+ * @param mimeType 图片类型
  * @returns base64 | blob
  */
 export function compressImg<T extends TransferType>(
     img: HTMLImageElement,
     resType: T,
-    quality = .5
+    quality = .5,
+    mimeType?: ImgMIME | string
 ): HandleImgReturn<T> {
     const { cvs, ctx } = createCvs(img.width, img.height)
     ctx.drawImage(img, 0, 0)
 
     if (resType === 'base64') {
-        return Promise.resolve(cvs.toDataURL('image/webp', quality)) as HandleImgReturn<T>
+        return Promise.resolve(cvs.toDataURL(mimeType, quality)) as HandleImgReturn<T>
     }
 
     return new Promise((resolve) => {
@@ -60,16 +63,14 @@ export function compressImg<T extends TransferType>(
             (blob) => {
                 resolve(blob)
             },
-            'image/webp',
+            mimeType,
             quality
         )
     }) as HandleImgReturn<T>
 }
 
 
-type TransferType = 'base64' | 'blob'
 type HandleImgReturn<T extends TransferType> =
     T extends 'blob'
     ? Promise<Blob>
     : Promise<string>
-    
