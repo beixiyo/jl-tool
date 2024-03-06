@@ -184,6 +184,25 @@ export function binarySearch<T>(arr: T[], target: T) {
     return -1
 }
 
+/**
+ * 截取字符串，默认补 `...` 到后面  
+ * 如果长度小于等于 `placeholder` 补充字符串的长度，则直接截取
+ * @param str 字符串
+ * @param len 需要截取的长度
+ * @param placeholder 补在后面的字符串 默认`...`
+ */
+export function cutStr(str: string, len: number, placeholder = '...') {
+    const placeholderLen = placeholder.length
+    if (len <= placeholderLen) {
+        return str.slice(0, len)
+    }
+
+    const newStr = str.slice(0, len)
+
+    return str.length > len
+        ? str.slice(0, len - placeholderLen) + placeholder
+        : newStr
+}
 
 /**
  * 蛇形转驼峰 也可以指定转换其他的

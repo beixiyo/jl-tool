@@ -13,6 +13,7 @@ export {
     arrToTree,
     arrToChunk,
     binarySearch,
+    cutStr,
     toCamel,
     curry,
     padNum,

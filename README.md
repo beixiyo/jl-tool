@@ -80,6 +80,15 @@ export declare function arrToChunk<T>(arr: T[], size: number): T[][];
 export declare function binarySearch<T>(arr: T[], target: T): number;
 
 /**
+ * 截取字符串，默认补 `...` 到后面
+ * 如果长度小于等于 `placeholder` 补充字符串的长度，则直接截取
+ * @param str 字符串
+ * @param len 需要截取的长度
+ * @param placeholder 补在后面的字符串 默认`...`
+ */
+export declare function cutStr(str: string, len: number, placeholder?: string): string;
+
+/**
  * 蛇形转驼峰 也可以指定转换其他的
  * @param key 需要转换的字符串
  * @param replaceStr 默认是 `_`，也就是蛇形转驼峰
