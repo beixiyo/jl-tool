@@ -7,11 +7,11 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-doc/.vitepress
+# doc
 doc/type-doc
-!doc/index.md
-!doc/.vitepress/config.ts
+doc/.vitepress/cache
+
+node_modules
 dist
 dist-ssr
 *.local
