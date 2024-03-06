@@ -23,7 +23,7 @@
         "build": "npm-run-all --parallel build:only gen-doc",
         "build:only": "rollup -c && tsc-alias",
         "gen-doc": "typedoc --tsconfig tsconfig.json",
-        "preview-doc": "vitepress dev ./doc",
+        "preview-doc": "vitepress dev ./doc --open",
         "build-doc": "vitepress build ./doc",
         "test": "pnpm -C test dev"
     },
