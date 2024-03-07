@@ -36,7 +36,7 @@
             "src/tools/scheduleTask.ts",
             "src/webApi/index.ts",
         ],
-        "out": "./doc/type-doc",
+        "out": "./docs/type-doc",
         "plugin": [
             "typedoc-plugin-markdown"
         ],

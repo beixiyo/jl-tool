@@ -1,5 +1,5 @@
 ---
-# https://vitepress.dev/zh/reference/default-theme-home-page
+# https://vitepress.dev/reference/default-theme-home-page
 layout: home
 
 title: 首页
@@ -11,7 +11,10 @@ hero:
   actions:
     - theme: brand
       text: API 文档
-      link: ./type-doc/modules
+      link: ./type-doc/modules.md
+    - theme: alt
+      text: Animate API
+      link: ./type-doc/modules/animation.md
 
 features:
   - icon: 🛠️
