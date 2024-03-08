@@ -617,6 +617,27 @@ export declare const isSame: (a: any, b: any) => boolean;
 ## canvas
 ```ts
 /**
+ * 截取图片的一部分，返回 base64 | blob
+ */
+export declare function cutImg<T extends TransferType>(img: HTMLImageElement, resType: T, x?: number, y?: number, width?: number, height?: number, opts?: {
+    type?: string;
+    quality?: number;
+}): HandleImgReturn<T>;
+
+/**
+ * 压缩图片
+ * @param img 图片
+ * @param resType 需要返回的文件格式
+ * @param quality 压缩质量，默认 0.5
+ * @param mimeType 图片类型，默认 `image/webp`。`image/jpeg | image/webp` 才能压缩，
+ * @returns base64 | blob
+ */
+export declare function compressImg<T extends TransferType>(img: HTMLImageElement, resType: T, quality?: number, mimeType?: 'image/jpeg' | 'image/webp'): HandleImgReturn<T>;
+
+type HandleImgReturn<T extends TransferType> = T extends 'blob' ? Promise<Blob> : Promise<string>;
+
+
+/**
  * 根据半径和角度获取坐标
  * @param r 半径
  * @param deg 角度
@@ -655,23 +676,6 @@ export declare function parseImgData(imgData: ImageData['data'], width: number, 
 
 /** 给 canvas 某个像素点填充颜色的函数 */
 export declare function fillPixel(ctx: CanvasRenderingContext2D, x: number, y: number, color: string): void;
-
-/**
- * 截取图片的一部分，返回 base64 | blob
- */
-export declare function cutImg<T extends TransferType>(img: HTMLImageElement, resType: T, x?: number, y?: number, width?: number, height?: number, opts?: {
-    type?: 'image/png' | 'image/jpeg' | 'image/webp';
-    quality?: number;
-}): HandleImgReturn<T>;
-
-/**
- * 压缩图片，`image/jpeg | image/webp` 才能压缩
- * @param img 图片
- * @param quality 压缩质量
- * @param resType 需要返回的文件格式
- * @returns base64 | blob
- */
-export declare function compressImg<T extends TransferType>(img: HTMLImageElement, resType: T, quality?: number): HandleImgReturn<T>;
 ```
 
 
