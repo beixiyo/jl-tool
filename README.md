@@ -664,7 +664,7 @@ export declare function createCvs(width: number, height: number): {
  * @param width 图像区域宽度
  * @returns `RGBA`数组
  */
-export declare function getPixel(x: number, y: number, imgData: ImageData['data'], width: number): number[];
+export declare function getPixel(x: number, y: number, imgData: ImageData['data'], width: number): [number, number, number, number];
 
 /**
  * 美化 ctx.getImageData.data 属性
