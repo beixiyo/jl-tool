@@ -1,13 +1,15 @@
 import {
-    blobToBase64,
-    compressImg,
-    getImg,
     createCvs,
     getPixel,
     fillPixel,
+    compressImg,
+    cutImg,
     parseImgData,
-    cutImg
-} from '@jl-org/tool'
+} from '@/canvas'
+import {
+    blobToBase64,
+    getImg,
+} from '@/tools/domTools'
 
 
 /** --------------------------------------------------------------
@@ -48,7 +50,6 @@ fillPixel(ctx, 0, 0, 'rgba(255, 0, 0, 0.5)')
 fillPixel(ctx, WIDTH - 1, HEIGHT - 1, 'rgba(40, 255, 255, 0.5)')
 
 
-
 /** ----------------------- Test ------------------------------ */
 const imgData = ctx.getImageData(0, 0, WIDTH, HEIGHT).data
 
@@ -59,10 +60,10 @@ console.log(imgData)
 console.log(parseImgData(imgData, WIDTH, HEIGHT))
 
 
+/** ------------------------- 裁剪图片测试 ----------------------------- */
 const img = new Image()
 img.src = 'https://cdn.pixabay.com/photo/2023/04/10/20/41/bird-7914702_640.jpg'
 
-/** ------------------------- 裁剪图片测试 ----------------------------- */
 img.onload = async () => {
     document.body.appendChild(img)
     const src = await cutImg(img, 'blob', 100, 0, 200, 100)
