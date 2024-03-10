@@ -48,7 +48,7 @@ export function getPixel(x: number, y: number, imgData: ImageData['data'], width
          * 然后加上 `i` 就是 `R` `G` `B` `A` 的位置
          */
         const index = (width * 4 * y) + (x * 4)
-        arr.push(imgData[index + i])
+        arr[i] = imgData[index + i]
     }
 
     return arr
