@@ -1,6 +1,7 @@
 export * from '@/tools/tools'
 export * from '@/tools/domTools'
 export * from '@/tools/color'
+export * from '@/channel'
 export * from '@/shared/exportToDoc'
 export * from '@/dataStructure'
 
