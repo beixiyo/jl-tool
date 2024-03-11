@@ -1,3 +1,5 @@
+import { Pixel } from '@/types'
+
 /** 弧度 */
 const RADIAN = Math.PI / 180
 /**
@@ -17,13 +19,14 @@ export function calcCoord(r: number, deg: number) {
  * 创建一个指定宽高的画布
  * @param width 画布的宽度
  * @param height 画布的高度
+ * @param options 上下文配置
  * @returns 包含画布和上下文的对象
  */
-export function createCvs(width: number, height: number) {
+export function createCvs(width?: number, height?: number, options?: CanvasRenderingContext2DSettings) {
     const cvs = document.createElement('canvas'),
-        ctx = cvs.getContext('2d')
-    cvs.width = width
-    cvs.height = height
+        ctx = cvs.getContext('2d', options)
+    width && (cvs.width = width)
+    height && (cvs.height = height)
 
     return { cvs, ctx }
 }
@@ -38,7 +41,7 @@ export function createCvs(width: number, height: number) {
  * @returns `RGBA`数组
  */
 export function getPixel(x: number, y: number, imgData: ImageData['data'], width: number) {
-    const arr: [number, number, number, number] = [0, 0, 0, 0]
+    const arr: Pixel = [0, 0, 0, 0]
     for (let i = 0; i < 4; i++) {
         /**
          * canvas 的像素点是一维数组，需要通过计算获取对应坐标的像素点

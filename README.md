@@ -648,9 +648,10 @@ export declare function calcCoord(r: number, deg: number): number[];
  * 创建一个指定宽高的画布
  * @param width 画布的宽度
  * @param height 画布的高度
+ * @param options 上下文配置
  * @returns 包含画布和上下文的对象
  */
-export declare function createCvs(width: number, height: number): {
+export declare function createCvs(width?: number, height?: number, options?: CanvasRenderingContext2DSettings): {
     cvs: HTMLCanvasElement;
     ctx: CanvasRenderingContext2D;
 };
@@ -664,7 +665,7 @@ export declare function createCvs(width: number, height: number): {
  * @param width 图像区域宽度
  * @returns `RGBA`数组
  */
-export declare function getPixel(x: number, y: number, imgData: ImageData['data'], width: number): [number, number, number, number];
+export declare function getPixel(x: number, y: number, imgData: ImageData['data'], width: number): Pixel;
 
 /**
  * 美化 ctx.getImageData.data 属性
