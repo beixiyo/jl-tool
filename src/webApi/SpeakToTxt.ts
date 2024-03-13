@@ -69,7 +69,7 @@ export class SpeakToTxt {
 type SpeakToTxtOpts = {
     onstart?: (ev: Event) => void
     onEnd?: (ev: Event) => void
-    /** 是否在用户停止说话后自动停止识别，默认 `false` */
+    /** 是否在用户停止说话后继续识别，默认 `false` */
     continuous?: boolean
     /** 是否返回临时结果，默认 `false` */
     interimResults?: boolean
