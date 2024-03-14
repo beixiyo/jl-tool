@@ -1,4 +1,4 @@
-import { deepCompare } from '@jl-org/tool'
+import { deepCompare } from '@/tools/tools'
 
 
 const testCases = [
@@ -16,11 +16,11 @@ const testCases = [
 
     // 对象
     [{ a: 1, b: { c: 'nested' } }, { a: 1, b: { c: 'nested' } }],                           // 8
-    [{ a: 1, b: { c: 'nested' } }, { a: 1, b: { c: 'different' } }],                        // 9
+    [{ a: 1, b: { c: 'nested' } }, { a: 1, b: { c: 'different' } }],                        // 9 false
 
     // 数组
     [[1, 2, 3], [1, 2, 3]],                                                                 // 10
-    [[1, 2, 3], [1, 2, 4]],                                                                 // 11
+    [[1, 2, 3], [1, 2, 4]],                                                                 // 11 false
 
     // Map
     [new Map([[1, 'one'], [2, 'two']]), new Map([[1, 'one'], [2, 'two']])],                 // 12
@@ -33,10 +33,10 @@ const testCases = [
     [new Set([1, 2, 3]), new Set([1, 2, 4])],                                               // 15
 
     // Symbol
-    [Symbol('foo'), Symbol('foo')],                                                         // 16
+    [Symbol('foo'), Symbol('foo')],                                                         // 16 false
 
     // 函数
-    [() => { }, () => { }],                                                                  // 17
+    [() => { }, () => { }],                                                                  // 17 false
 
     // undefined
     [undefined, undefined],                                                                 // 18
@@ -47,14 +47,17 @@ const testCases = [
         { a: [1, 2, { b: 'nested' }], c: { e: [null, { f: 'world' }], d: 'hello' } }
     ],
 
-    // 循环引用                                                                              // 20
+    // 循环引用测试                                                                           // 20
     (() => {
         const obj: any = { a: 1 }
-        obj.self = obj
-        return [obj, obj]
+        const obj2: any = { a: 1 }
+        
+        obj2.self = obj
+        obj.self = obj2
+        return [obj, obj2]
     })(),
 
-    [                                                                                       // 21
+    [                                                                                       // 21 false
         { a: undefined, b: undefined },
         { a: null, b: undefined }
     ]

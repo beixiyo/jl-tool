@@ -1,7 +1,7 @@
-import { TRANSFORM_KEYS } from '@/config/config'
+import { TRANSFORM_KEYS } from '@/config/animate'
 import { OnUpdate } from '@/types'
 import { PropMap } from '@/types/tools'
-import { numFixed } from '..'
+import { numFixed } from '@/tools/tools'
 
 
 /**

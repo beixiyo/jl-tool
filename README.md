@@ -25,6 +25,7 @@ https://beixiyo.github.io/
 - [颜色处理](#颜色处理)
 - [一些数据结构，如：最小堆](#数据结构)
 - [动画处理](#动画处理)
+- [事件分发，如消息订阅](#事件分发)
 - [*is* 判断](#is-判断)
 - [canvas](#canvas)
 - [*Web* 小插件，如：客户端同步服务器更新](#web-小插件)
@@ -67,7 +68,10 @@ export declare function getSum<T>(arr: T[], handler?: (item: T) => number): numb
 /** 深拷贝 */
 export declare function deepClone<T>(data: T, map?: WeakMap<WeakKey, any>): any;
 
-/** 深度比较对象 `Map | Set`无法使用 */
+/**
+ * 深度比较对象 `Map | Set`无法使用
+ * 支持循环引用比较
+ */
 export declare function deepCompare(o1: any, o2: any, seen?: WeakMap<WeakKey, any>): boolean;
 
 /** 递归树拍平 */
@@ -184,28 +188,6 @@ export declare function filterKeys<T, K extends keyof T>(target: T, keys: K[]): 
  * @example excludeKeys(data, ['name'])
  */
 export declare function excludeKeys<T, K extends keyof T>(target: T, keys: K[]): Omit<T, Extract<keyof T, K>>;
-
-/** 消息订阅与派发 */
-export declare class EventBus {
-    eventMap: Map<string, Set<{
-        once?: boolean;
-        fn: Function;
-    }>>;
-    /** 订阅 */
-    on(eventName: string, fn: Function): void;
-    /** 订阅一次 */
-    once(eventName: string, fn: Function): void;
-    /** 发送 */
-    emit(eventName: string, ...args: any[]): void;
-    /**
-     * 取关
-     * @param eventName 空字符或者不传代表重置所有
-     * @param func 要取关的函数 为空取关该事件的所有函数
-     */
-    off(eventName?: string, func?: Function): void;
-    private subscribe;
-    private static genItem;
-}
 ```
 
 
@@ -594,6 +576,65 @@ export declare class ATo {
     /** 停止所有动画 */
     stop(): void;
 }
+```
+
+## 事件分发
+```ts
+/** 消息订阅与派发 */
+export declare class EventBus {
+    /**
+     * 订阅
+     * @param eventName 事件名
+     * @param fn 接收函数
+     */
+    on(eventName: string, fn: Function): void;
+    /**
+     * 订阅一次
+     * @param eventName 事件名
+     * @param fn 接收函数
+     */
+    once(eventName: string, fn: Function): void;
+    /**
+     * 发送事件
+     * @param eventName 事件名
+     * @param args 不定参数
+     */
+    emit(eventName: string, ...args: any[]): void;
+    /**
+     * 取关
+     * @param eventName 空字符或者不传代表重置所有
+     * @param func 要取关的函数，为空取关该事件的所有函数
+     */
+    off(eventName?: string, func?: Function): void;
+}
+
+/**
+ * 事件频道，用于管理事件
+ * 可以批量触发，也可以单独触发
+ */
+export declare class Channel {
+    /**
+     * 添加监听
+     * @param actionType 类型
+     * @param func 函数
+     * @returns 删除监听的 **函数**
+     */
+    add(actionType: ActionType, func: Function): () => void;
+    /**
+     * 删除某个类型 或者 某个类型的具体函数
+     * @param actionType 类型
+     * @param func 具体函数，不传则删除所有
+     */
+    del(actionType: ActionType, func?: Function): void;
+    /**
+     * 触发某个类型
+     * @param actionType 类型
+     * @param args 不定参数
+     */
+    trigger(actionType: ActionType, ...args: any[]): void;
+}
+export type ActionType = string | symbol;
+
 ```
 
 

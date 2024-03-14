@@ -8,7 +8,6 @@ export default defineConfig(() => {
             alias: {
                 // 方便调试用的
                 '@': resolve(__dirname, '../src'),
-                '@deb': resolve(__dirname, '../src')
             }
         }
     }

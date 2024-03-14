@@ -1,21 +1,33 @@
 /** 消息订阅与派发 */
 export class EventBus {
-    eventMap = new Map<string, Set<{
+    private eventMap = new Map<string, Set<{
         once?: boolean
         fn: Function
     }>>()
 
-    /** 订阅 */
+    /**
+     * 订阅
+     * @param eventName 事件名
+     * @param fn 接收函数
+     */
     on(eventName: string, fn: Function) {
         this.subscribe(eventName, fn, false)
     }
 
-    /** 订阅一次 */
+    /**
+     * 订阅一次
+     * @param eventName 事件名
+     * @param fn 接收函数
+     */
     once(eventName: string, fn: Function) {
         this.subscribe(eventName, fn, true)
     }
 
-    /** 发送 */
+    /**
+     * 发送事件
+     * @param eventName 事件名
+     * @param args 不定参数
+     */
     emit(eventName: string, ...args: any[]) {
         for (const [key, fnSet] of this.eventMap) {
             if (eventName === key) {
@@ -30,7 +42,7 @@ export class EventBus {
     /**
      * 取关
      * @param eventName 空字符或者不传代表重置所有
-     * @param func 要取关的函数 为空取关该事件的所有函数
+     * @param func 要取关的函数，为空取关该事件的所有函数
      */
     off(eventName?: string, func?: Function) {
         if (!eventName) {
