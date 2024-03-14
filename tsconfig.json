@@ -36,6 +36,7 @@
             "src/tools/domTools.ts",
             "src/tools/scheduleTask.ts",
             "src/webApi/index.ts",
+            "src/channel/index.ts",
         ],
         "out": "./docs/type-doc",
         "plugin": [
