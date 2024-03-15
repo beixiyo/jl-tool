@@ -8,7 +8,6 @@ const div1 = genDiv('0', '0'),
 
 
 const aTo = new ATo()
-
 aTo
     .start(
         div1.style,
@@ -23,7 +22,7 @@ aTo
         div2.style,
         {
             translateX: '50vw',
-            translateY: '300px',
+            translateY: '50px',
         },
         2000,
         {
@@ -41,7 +40,6 @@ function genDiv(left: string, top: string) {
         background-color: ${getColor()};
         width: 100px;
         height: 100px;
-        will-change: transform;
         position: fixed;
         left: ${left};
         top: ${top};

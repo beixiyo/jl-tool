@@ -165,6 +165,12 @@ function getUnit(s: string, propName?: string): string | null {
         if (WITHOUT_UNITS.includes(propName)) {
             return ''
         }
+
+        const vUnit = /vw$|vh$/.exec(s)
+        if (vUnit) {
+            return vUnit[0]
+        }
+
         /** transform 属性对应的默认单位 */
         let _unit = ''
         if ((_unit = TRANSFORM_UNIT_MAP[propName]) != undefined) {
