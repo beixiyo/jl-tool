@@ -40,65 +40,57 @@ export class Speaker {
         speechSynthesis.speak(this.speak)
 
         onEnd && (this.speak.onend = onEnd)
+        return this
     }
 
     /** 停止 */
     stop() {
         speechSynthesis.cancel()
+        return this
     }
 
     /** 暂停 */
     pause() {
         speechSynthesis.pause()
+        return this
     }
 
     /** 继续 */
     resume() {
         speechSynthesis.resume()
+        return this
     }
 
     /** 设置播放文本 */
     setText(txt = '') {
         this.speak.text = txt
+        return this
     }
 
     /** 设置音量 */
     setVolume(volume = 1) {
-        if (volume < 0 || volume > 1) {
-            return this.warn()
-        }
         this.speak.volume = volume
+        return this
     }
 
     /** 设置声音类型 */
     setVoice(index: number) {
         if (index < 0) {
-            return this.warn(0, 99999)
+            return
         }
         this.speak.voice = this.voiceArr[index % this.voiceArr.length]
+        return this
     }
 
     /** 设置语速 */
     setRate(rate: number) {
-        if (rate < 0 || rate > 1) {
-            return this.warn()
-        }
         this.speak.rate = rate
+        return this
     }
 
     /** 设置音高 */
     setPitch(pitch: number) {
-        if (pitch < 0 || pitch > 2) {
-            return this.warn(0, 2)
-        }
         this.speak.pitch = pitch
-    }
-
-    private warn(min = 0, max = 1) {
-        console.warn(
-            `%cSpeak:%c 值必须在 ${min} ~ ${max} 之间`,
-            'background-color: #14c9fc; color: #fff; padding: 2px 4px; border-radius: 5px',
-            'color: #e07f52'
-        )
+        return this
     }
 }

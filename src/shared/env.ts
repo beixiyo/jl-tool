@@ -22,3 +22,11 @@ export function adaptEnv<T extends Function>(fn: T): T {
     }
     return (() => { }) as unknown as T
 }
+
+export function warn(name: string, min = 0, max = 1) {
+    console.warn(
+        `%c${name}:%c 值必须在 ${min} ~ ${max} 之间`,
+        'background-color: #14c9fc; color: #fff; padding: 2px 4px; border-radius: 5px',
+        'color: #e07f52'
+    )
+}

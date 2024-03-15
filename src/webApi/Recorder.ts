@@ -51,12 +51,14 @@ export class Recorder {
     /** 开始录音 */
     start() {
         if (!this.mediaRecorder) {
-            return console.warn('请先调用`init`方法 等待初始化完成')
+            console.warn('请先调用`init`方法 等待初始化完成')
+            return this
         }
 
         this.chunks = []
         this.stop()
         this.mediaRecorder.start()
+        return this
     }
 
     /** 停止录音，停止后，回调给构造器传递的 `onFinish` */
@@ -64,15 +66,18 @@ export class Recorder {
         if (this.mediaRecorder && this.mediaRecorder.state === 'recording') {
             this.mediaRecorder.stop()
         }
+        return this
     }
 
     /** 播放刚刚的录音，或者指定 base64 的录音 */
     play(url?: string) {
         if (!url && !this.audioUrl) {
-            return console.warn('录音尚未完成，请使用`onFinish`回调')
+            console.warn('录音尚未完成，请使用`onFinish`回调')
+            return this
         }
 
         const audio = new Audio(url ?? this.audioUrl)
         audio.play()
+        return this
     }
 }

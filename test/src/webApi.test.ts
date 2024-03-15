@@ -1,4 +1,4 @@
-import { Recorder, Speaker, openCamera, screenCAP, SpeakToTxt } from '@jl-org/tool'
+import { Recorder, Speaker, openCamera, screenCAP, SpeakToTxt } from '@/webApi'
 
 
 const speakBtn = createBtn('文字转语音', 'speak-btn'),
@@ -27,7 +27,11 @@ document.body.append(
 
 /** 文字转语音 */
 (() => {
-    const speaker = new Speaker('你好')
+    const speaker = new Speaker(`
+        今天是个好日子，
+        今天是个好日子，
+    `)
+    speaker.setRate(2.8)
     speakBtn.onclick = () => speaker.play()
 })();
 

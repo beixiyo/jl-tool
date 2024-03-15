@@ -35,11 +35,13 @@ export class SpeakToTxt {
     /** 开始识别 */
     start() {
         this.recognition.start()
+        return this
     }
 
     /** 停止识别 */
     stop() {
         this.recognition.stop()
+        return this
     }
 
     private init() {

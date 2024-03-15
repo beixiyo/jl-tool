@@ -21,7 +21,7 @@ https://beixiyo.github.io/
 - [各种常用工具](#各种常用工具)
 - [DOM](#dom)
 - [分时渲染函数，再多函数也不卡顿](#分时渲染函数)
-- [Media API](#media-api)
+- [Media API，如录屏、录音、文字语音互转](#media-api)
 - [颜色处理](#颜色处理)
 - [一些数据结构，如：最小堆](#数据结构)
 - [动画处理](#动画处理)
@@ -341,17 +341,16 @@ export declare class Recorder {
      * @param onFinish 录音完成的回调
      */
     constructor(onFinish?: (audioUrl: string, chunk: Blob[]) => void);
-
     init(): Promise<string | undefined>;
 
     /** 开始录音 */
-    start(): void;
+    start(): this;
     /** 停止录音，停止后，回调给构造器传递的 `onFinish` */
-    stop(): void;
-
+    stop(): this;
     /** 播放刚刚的录音，或者指定 base64 的录音 */
-    play(url?: string): void;
+    play(url?: string): this;
 }
+
 
 /**
  * 语音播放
@@ -366,31 +365,32 @@ export declare class Speaker {
     voiceArr: SpeechSynthesisVoice[];
     /** 内部操作的实例对象 */
     speak: SpeechSynthesisUtterance;
-
+ 
     constructor(txt?: string, volume?: number, lang?: string);
 
     /**
      * 播放声音
      * @param onEnd 声音播放完毕的回调
      */
-    play(onEnd?: (e: SpeechSynthesisEvent) => void): void;
+    play(onEnd?: (e: SpeechSynthesisEvent) => void): this;
     /** 停止 */
-    stop(): void;
+    stop(): this;
     /** 暂停 */
-    pause(): void;
+    pause(): this;
     /** 继续 */
-    resume(): void;
+    resume(): this;
     /** 设置播放文本 */
-    setText(txt?: string): void;
+    setText(txt?: string): this;
     /** 设置音量 */
-    setVolume(volume?: number): void;
+    setVolume(volume?: number): this;
     /** 设置声音类型 */
-    setVoice(index: number): void;
+    setVoice(index: number): this;
     /** 设置语速 */
-    setRate(rate: number): void;
+    setRate(rate: number): this;
     /** 设置音高 */
-    setPitch(pitch: number): void;
+    setPitch(pitch: number): this;
 }
+
 
 /**
  * 语音转文字，默认中文识别
@@ -401,19 +401,29 @@ export declare class Speaker {
  * speakTxtBtn.onclick = () => speakToTxt.start()
  */
 export declare class SpeakToTxt {
-
     /**
      * 调用 start 方法开始录音，默认中文识别
      * @param onResult 返回结果的回调
      * @param opts 配置项
      */
     constructor(onResult: OnResult, opts?: SpeakToTxtOpts);
-
     /** 开始识别 */
-    start(): void;
+    start(): this;
     /** 停止识别 */
-    stop(): void;
+    stop(): this;
 }
+
+type SpeakToTxtOpts = {
+    onstart?: (ev: Event) => void;
+    onEnd?: (ev: Event) => void;
+    /** 是否在用户停止说话后继续识别，默认 `false` */
+    continuous?: boolean;
+    /** 是否返回临时结果，默认 `false` */
+    interimResults?: boolean;
+    lang?: string;
+};
+type OnResult = (data: string, e: SpeechRecognitionEvent) => void;
+
 
 /**
  * 开启摄像头
