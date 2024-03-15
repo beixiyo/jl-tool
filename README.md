@@ -553,11 +553,30 @@ export declare function genTimeFunc(name?: TimeFunc): (v: number) => number;
 
 /**
  * 一个动画类 能够链式调用; 请先调用`start`函数, 参数和`createAnimationByTime`一致
- * @example
- * const aTo = new aTo()
- * aTo
- *     .start(...)
- *     .next(...)
+@example
+const aTo = new ATo()
+aTo
+    .start(
+        div1.style,
+        {
+            left: '200px',
+            top: '200px',
+            opacity: '0.1'
+        },
+        1000
+    )
+    .next(
+        div2.style,
+        {
+            translateX: '50vw',
+            translateY: '300px',
+        },
+        2000,
+        {
+            transform: true,
+            timeFunc: 'ease-in-out'
+        }
+    )
  */
 export declare class ATo {
 
