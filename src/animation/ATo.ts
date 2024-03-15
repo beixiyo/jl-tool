@@ -35,7 +35,7 @@ export class ATo {
         durationMS: number,
         opt?: AnimationOpt<T, P>
     ) {
-        this.animateArr.push([target, finalProps, durationMS, opt])
+        this.animateArr.push([target, finalProps, durationMS, opt || {}])
         this.addAnimate(this.animateArr)
         return this
     }
