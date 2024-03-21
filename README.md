@@ -65,6 +65,20 @@ export declare function getRandomNum(min: number, max: number): number;
  */
 export declare function getSum<T>(arr: T[], handler?: (item: T) => number): number;
 
+/**
+ * 给定一个数组，根据 key 进行分组
+ * 分组内容默认放入数组中，你也可以指定为 `'+' | '-' | '*' | '/' | '**'` 进行相应的操作
+ * @param data 要分组的数组
+ * @param key 要进行分组的 **键**
+ * @param operateKey 要操作的 **键**
+ * @param action 操作行为，默认放入数组
+ * @param enableParseFloat 默认 false，当你指定 action 为数值操作时，是否使用 parseFloat，这会把 '10px' 也当成数字
+ * @example
+ * const input = [{ type: 'chinese', score: 10 }, { type: 'chinese', score: 100 }]
+ * groupBy(input, 'type', 'score') => [{ type: 'chinese', score: [10, 100] }]
+ */
+export declare function groupBy<T extends Record<BaseKey, any>>(data: T[], key: keyof T, operateKey: keyof T, action?: 'arr' | '+' | '-' | '*' | '/' | '**', enableParseFloat?: boolean): T[];
+
 /** 深拷贝 */
 export declare function deepClone<T>(data: T, map?: WeakMap<WeakKey, any>): any;
 
@@ -638,8 +652,7 @@ export declare class EventBus {
 }
 
 /**
- * 事件频道，用于管理事件
- * 可以批量触发，也可以单独触发
+ * 事件频道，用于批量触发事件
  */
 export declare class Channel {
     /**
@@ -648,29 +661,32 @@ export declare class Channel {
      * @param func 函数
      * @returns 删除监听的 **函数**
      */
-    add(actionType: ActionType, func: Function): () => void;
+    add(actionType: BaseKey, func: Function): () => void;
     /**
      * 删除某个类型 或者 某个类型的具体函数
      * @param actionType 类型
      * @param func 具体函数，不传则删除所有
      */
-    del(actionType: ActionType, func?: Function): void;
+    del(actionType: BaseKey, func?: Function): void;
     /**
      * 触发某个类型
      * @param actionType 类型
      * @param args 不定参数
      */
-    trigger(actionType: ActionType, ...args: any[]): void;
+    trigger(actionType: BaseKey, ...args: any[]): void;
 }
-export type ActionType = string | symbol;
 
 ```
 
 
 ## is 判断
 ```ts
-/** 判断是否能强转成数字 */
-export declare function isPureNum(value: string | number): boolean;
+/**
+ * 判断是否能强转成数字
+ * @param value 判断的值
+ * @param enableParseFloat 默认 false，是否使用 parseFloat，这会把 '10px' 也当成数字
+ */
+export declare function isPureNum(value: string | number, enableParseFloat?: boolean): value is number;
 
 export declare const isStr: (s: any) => boolean;
 export declare const isNum: (s: any) => boolean;

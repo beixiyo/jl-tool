@@ -1,6 +1,6 @@
 import { ONE_DAY } from '@/shared'
-import { isObj } from '@/shared/is'
-import { TimeType, TreeData } from '@/types'
+import { isObj, isPureNum } from '@/shared/is'
+import { BaseKey, TimeType, TreeData } from '@/types'
 
 
 /** 获取类型 */
@@ -53,6 +53,99 @@ export function getSum<T>(arr: T[], handler?: (item: T) => number): number {
         },
         0
     )
+}
+
+/**
+ * 给定一个数组，根据 key 进行分组  
+ * 分组内容默认放入数组中，你也可以指定为 `'+' | '-' | '*' | '/' | '**'` 进行相应的操作
+ * @param data 要分组的数组
+ * @param key 要进行分组的 **键**
+ * @param operateKey 要操作的 **键**
+ * @param action 操作行为，默认放入数组
+ * @param enableParseFloat 默认 false，当你指定 action 为数值操作时，是否使用 parseFloat，这会把 '10px' 也当成数字
+ * @example
+ * const input = [{ type: 'chinese', score: 10 }, { type: 'chinese', score: 100 }]
+ * groupBy(input, 'type', 'score') => [{ type: 'chinese', score: [10, 100] }]
+ */
+export function groupBy<T extends Record<BaseKey, any>>(
+    data: T[],
+    key: keyof T,
+    operateKey: keyof T,
+    action: 'arr' | '+' | '-' | '*' | '/' | '**' = 'arr',
+    enableParseFloat = false
+) {
+    let i = 0
+    const res: T[] = [],
+        keyMap: any = {}
+
+    data.forEach(item => {
+        const mapKey = item[key]
+        if (keyMap[mapKey] === undefined) {
+            handleKeyMap(mapKey, item)
+        }
+        else {
+            hanledRepeatKey(mapKey, item)
+        }
+    })
+    return res
+
+    function handleKeyMap(mapKey: keyof T, item: any) {
+        keyMap[mapKey] = i
+        if (action === 'arr') {
+            res[i] = {
+                ...item,
+                [operateKey]: [item[operateKey]]
+            }
+        }
+        else {
+            res[i] = {
+                ...item,
+                [operateKey]: item[operateKey]
+            }
+        }
+        i++
+    }
+    function hanledRepeatKey(mapKey: keyof T, item: any) {
+        const index = keyMap[mapKey]
+        if (action !== 'arr' && !isPureNum(item[operateKey], enableParseFloat)) {
+            throw new TypeError('指定的键值无法当作数值计算（Is not like Number）')
+        }
+
+        let num: number
+        const curData = item[operateKey]
+        if (action !== 'arr') {
+            if (enableParseFloat) {
+                num = parseFloat(curData)
+            }
+            else {
+                num = Number(curData)
+            }
+        }
+
+        switch (action) {
+            case 'arr':
+                res[index][operateKey].push(curData)
+                break
+            case '+':
+                (res[index][operateKey] as number) += num
+                break
+            case '-':
+                (res[index][operateKey] as number) -= num
+                break
+            case '*':
+                (res[index][operateKey] as number) *= num
+                break
+            case '/':
+                (res[index][operateKey] as number) /= num
+                break
+            case '**':
+                (res[index][operateKey] as number) **= num
+                break
+
+            default:
+                break
+        }
+    }
 }
 
 /** 深拷贝 */

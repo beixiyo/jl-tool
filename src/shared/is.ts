@@ -1,6 +1,17 @@
-/** 判断是否能强转成数字 */
-export function isPureNum(value: string | number) {
-    const num = Number(value)
+/**
+ * 判断是否能强转成数字
+ * @param value 判断的值
+ * @param enableParseFloat 默认 false，是否使用 parseFloat，这会把 '10px' 也当成数字
+ */
+export function isPureNum(value: string | number, enableParseFloat = false): value is number {
+    let num: number
+    if (enableParseFloat) {
+        num = parseFloat(value + '')
+    }
+    else {
+        num = Number(value)
+    }
+
     if (typeof num === 'number' && !Number.isNaN(num)) {
         return true
     }

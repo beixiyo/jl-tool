@@ -1,6 +1,7 @@
+import { BaseKey } from '@/types'
+
 /**
- * 事件频道，用于管理事件
- * 可以批量触发，也可以单独触发
+ * 事件频道，用于批量触发事件
  */
 export class Channel {
     private readonly listeners = {}
@@ -11,7 +12,7 @@ export class Channel {
      * @param func 函数
      * @returns 删除监听的 **函数**
      */
-    add(actionType: ActionType, func: Function) {
+    add(actionType: BaseKey, func: Function) {
         this.listeners[actionType]
             ? this.listeners[actionType].add(func)
             : this.listeners[actionType] = new Set([func])
@@ -26,7 +27,7 @@ export class Channel {
      * @param actionType 类型
      * @param func 具体函数，不传则删除所有
      */
-    del(actionType: ActionType, func?: Function) {
+    del(actionType: BaseKey, func?: Function) {
         if (!func) {
             delete this.listeners[actionType]
             return
@@ -42,7 +43,7 @@ export class Channel {
      * @param actionType 类型
      * @param args 不定参数
      */
-    trigger(actionType: ActionType, ...args: any[]) {
+    trigger(actionType: BaseKey, ...args: any[]) {
         const tasks = this.listeners[actionType]
         if (!tasks) {
             return
@@ -54,4 +55,3 @@ export class Channel {
     }
 }
 
-export type ActionType = string | symbol
