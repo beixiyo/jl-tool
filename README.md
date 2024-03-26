@@ -19,6 +19,7 @@ https://beixiyo.github.io/
 
 ## 包含如下类型工具
 - [各种常用工具](#各种常用工具)
+- [网络请求工具，如最大并发，自动重试等](#网络请求工具)
 - [DOM](#dom)
 - [分时渲染函数，再多函数也不卡顿](#分时渲染函数)
 - [Media API，如录屏、录音、文字语音互转](#media-api)
@@ -203,6 +204,25 @@ export declare function filterKeys<T, K extends keyof T>(target: T, keys: K[]): 
  */
 export declare function excludeKeys<T, K extends keyof T>(target: T, keys: K[]): Omit<T, Extract<keyof T, K>>;
 ```
+
+
+# 网络请求工具
+```ts
+/**
+ * 失败后自动重试请求
+ * @param task 任务数组
+ * @param count 重试次数
+ */
+export declare function retryReq<T>(task: () => Promise<T>, count?: number): Promise<T>;
+
+/**
+ * 并发任务数组 完成最大并发数后才会继续
+ * @param tasks 任务数组
+ * @param maxNum 最大并发数
+ */
+export declare function concurrentTask<T>(tasks: () => Promise<T>[], maxNum?: number): Promise<T[]>;
+```
+
 
 
 ## DOM
