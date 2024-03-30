@@ -475,7 +475,6 @@ export declare const screenCAP: (fileName?: string) => Promise<void>;
 ```ts
 /** 获取十六进制随机颜色 */
 export declare function getColor(): string;
-
 /** 随机十六进制颜色数组 */
 export declare function getColorArr(size: number): string[];
 
@@ -484,7 +483,7 @@ export declare function getColorArr(size: number): string[];
   - #000 => #000000
   - #000f => #000000ff
  */
-export declare function hexColorToRaw(color: string): string | void;
+export declare function hexColorToRaw(color: string): string;
 
 /** 十六进制 转 RGB */
 export declare function hexToRGB(color: string): string;
@@ -498,7 +497,7 @@ export declare function rgbToHex(color: string): string;
  * @param strength 淡化的强度
  * @returns 返回 RGBA 类似如下格式的颜色 `rgba(0, 0, 0, 0.1)`
  */
-export declare function lightenColor(color: string, strength?: number): string | void;
+export declare function lightenColor(color: string, strength?: number): string;
 
 /**
  * 颜色添加透明度 支持`rgb`和十六进制

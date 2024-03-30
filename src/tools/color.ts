@@ -21,7 +21,8 @@ export function getColorArr(size: number) {
  */
 export function hexColorToRaw(color: string) {
     if (!color.startsWith('#')) {
-        return console.warn('the color is invalidate')
+        console.warn('the color is invalidate')
+        return genDefaultColor()
     }
 
     /** 排除类似 #000000 | #000000ff 正常长度的颜色 */
@@ -58,6 +59,7 @@ export function hexToRGB(color: string) {
     }
 
     console.warn('the color is invalidate')
+    return genDefaultColor()
 }
 
 /** rgb转十六进制 */
@@ -91,12 +93,16 @@ export function rgbToHex(color: string) {
 export function lightenColor(color: string, strength = 0) {
     if (color.startsWith('#')) {
         color = hexToRGB(color)
-        if (!color) return console.warn('the color is invalidate')
+        if (!color) {
+            console.warn('the color is invalidate')
+            return genDefaultColor()
+        }
     }
 
     const match = color.match(Reg.rgb)
     if (!match) {
-        return console.warn('the color is invalidate')
+        console.warn('the color is invalidate')
+        return genDefaultColor()
     }
 
     const [_prev, r, g, b, a = 1] = match
@@ -123,4 +129,8 @@ export function colorAddOpacity(color: string, opacity = .1) {
 
     const alphaHex = Math.round(opacity * 255).toString(16).padStart(2, '0')
     return color + alphaHex
+}
+
+function genDefaultColor() {
+    return 'rgba(0, 0, 0, 0)'
 }
