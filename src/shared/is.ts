@@ -3,7 +3,7 @@
  * @param value 判断的值
  * @param enableParseFloat 默认 false，是否使用 parseFloat，这会把 '10px' 也当成数字
  */
-export function isPureNum(value: string | number, enableParseFloat = false): value is number {
+export function isPureNum(value: string | number, enableParseFloat = false) {
     let num: number
     if (enableParseFloat) {
         num = parseFloat(value + '')
@@ -19,13 +19,13 @@ export function isPureNum(value: string | number, enableParseFloat = false): val
     return false
 }
 
-export const isStr = (s: any) => typeof s === 'string'
-export const isNum = (s: any) => typeof s === 'number'
-export const isBool = (s: any) => typeof s === 'boolean'
+export const isStr = (data: any): data is string => typeof data === 'string'
+export const isNum = (data: any): data is number => typeof data === 'number'
+export const isBool = (data: any): data is boolean => typeof data === 'boolean'
 
-export const isFn = (s: any) => typeof s === 'function'
-export const isObj = (s: any) => typeof s === 'object' && s !== null
-export const isArr = (s: any) => Array.isArray(s)
+export const isFn = (data: any): data is Function => typeof data === 'function'
+export const isObj = (data: any): data is object => typeof data === 'object' && data !== null
+export const isArr = <T>(data: any): data is Array<T> => Array.isArray(data)
 
 /** Object.is */
 export const isSame = (a: any, b: any) => Object.is(a, b)

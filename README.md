@@ -705,14 +705,15 @@ export declare class Channel {
  * @param value 判断的值
  * @param enableParseFloat 默认 false，是否使用 parseFloat，这会把 '10px' 也当成数字
  */
-export declare function isPureNum(value: string | number, enableParseFloat?: boolean): value is number;
+export declare function isPureNum(value: string | number, enableParseFloat?: boolean): boolean;
 
-export declare const isStr: (s: any) => boolean;
-export declare const isNum: (s: any) => boolean;
-export declare const isBool: (s: any) => boolean;
-export declare const isFn: (s: any) => boolean;
-export declare const isObj: (s: any) => boolean;
-export declare const isArr: (s: any) => boolean;
+export declare const isStr: (data: any) => data is string;
+export declare const isNum: (data: any) => data is number;
+export declare const isBool: (data: any) => data is boolean;
+
+export declare const isFn: (data: any) => data is Function;
+export declare const isObj: (data: any) => data is object;
+export declare const isArr: <T>(data: any) => data is T[];
 
 /** Object.is */
 export declare const isSame: (a: any, b: any) => boolean;
