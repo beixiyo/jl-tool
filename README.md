@@ -81,7 +81,7 @@ export declare function getSum<T>(arr: T[], handler?: (item: T) => number): numb
 export declare function groupBy<T extends Record<BaseKey, any>>(data: T[], key: keyof T, operateKey: keyof T, action?: 'arr' | '+' | '-' | '*' | '/' | '**', enableParseFloat?: boolean): T[];
 
 /** 深拷贝 */
-export declare function deepClone<T>(data: T, map?: WeakMap<WeakKey, any>): any;
+export declare function deepClone<T>(data: T, map?: WeakMap<WeakKey, any>): T;
 
 /**
  * 深度比较对象 `Map | Set`无法使用

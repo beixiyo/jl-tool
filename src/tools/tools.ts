@@ -149,10 +149,10 @@ export function groupBy<T extends Record<BaseKey, any>>(
 }
 
 /** 深拷贝 */
-export function deepClone<T>(data: T, map = new WeakMap) {
-    if (typeof data !== 'object') return data
-    if (data instanceof Date) return new Date(data)
-    if (data instanceof RegExp) return new RegExp(data)
+export function deepClone<T>(data: T, map = new WeakMap): T {
+    if (!isObj(data)) return data
+    if (data instanceof Date) return new Date(data) as T
+    if (data instanceof RegExp) return new RegExp(data) as T
 
     if (map.has(data)) return map.get(data)
 
@@ -162,7 +162,8 @@ export function deepClone<T>(data: T, map = new WeakMap) {
         if (!data.hasOwnProperty(key)) continue
         tar[key] = deepClone(data[key], map)
     }
-    return tar
+
+    return tar as T
 }
 
 /**
