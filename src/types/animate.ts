@@ -1,8 +1,8 @@
 import { PropMap } from '@/types/tools'
+import type { TimeFunc as _TimeFunc } from '@/animation/timeFunc'
 
 
-/** 动画过渡函数 支持内置函数和函数 函数需要返回一个`0 ~ 1`之间的值 */
-export type TimeFunc = 'linear' | 'ease' | 'ease-in' | 'ease-out' | 'ease-in-out' | ((v: number) => number)
+export type TimeFunc = _TimeFunc
 export type AnimationOpt<T, P> = {
     /** 动画缓动函数类型 支持内置函数和函数 函数需要返回一个 `0 ~ 1` 之间的值 */
     timeFunc?: TimeFunc

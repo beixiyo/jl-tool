@@ -1,6 +1,6 @@
 // import './Ato.test'
-import './groupBy.test'
-// import './createAnimationByTime.test'
+// import './groupBy.test'
+import './createAnimationByTime.test'
 // import './deepCompare.test'
 // import  './Heap.test'
 // import  './webApi.test'

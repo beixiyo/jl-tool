@@ -27,7 +27,7 @@ aTo
         2000,
         {
             transform: true,
-            timeFunc: 'ease-in-out'
+            timeFunc: 'backInOut'
         }
     )
 
