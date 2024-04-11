@@ -39,3 +39,5 @@ console.log(groupBy(input, 'type', 'score', '-'))
 console.log(groupBy(input, 'type', 'score', '*'))
 console.log(groupBy(input, 'type', 'score', '/'))
 console.log(groupBy(input, 'type', 'score', '**'))
+console.log(groupBy(input, 'type', null))
+

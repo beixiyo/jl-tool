@@ -57,29 +57,45 @@ export function getSum<T>(arr: T[], handler?: (item: T) => number): number {
 
 /**
  * 给定一个数组，根据 key 进行分组  
- * 分组内容默认放入数组中，你也可以指定为 `'+' | '-' | '*' | '/' | '**'` 进行相应的操作
+ * 分组内容默认放入数组中，你也可以指定为 `'+' | '-' | '*' | '/' | '**'` 进行相应的操作  
+ * 
+ * 你也可以把整个对象进行分组（设置 `operateKey` 为 `null`），放入到数组里。而不是进行 加减乘除 等操作
  * @param data 要分组的数组
  * @param key 要进行分组的 **键**
- * @param operateKey 要操作的 **键**
- * @param action 操作行为，默认放入数组
+ * @param operateKey 要操作的 **键**，填 `null` 则对整个对象进行分组，并且会把 `action` 设置为 `arr`
+ * @param action 操作行为，默认放入数组，你也可以进行相应的操作，`'+'` 为加法，`'-'` 为减法，`'*'` 为乘法，`'/'` 为除法，`'**'` 为乘方
  * @param enableParseFloat 默认 false，当你指定 action 为数值操作时，是否使用 parseFloat，这会把 '10px' 也当成数字
  * @example
  * const input = [{ type: 'chinese', score: 10 }, { type: 'chinese', score: 100 }]
  * groupBy(input, 'type', 'score') => [{ type: 'chinese', score: [10, 100] }]
+ * groupBy(input, 'type', null) => [ { type: 'chinese', children: [{ ... }] }, ... ]
  */
 export function groupBy<T extends Record<BaseKey, any>>(
     data: T[],
     key: keyof T,
-    operateKey: keyof T,
+    operateKey: null | (keyof T),
     action: 'arr' | '+' | '-' | '*' | '/' | '**' = 'arr',
     enableParseFloat = false
 ) {
     let i = 0
-    const res: T[] = [],
+    const res: any[] = [],
+        /**
+         * 存储键对应的索引
+         * @example 
+         * {
+         *     'chinese': 0,
+         *     'math': 1
+         * }
+         */
         keyMap: any = {}
+
+    if (operateKey === null) {
+        action = 'arr'
+    }
 
     data.forEach(item => {
         const mapKey = item[key]
+        /** 尚未存入数组的情况 */
         if (keyMap[mapKey] === undefined) {
             handleKeyMap(mapKey, item)
         }
@@ -91,7 +107,14 @@ export function groupBy<T extends Record<BaseKey, any>>(
 
     function handleKeyMap(mapKey: keyof T, item: any) {
         keyMap[mapKey] = i
-        if (action === 'arr') {
+
+        if (operateKey === null) {
+            res[i] = {
+                type: mapKey,
+                children: [item]
+            }
+        }
+        else if (action === 'arr') {
             res[i] = {
                 ...item,
                 [operateKey]: [item[operateKey]]
@@ -112,7 +135,20 @@ export function groupBy<T extends Record<BaseKey, any>>(
         }
 
         let num: number
-        const curData = item[operateKey]
+        let curData: any
+
+        if (operateKey === null) {
+            curData = item
+        }
+        else {
+            curData = item[operateKey]
+        }
+
+        if (operateKey === null) {
+            res[index].children.push(curData)
+            return 
+        }
+
         if (action !== 'arr') {
             if (enableParseFloat) {
                 num = parseFloat(curData)
