@@ -65,6 +65,7 @@ export function getSum<T>(arr: T[], handler?: (item: T) => number): number {
  * @param operateKey 要操作的 **键**，填 `null` 则对整个对象进行分组，并且会把 `action` 设置为 `arr`
  * @param action 操作行为，默认放入数组，你也可以进行相应的操作，`'+'` 为加法，`'-'` 为减法，`'*'` 为乘法，`'/'` 为除法，`'**'` 为乘方
  * @param enableParseFloat 默认 false，当你指定 action 为数值操作时，是否使用 parseFloat，这会把 '10px' 也当成数字
+ * @param enableDeepClone 是否深拷贝，默认 false
  * @example
  * const input = [{ type: 'chinese', score: 10 }, { type: 'chinese', score: 100 }]
  * groupBy(input, 'type', 'score') => [{ type: 'chinese', score: [10, 100] }]
@@ -75,7 +76,8 @@ export function groupBy<T extends Record<BaseKey, any>>(
     key: keyof T,
     operateKey: null | (keyof T),
     action: 'arr' | '+' | '-' | '*' | '/' | '**' = 'arr',
-    enableParseFloat = false
+    enableParseFloat = false,
+    enableDeepClone = false
 ) {
     let i = 0
     const res: any[] = [],
@@ -107,23 +109,26 @@ export function groupBy<T extends Record<BaseKey, any>>(
 
     function handleKeyMap(mapKey: keyof T, item: any) {
         keyMap[mapKey] = i
+        const _item = enableDeepClone
+            ? deepClone(item)
+            : item
 
         if (operateKey === null) {
             res[i] = {
                 type: mapKey,
-                children: [item]
+                children: [_item]
             }
         }
         else if (action === 'arr') {
             res[i] = {
-                ...item,
-                [operateKey]: [item[operateKey]]
+                ..._item,
+                [operateKey]: [_item[operateKey]]
             }
         }
         else {
             res[i] = {
-                ...item,
-                [operateKey]: item[operateKey]
+                ..._item,
+                [operateKey]: _item[operateKey]
             }
         }
         i++
@@ -138,7 +143,9 @@ export function groupBy<T extends Record<BaseKey, any>>(
         let curData: any
 
         if (operateKey === null) {
-            curData = item
+            curData = enableDeepClone
+                ? deepClone(item)
+                : item
         }
         else {
             curData = item[operateKey]
