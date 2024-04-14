@@ -3,7 +3,7 @@ const CONFIRM_GAP = 1000 * 60 * 5,
 
 
 /** 检查页面更新 */
-export function autoUpdate(opts: Opts = {}) {
+export function autoUpdate(opts: AutoUpdateOpts = {}) {
     let timer: number,
         srcArr: string[] = []
 
@@ -64,7 +64,7 @@ export function autoUpdate(opts: Opts = {}) {
 }
 
 
-type Opts = {
+export type AutoUpdateOpts = {
     /** 你可以根据环境变量决定是否自动检查更新 */
     needUpate?: () => boolean
     /** 再次询问是否更新的间隔，默认 5 分钟 */

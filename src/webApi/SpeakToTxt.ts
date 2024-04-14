@@ -8,7 +8,7 @@
  */
 export class SpeakToTxt {
     private recognition: SpeechRecognition
-    private onResult: OnResult
+    private onResult: SpeakToTxtOnResult
     private opts: SpeakToTxtOpts
 
     /**
@@ -16,7 +16,7 @@ export class SpeakToTxt {
      * @param onResult 返回结果的回调
      * @param opts 配置项
      */
-    constructor(onResult: OnResult, opts: SpeakToTxtOpts = {}) {
+    constructor(onResult: SpeakToTxtOnResult, opts: SpeakToTxtOpts = {}) {
         if ('webkitSpeechRecognition' in window) {
             this.recognition = new webkitSpeechRecognition()
         }
@@ -68,7 +68,7 @@ export class SpeakToTxt {
 }
 
 
-type SpeakToTxtOpts = {
+export type SpeakToTxtOpts = {
     onstart?: (ev: Event) => void
     onEnd?: (ev: Event) => void
     /** 是否在用户停止说话后继续识别，默认 `false` */
@@ -78,4 +78,4 @@ type SpeakToTxtOpts = {
     lang?: string
 }
 
-type OnResult = (data: string, e: SpeechRecognitionEvent) => void
+export type SpeakToTxtOnResult = (data: string, e: SpeechRecognitionEvent) => void

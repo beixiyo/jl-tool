@@ -6,11 +6,13 @@ export type BaseKey = string | number | symbol
 export type TimeType = Date | number | string
 export type KeyCode = 'ArrowUp' | 'ArrowDown' | 'ArrowLeft' | 'ArrowRight'
 
-export type Pixel = [number, number, number, number]
+export type Pixel = [R: number, G: number, B: number, A: number]
 
-export type TreeData = {
-    pid: number
-    id: number
-    children: TreeData[]
-    [key: string]: any
+export type TreeItem = {
+    pid: BaseType
+    id: BaseType
 }
+export type TreeData<T extends TreeItem> =
+    T & {
+        children?: TreeData<T>[]
+    }

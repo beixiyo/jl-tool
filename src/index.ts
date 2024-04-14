@@ -1,12 +1,15 @@
-export * from '@/tools/tools'
+export * from '@/tools/arrTools'
+export * from '@/tools/colorTools'
+export * from '@/tools/dateTools'
 export * from '@/tools/domTools'
-export * from '@/tools/color'
+export { scheduleTask } from '@/tools/scheduleTask'
+export * from '@/tools/tools'
+
 export * from '@/channel'
 export * from '@/shared/exportToDoc'
 export * from '@/dataStructure'
-export * from '@/http'
 
-export { scheduleTask } from '@/tools/scheduleTask'
+export * from '@/http'
 
 export * from '@/webApi'
 export * from '@/animation'

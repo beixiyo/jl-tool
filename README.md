@@ -13,17 +13,21 @@ npm i @jl-org/tool
 
 ## 文档地址
 > 其实不如看 *VSCode* 的代码提示方便。  
-鼠标悬浮在变量上即可查看，几乎所有地方我都写了文档注释  
+
+**鼠标悬浮在变量上即可查看，几乎所有地方我都写了文档注释**
 
 https://beixiyo.github.io/
+
 
 ## 包含如下类型工具
 - [各种常用工具](#各种常用工具)
 - [网络请求工具，如最大并发，自动重试等](#网络请求工具)
+- [数组处理](#数组处理)
+- [颜色处理](#颜色处理)
+- [日期处理](#日期处理)
 - [DOM](#dom)
 - [分时渲染函数，再多函数也不卡顿](#分时渲染函数)
 - [Media API，如录屏、录音、文字语音互转](#media-api)
-- [颜色处理](#颜色处理)
 - [一些数据结构，如：最小堆](#数据结构)
 - [动画处理](#动画处理)
 - [事件分发，如消息订阅](#事件分发)
@@ -40,49 +44,16 @@ export declare const getType: (data: any) => string;
 /** 随机长度为`10`的字符串 */
 export declare const randomStr: () => string;
 
-/** 今年的第几天 */
-export declare const dayOfYear: (date?: Date) => number;
-
-/** 获取时分秒 */
-export declare const timeFromDate: (date: Date) => string;
-
 /** 摄氏度转华氏度 */
 export declare const celsiusToFahrenheit: (celsius: number) => number;
 
 /** 华氏度转摄氏度 */
 export declare const fahrenheitToCelsius: (fahrenheit: number) => number;
 
-/** 获取日期间隔 单位(天) */
-export declare function dayDiff(date1: TimeType, date2: TimeType): number;
-
 /**
  * 获取随机范围整型数值 不包含最大值
  */
 export declare function getRandomNum(min: number, max: number): number;
-
-/**
- * 对数组求和
- * @param handler 可以对数组每一项进行操作，返回值将会被相加
- */
-export declare function getSum<T>(arr: T[], handler?: (item: T) => number): number;
-
-/**
- * 给定一个数组，根据 key 进行分组
- * 分组内容默认放入数组中，你也可以指定为 `'+' | '-' | '*' | '/' | '**'` 进行相应的操作
- *
- * 你也可以把整个对象进行分组（设置 `operateKey` 为 `null`），放入到数组里。而不是进行 加减乘除 等操作
- * @param data 要分组的数组
- * @param key 要进行分组的 **键**
- * @param operateKey 要操作的 **键**，填 `null` 则对整个对象进行分组，并且会把 `action` 设置为 `arr`
- * @param action 操作行为，默认放入数组，你也可以进行相应的操作，`'+'` 为加法，`'-'` 为减法，`'*'` 为乘法，`'/'` 为除法，`'**'` 为乘方
- * @param enableParseFloat 默认 false，当你指定 action 为数值操作时，是否使用 parseFloat，这会把 '10px' 也当成数字
- * @param enableDeepClone 是否深拷贝，默认 false
- * @example
- * const input = [{ type: 'chinese', score: 10 }, { type: 'chinese', score: 100 }]
- * groupBy(input, 'type', 'score') => [{ type: 'chinese', score: [10, 100] }]
- * groupBy(input, 'type', null) => [ { type: 'chinese', children: [{ ... }] }, ... ]
- */
-export declare function groupBy<T extends Record<BaseKey, any>>(data: T[], key: keyof T, operateKey: null | (keyof T), action?: 'arr' | '+' | '-' | '*' | '/' | '**', enableParseFloat?: boolean, enableDeepClone?: boolean): any[];
 
 /** 深拷贝 */
 export declare function deepClone<T>(data: T, map?: WeakMap<WeakKey, any>): T;
@@ -92,20 +63,6 @@ export declare function deepClone<T>(data: T, map?: WeakMap<WeakKey, any>): T;
  * 支持循环引用比较
  */
 export declare function deepCompare(o1: any, o2: any, seen?: WeakMap<WeakKey, any>): boolean;
-
-/** 递归树拍平 */
-export declare function arrToTree(arr: TreeData[]): TreeData[];
-
-/**
- * 把数组分成 n 块
- * @param arr 数组
- * @param size 每个数组大小
- * @returns 返回二维数组
- */
-export declare function arrToChunk<T>(arr: T[], size: number): T[][];
-
-/** 二分查找，必须是正序的数组 */
-export declare function binarySearch<T>(arr: T[], target: T): number;
 
 /**
  * 截取字符串，默认补 `...` 到后面
@@ -128,7 +85,6 @@ export declare function toCamel(key: string, replaceStr?: string): string;
 
 /** 柯里化 */
 export declare function curry(): any;
-
 /**
  * 数字补齐精度
  * @param num 数字
@@ -150,27 +106,6 @@ export declare function padNum(num: string | number, precision?: number, placeho
 export declare function numFixed(num: number, precision?: number): number;
 
 /**
- * 日期补零 把`yyyy-MM-dd` 转成 `yyyy-MM-dd HH:mm:ss`
- * @param date 格式: `2016-06-10` 必须和它长度保持一致
- * @param placeholder 后面补充的字符串 默认`00:00:00`
- * @returns 如`2016-06-10 10:00:00`
- */
-export declare function padDate(date: string, placeholder?: string): string;
-
-/**
- * 把日期转为 `Date` 对象
- * @param date 日期，可以是字符串或者时间戳
- */
-export declare function getValidDate(date: Date | string | number): string | number | Date;
-
-/**
- * 返回给定日期是否小于某年`一月一日` 默认去年
- * @param curDate 当前日期
- * @param yearLen 年份长度，默认 `-1`，即去年
- */
-export declare function isLtYear(curDate: Date | string | number, yearLen?: number): boolean;
-
-/**
  * 生成 iconfont 的类名
  * @param name icon 名字
  * @param prefix 前缀默认 iconfont
@@ -181,28 +116,28 @@ export declare function isLtYear(curDate: Date | string | number, yearLen?: numb
 export declare function genIcon(name: string, prefix?: string, suffix?: string, connector?: string): string;
 
 /**
- * 返回一个新对象，对象会提取值在 extractArr，中的元素
+ * 提取值在 extractArr，中的元素
  * 例如提取所有空字符串
  * @example filterVals(data, [''])
  */
 export declare function filterVals<T>(data: T, extractArr: any[]): Partial<T>;
 
 /**
- * 返回一个新对象，对象会排除值在 excludeArr，中的元素
+ * 排除值在 excludeArr，中的元素
  * 例如排除所有空字符串
  * @example excludeVals(data, [''])
  */
 export declare function excludeVals<T>(data: T, excludeArr: any[]): Partial<T>;
 
 /**
- * 返回一个新对象，对象中会提取 `keys` 数组
+ * 提取 `keys` 数组，返回一个对象
  * 例如：提取 `name`
  * @example filterKeys(data, ['name'])
  */
 export declare function filterKeys<T, K extends keyof T>(target: T, keys: K[]): Pick<T, Extract<keyof T, K>>;
 
 /**
- * 返回一个新对象，对象中会排除 `keys` 数组
+ * 排除 `keys` 数组，返回一个对象
  * 例如：排除 `name`
  * @example excludeKeys(data, ['name'])
  */
@@ -210,7 +145,7 @@ export declare function excludeKeys<T, K extends keyof T>(target: T, keys: K[]):
 ```
 
 
-# 网络请求工具
+## 网络请求工具
 ```ts
 /**
  * 失败后自动重试请求
@@ -227,6 +162,147 @@ export declare function retryReq<T>(task: () => Promise<T>, count?: number): Pro
 export declare function concurrentTask<T>(tasks: () => Promise<T>[], maxNum?: number): Promise<T[]>;
 ```
 
+
+## 数组处理
+```ts
+/**
+ * 对数组求和
+ * @param handler 可以对数组每一项进行操作，返回值将会被相加
+ */
+export declare function getSum<T>(arr: T[], handler?: (item: T) => number): number;
+
+/**
+ * 给定一个数组，根据 key 进行分组
+ * 分组内容默认放入数组中，你也可以指定为 `'+' | '-' | '*' | '/' | '**'` 进行相应的操作
+ *
+ * 你也可以把整个对象进行分组（设置 `operateKey` 为 `null`），他会把整个对象放入数组。而不是进行 加减乘除 等操作
+ * @param data 要分组的数组
+ * @param key 要进行分组的 **键**
+ * @param operateKey 要操作的 **键**，填 `null` 则对整个对象进行分组，并且会把 `action` 设置为 `arr`
+ * @param action 操作行为，默认放入数组，你也可以进行相应的操作，`'+'` 为加法，`'-'` 为减法，`'*'` 为乘法，`'/'` 为除法，`'**'` 为乘方
+ * @param enableParseFloat 默认 false，当你指定 action 为数值操作时，是否使用 parseFloat，这会把 '10px' 也当成数字
+ * @param enableDeepClone 是否深拷贝，默认 false
+ * @example
+ * const input = [{ type: 'chinese', score: 10 }, { type: 'chinese', score: 100 }]
+ * groupBy(input, 'type', 'score') => [{ type: 'chinese', score: [10, 100] }]
+ * groupBy(input, 'type', null) => [ { type: 'chinese', children: [{ ... }] }, ... ]
+ */
+export declare function groupBy<T extends Record<BaseKey, any>>(data: T[], key: keyof T, operateKey: null | (keyof T), action?: 'arr' | '+' | '-' | '*' | '/' | '**', enableParseFloat?: boolean, enableDeepClone?: boolean): any[];
+
+/**
+ * 扁平数组转递归树
+ * @example
+const arr = [
+    { id: 1, name: '部门1', pid: 0 },
+    { id: 2, name: '部门2', pid: 1 },
+    { id: 3, name: '部门3', pid: 1 },
+    { id: 4, name: '部门4', pid: 3 },
+    { id: 5, name: '部门5', pid: 4 },
+    { id: 6, name: '部门6', pid: 1 },
+]
+const treeData = arrToTree(arr)
+ */
+export declare function arrToTree<T extends TreeItem>(arr: T[]): TreeData<T>[];
+
+/**
+ * 把数组分成 n 块
+ * @param arr 数组
+ * @param size 每个数组大小
+ * @returns 返回二维数组
+ */
+export declare function arrToChunk<T>(arr: T[], size: number): T[][];
+
+/** 二分查找，必须是正序的数组 */
+export declare function binarySearch<T>(arr: T[], target: T): number;
+```
+
+
+
+## 颜色处理
+```ts
+/** 获取十六进制随机颜色 */
+export declare function getColor(): string;
+/** 随机十六进制颜色数组 */
+export declare function getColorArr(size: number): string[];
+
+/**
+### 把十六进制颜色转成 原始长度的颜色
+  - #000 => #000000
+  - #000f => #000000ff
+ */
+export declare function hexColorToRaw(color: string): string;
+
+/** 十六进制 转 RGB */
+export declare function hexToRGB(color: string): string;
+
+/** rgb转十六进制 */
+export declare function rgbToHex(color: string): string;
+
+/**
+ * 淡化颜色透明度 支持`rgb`和十六进制
+ * @param color rgba(0, 239, 255, 1)
+ * @param strength 淡化的强度
+ * @returns 返回 RGBA 类似如下格式的颜色 `rgba(0, 0, 0, 0.1)`
+ */
+export declare function lightenColor(color: string, strength?: number): string;
+
+/**
+ * 颜色添加透明度 支持`rgb`和十六进制
+ * @param color 颜色
+ * @param opacity 透明度
+ * @returns 返回十六进制 类似如下格式的颜色 `#ffffff11`
+ */
+export declare function colorAddOpacity(color: string, opacity?: number): string;
+```
+
+
+## 日期处理
+```ts
+/** 今年的第几天 */
+export declare const dayOfYear: (date?: Date) => number;
+
+/** 获取时分秒 */
+export declare const timeFromDate: (date: Date) => string;
+
+/** 获取日期间隔 单位(天) */
+export declare function dayDiff(date1: TimeType, date2: TimeType): number;
+
+/**
+ * 日期补零 把`yyyy-MM-dd` 转成 `yyyy-MM-dd HH:mm:ss`
+ * @param date 格式: `2016-06-10` 必须和它长度保持一致
+ * @param placeholder 后面补充的字符串 默认`00:00:00`
+ * @returns 如`2016-06-10 10:00:00`
+ */
+export declare function padDate(date: string, placeholder?: string): string;
+
+/**
+ * 把日期转为 `Date` 对象，非法日期则抛异常
+ * @param date 日期，可以是字符串或者时间戳
+ */
+export declare function getValidDate(date: Date | string | number): string | number | Date;
+
+/**
+ * 返回给定日期是否小于某年`一月一日` 默认去年
+ * @param curDate 当前日期
+ * @param yearLen 年份长度，默认 `-1`，即去年
+ */
+export declare function isLtYear(curDate: Date | string | number, yearLen?: number): boolean;
+
+/**
+ * 描述传入日期相对于当前时间的口头说法
+ * @param date 需要计算时间间隔的日期
+ */
+export declare function timeGap(date?: TimeType, opts?: TimeGapOpts): string;
+
+export type TimeGapOpts = {
+    /** 兜底替代字符串，默认 -- */
+    fallback?: string;
+    /** 以前日期格式化 */
+    beforeFn?: (dateStr: string) => string;
+    /** 以后日期格式化 */
+    afterFn?: (dateStr: string) => string;
+};
+```
 
 
 ## DOM
@@ -475,44 +551,6 @@ export declare const screenCAP: (fileName?: string) => Promise<void>;
 ```
 
 
-## 颜色处理
-```ts
-/** 获取十六进制随机颜色 */
-export declare function getColor(): string;
-/** 随机十六进制颜色数组 */
-export declare function getColorArr(size: number): string[];
-
-/**
-### 把十六进制颜色转成 原始长度的颜色
-  - #000 => #000000
-  - #000f => #000000ff
- */
-export declare function hexColorToRaw(color: string): string;
-
-/** 十六进制 转 RGB */
-export declare function hexToRGB(color: string): string;
-
-/** rgb转十六进制 */
-export declare function rgbToHex(color: string): string;
-
-/**
- * 淡化颜色透明度 支持`rgb`和十六进制
- * @param color rgba(0, 239, 255, 1)
- * @param strength 淡化的强度
- * @returns 返回 RGBA 类似如下格式的颜色 `rgba(0, 0, 0, 0.1)`
- */
-export declare function lightenColor(color: string, strength?: number): string;
-
-/**
- * 颜色添加透明度 支持`rgb`和十六进制
- * @param color 颜色
- * @param opacity 透明度
- * @returns 返回十六进制 类似如下格式的颜色 `#ffffff11`
- */
-export declare function colorAddOpacity(color: string, opacity?: number): string;
-```
-
-
 ## 数据结构
 ```ts
 /** 最小堆算法 */
@@ -644,6 +682,7 @@ export declare class ATo {
 }
 ```
 
+
 ## 事件分发
 ```ts
 /** 消息订阅与派发 */
@@ -698,7 +737,6 @@ export declare class Channel {
      */
     trigger(actionType: BaseKey, ...args: any[]): void;
 }
-
 ```
 
 

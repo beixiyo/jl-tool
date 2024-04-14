@@ -28,16 +28,21 @@
         "entryPoints": [
             "src/animation/index.ts",
             "src/canvas/index.ts",
+            "src/channel/index.ts",
+            
             "src/dataStructure/index.ts",
             "src/http/index.ts",
             "src/plugins/index.ts",
             "src/shared/exportToDoc.ts",
-            "src/tools/color.ts",
-            "src/tools/tools.ts",
+
+            "src/tools/arrTools.ts",
+            "src/tools/colorTools.ts",
+            "src/tools/dateTools.ts",
             "src/tools/domTools.ts",
             "src/tools/scheduleTask.ts",
+            "src/tools/tools.ts",
+
             "src/webApi/index.ts",
-            "src/channel/index.ts",
         ],
         "out": "./docs/type-doc",
         "plugin": [
