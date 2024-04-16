@@ -156,6 +156,14 @@ export function debounce<P extends any[], T, R>(
     }
 }
 
+/** 设置 LocalStorage，无需手动序列化 */
+export function setLocalStorage(key: string, value: any) {
+    return localStorage.setItem(key, JSON.stringify(value))
+}
+/** 获取 LocalStorage，无需手动反序列化 */
+export function getLocalStorage(key: string) {
+    return JSON.parse(localStorage.getItem(key) || '')
+}
 
 /** 获取选中的文本 */
 export const getSelectedText = () => window.getSelection().toString()

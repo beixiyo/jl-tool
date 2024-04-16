@@ -366,6 +366,11 @@ export declare function throttle<P extends any[], T, R>(fn: (this: T, ...args: P
 /** 防抖 */
 export declare function debounce<P extends any[], T, R>(fn: (this: T, ...args: P) => R, delay?: number): (this: T, ...args: P) => void;
 
+/** 设置 LocalStorage，无需手动序列化 */
+export declare function setLocalStorage(key: string, value: any): void;
+/** 获取 LocalStorage，无需手动反序列化 */
+export declare function getLocalStorage(key: string): any;
+
 /** 获取选中的文本 */
 export declare const getSelectedText: () => string;
 
