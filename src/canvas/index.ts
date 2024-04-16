@@ -8,5 +8,8 @@ export {
 
 export {
     cutImg,
-    compressImg
+    compressImg,
+    setImgCrossOrigin,
+    getCvsImg,
+    type CutImgOpts,
 } from './imgHandle'
