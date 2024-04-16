@@ -29,7 +29,6 @@ export function cutImg<T extends TransferType = 'base64'>(
     return getCvsImg<T>(cvs, resType, mimeType, quality)
 }
 
-
 /**
  * 压缩图片
  * @param img 图片
@@ -91,6 +90,8 @@ export function getCvsImg<T extends TransferType = 'base64'>(
     }
 }
 
+
+/** ======================= Type ========================= */
 
 type HandleImgReturn<T extends TransferType> =
     T extends 'blob'

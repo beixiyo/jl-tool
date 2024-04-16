@@ -32,7 +32,7 @@ https://beixiyo.github.io/
 - [动画处理](#动画处理)
 - [事件分发，如消息订阅](#事件分发)
 - [*is* 判断](#is-判断)
-- [canvas](#canvas)
+- [canvas，可以压缩图片，截取部分图片...](#canvas)
 - [*Web* 小插件，如：客户端同步服务器更新](#web-小插件)
 
 
@@ -769,23 +769,33 @@ export declare const isSame: (a: any, b: any) => boolean;
 ```ts
 /**
  * 截取图片的一部分，返回 base64 | blob
+ * @param img 图片
+ * @param opts 配置
+ * @param resType 需要返回的文件格式，默认 `base64`
  */
-export declare function cutImg<T extends TransferType>(img: HTMLImageElement, resType: T, x?: number, y?: number, width?: number, height?: number, opts?: {
-    type?: string;
-    quality?: number;
-}): HandleImgReturn<T>;
+export declare function cutImg<T extends TransferType = 'base64'>(img: HTMLImageElement, opts?: CutImgOpts, resType?: T): HandleImgReturn<T>;
 
 /**
  * 压缩图片
  * @param img 图片
- * @param resType 需要返回的文件格式
+ * @param resType 需要返回的文件格式，默认 `base64`
  * @param quality 压缩质量，默认 0.5
  * @param mimeType 图片类型，默认 `image/webp`。`image/jpeg | image/webp` 才能压缩，
  * @returns base64 | blob
  */
-export declare function compressImg<T extends TransferType>(img: HTMLImageElement, resType: T, quality?: number, mimeType?: 'image/jpeg' | 'image/webp'): HandleImgReturn<T>;
+export declare function compressImg<T extends TransferType = 'base64'>(img: HTMLImageElement, resType?: T, quality?: number, mimeType?: 'image/jpeg' | 'image/webp'): HandleImgReturn<T>;
 
-type HandleImgReturn<T extends TransferType> = T extends 'blob' ? Promise<Blob> : Promise<string>;
+/** 设置图片的 crossOrigin */
+export declare function setImgCrossOrigin(img: HTMLImageElement): void;
+
+/**
+ * 把 canvas 上的图像转成 base64 | blob
+ * @param cvs canvas
+ * @param resType 需要返回的文件格式，默认 `base64`
+ * @param type 图片的 MIME 格式
+ * @param quality 压缩质量
+ */
+export declare function getCvsImg<T extends TransferType = 'base64'>(cvs: HTMLCanvasElement, resType?: T, mimeType?: string, quality?: number): HandleImgReturn<T>;
 
 
 /**
@@ -828,6 +838,19 @@ export declare function parseImgData(imgData: ImageData['data'], width: number, 
 
 /** 给 canvas 某个像素点填充颜色的函数 */
 export declare function fillPixel(ctx: CanvasRenderingContext2D, x: number, y: number, color: string): void;
+
+
+/** ======================= Type ========================= */
+export type CutImgOpts = {
+    x?: number;
+    y?: number;
+    width?: number;
+    height?: number;
+    /** 图片的 MIME 格式 */
+    mimeType?: string;
+    /** 图像质量，取值范围 0 ~ 1 */
+    quality?: number;
+};
 ```
 
 
