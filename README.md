@@ -264,6 +264,9 @@ export declare const dayOfYear: (date?: Date) => number;
 /** 获取时分秒 */
 export declare const timeFromDate: (date: Date) => string;
 
+/** 获取季度 */
+export declare function getQuarter(date?: TimeType): 1 | 2 | 4 | 3;
+
 /** 获取日期间隔 单位(天) */
 export declare function dayDiff(date1: TimeType, date2: TimeType): number;
 
