@@ -162,7 +162,12 @@ export function setLocalStorage(key: string, value: any) {
 }
 /** 获取 LocalStorage，无需手动反序列化 */
 export function getLocalStorage<T>(key: string) {
-    return JSON.parse(localStorage.getItem(key) || '') as T
+    const item = localStorage.getItem(key)
+    if (item == null) {
+        return null
+    }
+
+    return JSON.parse(item)
 }
 
 /** 获取选中的文本 */
