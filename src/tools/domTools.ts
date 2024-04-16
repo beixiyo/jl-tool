@@ -161,8 +161,8 @@ export function setLocalStorage(key: string, value: any) {
     return localStorage.setItem(key, JSON.stringify(value))
 }
 /** 获取 LocalStorage，无需手动反序列化 */
-export function getLocalStorage(key: string) {
-    return JSON.parse(localStorage.getItem(key) || '')
+export function getLocalStorage<T>(key: string) {
+    return JSON.parse(localStorage.getItem(key) || '') as T
 }
 
 /** 获取选中的文本 */
