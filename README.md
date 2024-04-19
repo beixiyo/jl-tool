@@ -790,8 +790,8 @@ export declare function cutImg<T extends TransferType = 'base64'>(img: HTMLImage
  */
 export declare function compressImg<T extends TransferType = 'base64'>(img: HTMLImageElement, resType?: T, quality?: number, mimeType?: 'image/jpeg' | 'image/webp'): HandleImgReturn<T>;
 
-/** 设置图片的 crossOrigin */
-export declare function setImgCrossOrigin(img: HTMLImageElement): void;
+/** 设置元素的 crossOrigin */
+export declare function setElCrossOrigin(el: HTMLElement): void;
 
 /**
  * 把 canvas 上的图像转成 base64 | blob
