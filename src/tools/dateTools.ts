@@ -1,6 +1,7 @@
 import { ONE_DAY } from '@/shared/constant'
 import type { TimeType } from '@/types/base'
 import { getType } from './tools'
+import { isFn } from '..'
 
 
 /** 今年的第几天 */
@@ -17,7 +18,7 @@ export const timeFromDate = (date: Date) => date.toTimeString().slice(0, 8)
 export function getQuarter(date: TimeType = new Date()) {
     const _date = new Date(date)
     const month = _date.getMonth() + 1
-    
+
     if (month <= 3) {
         return 1
     }
@@ -83,8 +84,11 @@ export function isLtYear(curDate: Date | string | number, yearLen = -1) {
 }
 
 /**
- * 描述传入日期相对于当前时间的口头说法
+ * 描述传入日期相对于当前时间的口头说法  
+ * 例如：刚刚、1分钟前、1小时前、1天前、1个月前、1年前...
  * @param date 需要计算时间间隔的日期
+ * @example
+ * console.log(timeGap()) // 刚刚
  */
 export function timeGap(date?: TimeType, opts: TimeGapOpts = {}) {
     const { afterFn, beforeFn, fallback = '--' } = opts
@@ -126,6 +130,92 @@ export function timeGap(date?: TimeType, opts: TimeGapOpts = {}) {
     }
 }
 
+/**
+ * 格式化时间，你也可以放在 Date.prototype 上，然后 new Date().formatDate()
+ * @param formatter 格式化函数或者字符串
+ * @param date 日期，默认当前时间
+ * @param padZero 是否补零，默认 true
+ * @example
+ * console.log(formatDate('yyyy-MM-dd 00:00'))
+ * console.log(formatDate('yyyy-MM-dd', new Date(66600), false))
+ * console.log(formatDate('yyyy-MM-dd HH:mm:ss:ms'))
+ * console.log(formatDate((dateInfo) => {
+ *     return `今年是${dateInfo.yyyy}年`
+ * }))
+ */
+export function formatDate(
+    formatter: DateFormat = 'yyyy-MM-dd HH:mm:ss',
+    date?: Date,
+    padZero = true
+) {
+    const formatterFn = _formatNormalize()
+    const pad = (str: string, num = 2) => str.toString().padStart(num, '0')
+
+    date ??= typeof (Date.prototype as any).formatDate === 'function'
+        ? this
+        : new Date()
+    const dateInfo: DateInfo = {
+        yyyy: String(date.getFullYear()),
+        MM: String(date.getMonth() + 1),
+        dd: String(date.getDate()),
+        HH: String(date.getHours()),
+        mm: String(date.getMinutes()),
+        ss: String(date.getSeconds()),
+        ms: String(date.getMilliseconds()),
+    }
+
+    if (padZero) {
+        for (const key in dateInfo) {
+            const item = dateInfo[key]
+            if (key === 'yyyy') {
+                dateInfo[key] = pad(item, 4)
+                continue
+            }
+            dateInfo[key] = pad(item)
+        }
+    }
+    return formatterFn(dateInfo)
+
+
+    function _formatNormalize() {
+        if (isFn(formatter)) return formatter
+
+        return (dateInfo: DateInfo) => {
+            const { yyyy, MM, dd, HH, mm, ss, ms } = dateInfo
+
+            return formatter.replace('yyyy', yyyy)
+                .replace('MM', MM)
+                .replace('dd', dd)
+                .replace('HH', HH)
+                .replace('mm', mm)
+                .replace('ss', ss)
+                .replace('ms', ms)
+        }
+    }
+}
+
+
+export type DateFormat =
+    | ((dateInfo: DateInfo) => string)
+    | 'yyyy-MM-dd'
+    | 'yyyy-MM-dd HH'
+    | 'yyyy-MM-dd HH:mm'
+    | 'yyyy-MM-dd HH:mm:ss'
+    | 'yyyy-MM-dd HH:mm:ss:ms'
+    | 'yyyy-MM-dd 00:00'
+    | 'yyyy-MM-dd 00:00:00'
+    | 'yyyy-MM-dd 23:59'
+    | 'yyyy-MM-dd 23:59:59'
+
+export interface DateInfo {
+    yyyy: string
+    MM: string
+    dd: string
+    HH: string
+    mm: string
+    ss: string
+    ms: string
+}
 
 export type TimeGapOpts = {
     /** 兜底替代字符串，默认 -- */

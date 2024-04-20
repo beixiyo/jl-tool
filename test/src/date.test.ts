@@ -1,4 +1,4 @@
-import { timeGap } from '@/tools/dateTools'
+import { timeGap, formatDate } from '@/tools/dateTools'
 
 
 console.log(timeGap())
@@ -22,4 +22,23 @@ console.log(timeGap('2024-4-16', {
 console.log(timeGap('asdfsad', {
     fallback: '未知时间',
 }))
+console.log('='.repeat(20))
 
+
+console.log(formatDate('yyyy-MM-dd 00:00'))
+console.log(formatDate('yyyy-MM-dd', new Date(66600), false))
+console.log(formatDate('yyyy-MM-dd HH:mm:ss:ms'))
+console.log(formatDate((dateInfo) => {
+    return `今年是${dateInfo.yyyy}年`
+}))
+
+Date.prototype.formatDate = formatDate
+const protoDate = new Date().formatDate()
+console.log('proto', protoDate)
+
+
+declare global {
+    interface Date {
+        formatDate: typeof formatDate
+    }
+}

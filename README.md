@@ -293,9 +293,27 @@ export declare function isLtYear(curDate: Date | string | number, yearLen?: numb
 
 /**
  * 描述传入日期相对于当前时间的口头说法
+ * 例如：刚刚、1分钟前、1小时前、1天前、1个月前、1年前...
  * @param date 需要计算时间间隔的日期
+ * @example
+ * console.log(timeGap()) // 刚刚
  */
 export declare function timeGap(date?: TimeType, opts?: TimeGapOpts): string;
+
+/**
+ * 格式化时间，你也可以放在 Date.prototype 上，然后 new Date().formatDate()
+ * @param formatter 格式化函数或者字符串
+ * @param date 日期，默认当前时间
+ * @param padZero 是否补零，默认 true
+ * @example
+ * console.log(formatDate('yyyy-MM-dd 00:00'))
+ * console.log(formatDate('yyyy-MM-dd', new Date(66600), false))
+ * console.log(formatDate('yyyy-MM-dd HH:mm:ss:ms'))
+ * console.log(formatDate((dateInfo) => {
+ *     return `今年是${dateInfo.yyyy}年`
+ * }))
+ */
+export declare function formatDate(formatter?: DateFormat, date?: Date, padZero?: boolean): string;
 
 export type TimeGapOpts = {
     /** 兜底替代字符串，默认 -- */
