@@ -1,7 +1,7 @@
 import { ONE_DAY } from '@/shared/constant'
 import type { TimeType } from '@/types/base'
 import { getType } from './tools'
-import { isFn } from '..'
+import { isFn } from '@/shared/is'
 
 
 /** 今年的第几天 */

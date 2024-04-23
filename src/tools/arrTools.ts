@@ -3,6 +3,16 @@ import { deepClone } from './tools'
 import { isPureNum } from '@/shared/is'
 
 /**
+ * 计算分页的当前数据
+ * @param arr 全部数据的数组
+ * @param curPage 当前页
+ * @param pageSize 一页大小，默认 20
+ */
+export function getPageData<T>(arr: T[], curPage: number, pageSize = 20) {
+    return arr.slice((curPage - 1) * pageSize, curPage * pageSize)
+}
+
+/**
  * 对数组求和
  * @param handler 可以对数组每一项进行操作，返回值将会被相加
  */
