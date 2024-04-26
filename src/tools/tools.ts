@@ -166,9 +166,10 @@ export function padNum(num: string | number, precision = 2, placeholder = '0') {
  * numFixed(1.335) => 1.34
  *
  * @param num 数值
- * @param precision 精度 默认 2
+ * @param precision 精度，默认 2
  */
-export function numFixed(num: number, precision = 2) {
+export function numFixed(num: number | string, precision = 2) {
+    num = Number(num)
     const scale = 10 ** precision
     return Math.round(num * scale) / scale
 }
