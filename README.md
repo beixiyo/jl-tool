@@ -142,13 +142,6 @@ export declare function filterKeys<T, K extends keyof T>(target: T, keys: K[]): 
  * @example excludeKeys(data, ['name'])
  */
 export declare function excludeKeys<T, K extends keyof T>(target: T, keys: K[]): Omit<T, Extract<keyof T, K>>;
-
-/** 判断字符串是否为 JavaScript 对象 */
-export declare function isJSObj(code: string): boolean;
-/** JavaScript 字符串对象转 JSON */
-export declare function jsToJSON(code: string): string;
-/** 删除 JavaScript 的声明，例如：`const xxx = ` */
-export declare function delJSDeclare(code: string): string;
 ```
 
 

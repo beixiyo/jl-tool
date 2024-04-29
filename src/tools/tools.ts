@@ -269,33 +269,6 @@ export function excludeKeys<T, K extends keyof T>(
     return _data as Omit<T, Extract<keyof T, K>>
 }
 
-/** 判断字符串是否为 JavaScript 对象 */
-export function isJSObj(code: string) {
-    const reg = /(?<!:)(\w+)\s*:/g
-    return code.match(reg) ? true : false
-}
-
-/** JavaScript 字符串对象转 JSON */
-export function jsToJSON(code: string) {
-    code = delJSDeclare(code)
-    code = singleQuoteToDouble(code)
-    
-    const reg = /(?<!:)(\w+)\s*:/g
-    return code.replace(reg, (match, g1) => {
-        return `"${g1.trim()}":`
-    })
-}
-
-/** 删除 JavaScript 的声明，例如：`const xxx = ` */
-export function delJSDeclare(code: string) {
-    const reg = /(?:(const|var|let)?\s?.*?=)\s*/g
-    return code.replace(reg, '')
-}
-
-/** 单引号转双引号 */
-function singleQuoteToDouble(code: string) {
-    return code.replace(/'/g, '"')
-}
 
 
 // 递归树拍平简易写法
