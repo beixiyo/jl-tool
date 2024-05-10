@@ -20,9 +20,14 @@ export function getWinHeight() {
         document.body.clientHeight
 }
 
+/** 把`http`协议转换成当前站的 */
+export const matchProtocol = (url: string) => {
+    const proto = window.location.protocol
+    return url.replace(/(http:|https:)/, proto)
+}
 
 /**
- * 根据 `Blob` 下载
+ * 用 `Blob` 下载
  * @param data 数据
  * @param filename 文件名
  */
@@ -35,19 +40,16 @@ export const downloadByData = (data: Blob, filename: string) => {
     URL.revokeObjectURL(a.href)
 }
 
-/** 把`http`协议转换成当前站的 */
-export const matchProtocol = (url: string) => {
-    const proto = window.location.protocol
-    return url.replace(/(http:|https:)/, proto)
-}
-
 /**
- * 用cdn链接下载
+ * 用链接下载
  * @param url 链接
  * @param fileName 文件名
+ * @param matchProto 是否匹配协议，比如把 http 匹配为当前站的协议。默认 false
  */
-export const downloadByUrl = async (url: string, fileName: string) => {
-    url = matchProtocol(url)
+export const downloadByUrl = async (url: string, fileName: string, matchProto = false) => {
+    if (matchProto) {
+        url = matchProtocol(url)
+    }
     const a = document.createElement('a')
     const blob = await fetch(url).then(res => res.blob())
 
