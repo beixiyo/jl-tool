@@ -74,6 +74,16 @@ export declare function deepCompare(o1: any, o2: any, seen?: WeakMap<WeakKey, an
 export declare function cutStr(str: string, len: number, placeholder?: string): string;
 
 /**
+ * 把对象的空值转为指定字符串，默认 `--`
+ * 包含 空白字符串、null、undefined 等
+ * 默认不包含数值或字符串 0，可通过配置修改
+ */
+export declare function padEmptyObj<T extends object>(data: T, config?: {
+    padStr?: string;
+    ignoreNum?: boolean;
+}): T;
+
+/**
  * 蛇形转驼峰 也可以指定转换其他的
  * @param key 需要转换的字符串
  * @param replaceStr 默认是 `_`，也就是蛇形转驼峰

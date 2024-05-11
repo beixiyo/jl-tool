@@ -1,4 +1,4 @@
-import { isObj } from '@/shared/is'
+import { isObj, isStr } from '@/shared/is'
 
 
 /** 获取类型 */
@@ -99,6 +99,45 @@ export function cutStr(str: string, len: number, placeholder = '...') {
     return str.length > len
         ? str.slice(0, len - placeholderLen) + placeholder
         : newStr
+}
+
+/**
+ * 把对象的空值转为指定字符串，默认 `--`  
+ * 包含 空白字符串、null、undefined 等  
+ * 默认不包含数值或字符串 0，可通过配置修改
+ */
+export function padEmptyObj<T extends object>(data: T, config?: {
+    padStr?: string
+    ignoreNum?: boolean
+}) {
+    const _data = {} as any
+    const { padStr = '--', ignoreNum = true } = config ?? {}
+
+    for (const k in data) {
+        if (!Object.hasOwnProperty.call(data, k)) continue
+
+        const item = data[k] as any
+        
+        if (isStr(item) && item.trim() === '') {
+            _data[k] = padStr
+            continue
+        }
+
+        if (ignoreNum) {
+            /** 排除空字符强转 0 */
+            if (
+                item != null
+                && Number(item) === 0
+            ) {
+                _data[k] = item
+                continue
+            }
+        }
+
+        _data[k] = item || padStr
+    }
+
+    return _data as T
 }
 
 /**
