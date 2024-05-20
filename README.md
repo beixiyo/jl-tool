@@ -443,8 +443,29 @@ export declare const judgeImgLoad: (el?: Document) => Promise<boolean>;
  */
 export declare const getImg: (src: string) => Promise<false | HTMLImageElement>;
 
-/** Blob 转 Base64 */
+/**
+ * Blob 转 Base64
+ */
 export declare function blobToBase64(blob: Blob): Promise<string>;
+
+/**
+ * Base64 转 Blob
+ * @param base64String base64
+ * @param mimeType 文件类型，默认 application/octet-stream
+ */
+export declare function base64ToBlob(base64String: string, mimeType?: string): Blob;
+
+/**
+ * blob 转成 Stream，方便浏览器和 Node 互操作
+ */
+export declare function blobToStream(blob: Blob): Promise<ReadableStream>;
+
+/**
+ * 二进制转字符串
+ * @param data 数据
+ * @param encode 编码格式，默认 utf-8
+ */
+export declare function dataToStr(data: Blob | ArrayBuffer, encode?: string): Promise<string>;
 
 /**
  * 返回一个双击键盘事件

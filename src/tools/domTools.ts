@@ -278,7 +278,9 @@ export const getImg = (src: string) => {
     })
 }
 
-/** Blob 转 Base64 */
+/** 
+ * Blob 转 Base64
+ */
 export function blobToBase64(blob: Blob) {
     const fr = new FileReader()
     fr.readAsDataURL(blob)
@@ -288,6 +290,64 @@ export function blobToBase64(blob: Blob) {
             resolve(this.result as string)
         }
     })
+}
+
+/**
+ * Base64 转 Blob
+ * @param base64String base64
+ * @param mimeType 文件类型，默认 application/octet-stream
+ */
+export function base64ToBlob(base64String: string, mimeType: string = 'application/octet-stream'): Blob {
+    const base64Data = base64String.replace(/^data:([A-Za-z-+/]+);base64,/, '')
+
+    // 将Base64解码为二进制数据
+    const byteCharacters = atob(base64Data)
+
+    // 计算二进制数据的长度
+    const byteArrays = new Uint8Array(byteCharacters.length)
+
+    // 将字符转换为字节并放入 Uint8Array
+    for (let offset = 0; offset < byteCharacters.length; offset++) {
+        byteArrays[offset] = byteCharacters.charCodeAt(offset)
+    }
+
+    return new Blob([byteArrays], { type: mimeType })
+}
+
+/**
+ * blob 转成 Stream，方便浏览器和 Node 互操作
+ */
+export async function blobToStream(blob: Blob): Promise<ReadableStream> {
+    return new ReadableStream({
+        async start(controller) {
+            const reader = blob.stream().getReader()
+            let { done, value } = await reader.read()
+
+            while (!done) {
+                controller.enqueue(value)
+
+                const { done: _d, value: _v } = await reader.read()
+                done = _d
+                value = _v
+            }
+
+            controller.close()
+        }
+    })
+}
+
+/** 
+ * 二进制转字符串
+ * @param data 数据
+ * @param encode 编码格式，默认 utf-8
+ */
+export async function dataToStr(data: Blob | ArrayBuffer, encode = 'utf-8') {
+    if (data instanceof ArrayBuffer) {
+        return new TextDecoder(encode).decode(data)
+    }
+
+    const _data = await data.arrayBuffer()
+    return new TextDecoder(encode).decode(_data)
 }
 
 /**
