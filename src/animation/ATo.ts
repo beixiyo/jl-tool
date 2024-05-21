@@ -44,7 +44,6 @@ export class ATo {
      * @param target 要修改的对象 如果是`CSSStyleDeclaration`对象 则单位默认为`px`
      * @param finalProps 要修改对象的最终属性值
      * @param durationMS 动画持续时间
-     * @param onUpdate 回调函数，可选值；建议当`props`为非数字时，可用此函数手动更改
      * @param opt 配置项 可选参数
      * @returns 返回一个停止动画函数
      */
@@ -64,7 +63,6 @@ export class ATo {
      * @param target 要修改的对象 如果是`CSSStyleDeclaration`对象 则单位默认为`px`
      * @param finalProps 要修改对象的最终属性值
      * @param durationMS 动画持续时间
-     * @param onUpdate 回调函数，可选值；建议当`props`为非数字时，可用此函数手动更改
      * @param opt 配置项 可选参数
      * @returns 返回一个停止动画函数
      */

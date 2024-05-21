@@ -39,6 +39,7 @@
             "src/tools/colorTools.ts",
             "src/tools/dateTools.ts",
             "src/tools/domTools.ts",
+            "src/tools/fileTools.ts",
             "src/tools/scheduleTask.ts",
             "src/tools/tools.ts",
 

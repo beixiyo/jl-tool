@@ -29,6 +29,7 @@ export default defineConfig({
                         text: "事件分发",
                         link: "/type-doc/modules/channel.md",
                     },
+                    
                     {
                         text: "数据结构",
                         link: "/type-doc/modules/dataStructure.md",
@@ -45,6 +46,7 @@ export default defineConfig({
                         text: "is 判断",
                         link: "/type-doc/modules/shared_exportToDoc.md",
                     },
+
                     {
                         text: "数组处理",
                         link: "/type-doc/modules/tools_arrTools.md",
@@ -62,6 +64,10 @@ export default defineConfig({
                         link: "/type-doc/modules/tools_domTools.md",
                     },
                     {
+                        text: "文件处理",
+                        link: "/type-doc/modules/tools_fileTools.md",
+                    },
+                    {
                         text: "常用工具",
                         link: "/type-doc/modules/tools_tools.md",
                     },
@@ -69,6 +75,7 @@ export default defineConfig({
                         text: "分时运行函数",
                         link: "/type-doc/modules/tools_scheduleTask.md",
                     },
+                    
                     {
                         text: "webApi",
                         link: "/type-doc/modules/webApi.md",

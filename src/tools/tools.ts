@@ -181,7 +181,7 @@ export function curry() {
  * @param num 数字
  * @param precision 精度长度 默认`2`
  * @param placeholder 补齐内容 默认`0`
- * @returns
+ * @returns 数字字符串
  */
 export function padNum(num: string | number, precision = 2, placeholder = '0') {
     num = String(num)

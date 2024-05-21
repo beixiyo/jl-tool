@@ -25,7 +25,8 @@ https://beixiyo.github.io/
 - [数组处理](#数组处理)
 - [颜色处理](#颜色处理)
 - [日期处理](#日期处理)
-- [DOM](#dom)
+- [DOM 处理](#dom)
+- [文件处理，如 Base64 和 Blob 互转、下载文件](#files)
 - [分时渲染函数，再多函数也不卡顿](#分时渲染函数)
 - [Media API，如录屏、录音、文字语音互转](#media-api)
 - [一些数据结构，如：最小堆](#数据结构)
@@ -351,22 +352,8 @@ export declare function getWinWidth(): number;
 /** 获取浏览器内容高度 */
 export declare function getWinHeight(): number;
 
-/**
- * 根据 `Blob` 下载
- * @param data 数据
- * @param filename 文件名
- */
-export declare const downloadByData: (data: Blob, filename: string) => void;
-
 /** 把`http`协议转换成当前站的 */
 export declare const matchProtocol: (url: string) => string;
-
-/**
- * 用cdn链接下载
- * @param url 链接
- * @param fileName 文件名
- */
-export declare const downloadByUrl: (url: string, fileName: string) => Promise<void>;
 
 /**
  * 根据原始设计稿宽度 等比例转换大小
@@ -444,30 +431,6 @@ export declare const judgeImgLoad: (el?: Document) => Promise<boolean>;
 export declare const getImg: (src: string) => Promise<false | HTMLImageElement>;
 
 /**
- * Blob 转 Base64
- */
-export declare function blobToBase64(blob: Blob): Promise<string>;
-
-/**
- * Base64 转 Blob
- * @param base64String base64
- * @param mimeType 文件类型，默认 application/octet-stream
- */
-export declare function base64ToBlob(base64String: string, mimeType?: string): Blob;
-
-/**
- * blob 转成 Stream，方便浏览器和 Node 互操作
- */
-export declare function blobToStream(blob: Blob): Promise<ReadableStream>;
-
-/**
- * 二进制转字符串
- * @param data 数据
- * @param encode 编码格式，默认 utf-8
- */
-export declare function dataToStr(data: Blob | ArrayBuffer, encode?: string): Promise<string>;
-
-/**
  * 返回一个双击键盘事件
  * @param code 上下左右
  * @param fn 双击后执行函数
@@ -486,6 +449,48 @@ export declare const fullScreen: (dom?: HTMLElement) => void;
 
 /** 解析出`HTML`的所有字符串 */
 export declare const HTMLToStr: (HTMLStr: string) => string;
+```
+
+## files
+```ts
+/**
+ * 用 `Blob` 下载
+ * @param data 数据
+ * @param filename 文件名
+ */
+export declare const downloadByData: (data: Blob, filename: string) => void;
+
+/**
+ * 用 url 下载
+ * @param url 链接
+ * @param fileName 文件名
+ * @param matchProto 是否匹配协议，比如把 http 匹配为当前站的协议。默认 false
+ */
+export declare const downloadByUrl: (url: string, fileName: string, matchProto?: boolean) => Promise<void>;
+
+/**
+ * Blob 转 Base64
+ */
+export declare function blobToBase64(blob: Blob): Promise<string>;
+
+/**
+ * Base64 转 Blob
+ * @param base64Str base64
+ * @param mimeType 文件类型，默认 application/octet-stream
+ */
+export declare function base64ToBlob(base64Str: string, mimeType?: string): Blob;
+
+/**
+ * blob 转成 Stream，方便浏览器和 Node 互操作
+ */
+export declare function blobToStream(blob: Blob): Promise<ReadableStream>;
+
+/**
+ * 二进制转字符串
+ * @param data 数据
+ * @param encode 编码格式，默认 utf-8
+ */
+export declare function dataToStr(data: Blob | ArrayBuffer, encode?: string): Promise<string>;
 ```
 
 
@@ -714,7 +719,7 @@ aTo
         2000,
         {
             transform: true,
-            timeFunc: 'backInOut'
+            timeFunc: 'ease-in-out'
         }
     )
  */
@@ -725,7 +730,6 @@ export declare class ATo {
      * @param target 要修改的对象 如果是`CSSStyleDeclaration`对象 则单位默认为`px`
      * @param finalProps 要修改对象的最终属性值
      * @param durationMS 动画持续时间
-     * @param onUpdate 回调函数，可选值；建议当`props`为非数字时，可用此函数手动更改
      * @param opt 配置项 可选参数
      * @returns 返回一个停止动画函数
      */
@@ -736,7 +740,6 @@ export declare class ATo {
      * @param target 要修改的对象 如果是`CSSStyleDeclaration`对象 则单位默认为`px`
      * @param finalProps 要修改对象的最终属性值
      * @param durationMS 动画持续时间
-     * @param onUpdate 回调函数，可选值；建议当`props`为非数字时，可用此函数手动更改
      * @param opt 配置项 可选参数
      * @returns 返回一个停止动画函数
      */
@@ -744,7 +747,9 @@ export declare class ATo {
 
     /** 停止所有动画 */
     stop(): void;
+
 }
+
 ```
 
 
@@ -847,14 +852,14 @@ export declare function cutImg<T extends TransferType = 'base64'>(img: HTMLImage
  */
 export declare function compressImg<T extends TransferType = 'base64'>(img: HTMLImageElement, resType?: T, quality?: number, mimeType?: 'image/jpeg' | 'image/webp'): HandleImgReturn<T>;
 
-/** 设置元素的 crossOrigin */
+/** 设置元素的 crossOrigin 为 anonymous */
 export declare function setElCrossOrigin(el: HTMLElement): void;
 
 /**
  * 把 canvas 上的图像转成 base64 | blob
  * @param cvs canvas
  * @param resType 需要返回的文件格式，默认 `base64`
- * @param type 图片的 MIME 格式
+ * @param mimeType 图片的 MIME 格式
  * @param quality 压缩质量
  */
 export declare function getCvsImg<T extends TransferType = 'base64'>(cvs: HTMLCanvasElement, resType?: T, mimeType?: string, quality?: number): HandleImgReturn<T>;

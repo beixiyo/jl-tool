@@ -52,7 +52,7 @@ export function compressImg<T extends TransferType = 'base64'>(
 }
 
 
-/** 设置元素的 crossOrigin */
+/** 设置元素的 crossOrigin 为 anonymous */
 export function setElCrossOrigin(el: HTMLElement) {
     el.setAttribute('crossOrigin', 'anonymous')
 }
@@ -61,7 +61,7 @@ export function setElCrossOrigin(el: HTMLElement) {
  * 把 canvas 上的图像转成 base64 | blob
  * @param cvs canvas
  * @param resType 需要返回的文件格式，默认 `base64`
- * @param type 图片的 MIME 格式
+ * @param mimeType 图片的 MIME 格式
  * @param quality 压缩质量
  */
 export function getCvsImg<T extends TransferType = 'base64'>(
