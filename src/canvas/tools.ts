@@ -78,7 +78,7 @@ export function parseImgData(imgData: ImageData['data'], width: number, height: 
         arr.push(row)
     }
 
-    return arr
+    return arr as Pixel[][]
 }
 
 /** 给 canvas 某个像素点填充颜色的函数 */

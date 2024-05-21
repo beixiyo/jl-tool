@@ -1,3 +1,4 @@
+import { setElCrossOrigin } from '@/canvas/imgHandle'
 import { isNode } from '@/shared'
 import { isPureNum } from '@/shared/is'
 
@@ -237,6 +238,7 @@ export const judgeImgLoad = (el = document): Promise<boolean> => {
 export const getImg = (src: string) => {
     const img = new Image()
     img.src = src
+    setElCrossOrigin(img)
 
     return new Promise<false | HTMLImageElement>((resolve) => {
         img.onload = () => resolve(img)
