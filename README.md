@@ -76,11 +76,13 @@ export declare function cutStr(str: string, len: number, placeholder?: string): 
 
 /**
  * 把对象的空值转为指定字符串，默认 `--`
- * 包含 空白字符串、null、undefined 等
- * 默认不包含数值或字符串 0，可通过配置修改
+ * 包含 空字符串、空格、null、undefined 等
+ * 默认不包含数值 0，可通过配置修改
  */
 export declare function padEmptyObj<T extends object>(data: T, config?: {
+    /** 要填补的字符串，默认 -- */
     padStr?: string;
+    /** 忽略数字 0，默认 true */
     ignoreNum?: boolean;
 }): T;
 
