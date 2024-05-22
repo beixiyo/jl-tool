@@ -41,13 +41,13 @@ export function dayDiff(date1: TimeType, date2: TimeType) {
 
 /**
  * 日期补零 把`yyyy-MM-dd` 转成 `yyyy-MM-dd HH:mm:ss`
- * @param date 格式: `2016-06-10` 必须和它长度保持一致
+ * @param date 格式: `2016-06-10`，必须和它长度保持一致，否则直接返回
  * @param placeholder 后面补充的字符串 默认`00:00:00`
  * @returns 如`2016-06-10 10:00:00`
  */
 export function padDate(date: string, placeholder = '00:00:00') {
-    if (!date) throw new Error('日期格式必须是`yyyy-MM-dd`')
-    if (date.length !== '2016-06-10'.length) throw new Error('日期格式必须是`yyyy-MM-dd`')
+    if (!date) return formatDate()
+    if (date.length !== '2016-06-10'.length) return date
 
     return date + ' ' + placeholder
 }
