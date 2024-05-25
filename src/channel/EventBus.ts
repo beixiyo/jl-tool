@@ -5,7 +5,7 @@ import type { BaseKey } from '..'
  * 消息订阅与派发，订阅和派发指定消息
  */
 export class EventBus {
-    private eventMap = new Map<BaseKey, Set<{
+    private readonly eventMap = new Map<BaseKey, Set<{
         once?: boolean
         fn: Function
     }>>()
@@ -52,7 +52,8 @@ export class EventBus {
      */
     off(eventName?: BaseKey, func?: Function) {
         if (!eventName) {
-            this.eventMap = new Map()
+            this.eventMap.clear()
+            return
         }
 
         const fnSet = this.eventMap.get(eventName)
@@ -76,7 +77,7 @@ export class EventBus {
         }
 
         this.eventMap
-            .get(eventName)
+            .get(eventName)!
             .add(EventBus.genItem(fn, once))
     }
 

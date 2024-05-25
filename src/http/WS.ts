@@ -7,24 +7,34 @@ import { EventBus } from '../channel/EventBus'
 export class WS extends EventBus {
 
     private url = ''
+    private protocols?: string | string[]
     private socket?: WebSocket
 
-    /** 重连次数 */
+    /** 已经重连次数 */
     private reconnectAttempts = 0
     /** 最大重连数，默认 5 */
-    public maxReconnectAttempts = 5
+    maxReconnectAttempts = 5
 
     /** 重连间隔，默认 10000 ms（10s） */
-    public reconnectInterval = 10000
+    reconnectInterval = 10000
     /** 发送心跳数据间隔，默认 30000 ms（30s） */
-    public heartbeatInterval = 30000
+    heartbeatInterval = 30000
 
     /** 计时器 id */
     private heartbeatTimer?: number
     /** 彻底终止 WS */
     private isStop = false
 
-    private rmNetEvent: VoidFunction
+    /** 标识是自己发的消息 */
+    private myId = Date.now().toString()
+    /**
+     * 自定义 id 名称，标识是自己发送的消息，不会通过 onmessage 接收自己的消息
+     * 
+     * 如果设置为空字符、null、undefined，则不会发送额外的 id
+     */
+    id: string | null | undefined = '__WS_ID__'
+
+    private rmNetEvent?: VoidFunction
     private static SPACE = '    '
 
     /**
@@ -34,10 +44,10 @@ export class WS extends EventBus {
      * ws.connect()
      * ws.onmessage(() => { ... })
      */
-    constructor(url: string) {
+    constructor(url: string, protocols?: string | string[]) {
         super()
         this.url = url
-        this.rmNetEvent = this.bindNetEvent()
+        this.protocols = protocols
     }
 
     // 事件 ==================================================
@@ -56,53 +66,37 @@ export class WS extends EventBus {
 
     send(message: Parameters<WebSocket['send']>[0]) {
         if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+            if (this.id) {
+                this.socket.send(JSON.stringify({
+                    [this.id]: this.myId,
+                    message
+                }))
+                return
+            }
+
             this.socket.send(message)
             return
         }
+
         this.logInfo('未连接，请先调用 connect', 'warn')
     }
 
     connect() {
+        this.rmNetEvent?.()
+        this.rmNetEvent = this.bindNetEvent()
+
         if (this.reconnectAttempts === 0) {
             this.logInfo('初始化连接中...')
         }
         if (this.socket && this.socket.readyState === WebSocket.OPEN) {
             return
         }
-        this.socket = new WebSocket(this.url)
 
-        /** WebSocket 连接成功 */
-        this.socket.onopen = event => {
-            this.isStop = false
-            this.reconnectAttempts = 0
-            this.startHeartbeat()
-
-            this.logInfo('连接成功 [onopen]...')
-            this.emit('open', event)
-        }
-
-        this.socket.onmessage = event => {
-            this.emit('message', event)
-            this.startHeartbeat()
-        }
-
-        this.socket.onclose = event => {
-            if (this.reconnectAttempts === 0) {
-                this.logInfo('连接断开 [onclose]')
-            }
-            if (!this.isStop) {
-                this.handleReconnect()
-            }
-            this.emit('close', event)
-        }
-
-        this.socket.onerror = event => {
-            if (this.reconnectAttempts === 0) {
-                this.logInfo('连接异常 [onerror]...')
-            }
-            this.stopHeartbeat()
-            this.emit('error', event)
-        }
+        this.socket = new WebSocket(this.url, this.protocols)
+        this.handleOpen()
+        this.handleMessage()
+        this.handleClose()
+        this.handleError()
     }
 
     close() {
@@ -115,12 +109,70 @@ export class WS extends EventBus {
             this.off('message')
             this.off('close')
             this.off('error')
-            this.rmNetEvent()
+            this.rmNetEvent?.()
         }
         this.stopHeartbeat()
     }
 
     // 私有方法 ==================================================
+
+    /** WebSocket 连接成功 */
+    private handleOpen() {
+        if (!this.socket) return
+        this.socket.onopen = event => {
+            this.isStop = false
+            this.reconnectAttempts = 0
+            this.startHeartbeat()
+
+            this.logInfo('连接成功 [onopen]...')
+            this.emit('open', event)
+        }
+    }
+
+    private handleMessage() {
+        if (!this.socket) return
+        this.socket.onmessage = event => {
+            let { data } = event
+            try {
+                data = JSON.parse(data)
+            }
+            catch { }
+
+            /**
+              * 是自己发的消息，不广播给自己
+              */
+            if (this.id && data?.[this.id] === this.myId) {
+                return
+            }
+
+            this.emit('message', event)
+            this.startHeartbeat()
+        }
+    }
+
+    private handleClose() {
+        if (!this.socket) return
+        this.socket.onclose = event => {
+            if (this.reconnectAttempts === 0) {
+                this.logInfo('连接断开 [onclose]')
+            }
+            if (!this.isStop) {
+                this.reconnect()
+            }
+            this.emit('close', event)
+        }
+    }
+
+    private handleError() {
+        if (!this.socket) return
+        this.socket.onerror = event => {
+            if (this.reconnectAttempts === 0) {
+                this.logInfo('连接异常 [onerror]...')
+            }
+            this.stopHeartbeat()
+            this.emit('error', event)
+        }
+    }
 
     private logInfo(msg: string, type: 'log' | 'warn' = 'log') {
         console[type](`WS ${msg}${WS.SPACE}${this.url}`)
@@ -147,7 +199,7 @@ export class WS extends EventBus {
     }
 
     /** 断网重连逻辑 */
-    private handleReconnect() {
+    private reconnect() {
         if (this.reconnectAttempts < this.maxReconnectAttempts) {
             this.reconnectAttempts++
             this.logInfo(`尝试重连... (${this.reconnectAttempts}/${this.maxReconnectAttempts})`)
