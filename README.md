@@ -178,20 +178,27 @@ export declare function concurrentTask<T>(tasks: (() => Promise<T>)[], maxCount?
  * 根据网络状态自动重连的 WebSocket
  */
 export declare class WS extends EventBus {
-   
+
     /** 最大重连数，默认 5 */
     maxReconnectAttempts: number;
     /** 重连间隔，默认 10000 ms（10s） */
     reconnectInterval: number;
     /** 发送心跳数据间隔，默认 30000 ms（30s） */
     heartbeatInterval: number;
-   
+
     /**
      * 自定义 id 名称，标识是自己发送的消息，不会通过 onmessage 接收自己的消息
      *
      * 如果设置为空字符、null、undefined，则不会发送额外的 id
+     *
+     * 默认 '__WS_ID__'，如果你未进行任何设置，则会发送如下消息到服务端
+     * @example
+     * {
+     *      __WS_ID__: '唯一id',
+     *      message: '消息内容'
+     * }
      */
-    id: string | null | undefined;
+    customId: string | null | undefined;
 
     /**
      * @param url 地址，如 ws://127.0.0.1:8080
@@ -206,7 +213,7 @@ export declare class WS extends EventBus {
     onmessage<T>(callBack: SocketCb<T>): void;
     onclose<T>(callBack: SocketCb<T>): void;
     onerror<T>(callBack: SocketCb<T>): void;
-    
+
     send(message: Parameters<WebSocket['send']>[0]): void;
     connect(): void;
     close(): void;

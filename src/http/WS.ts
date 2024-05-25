@@ -31,8 +31,15 @@ export class WS extends EventBus {
      * 自定义 id 名称，标识是自己发送的消息，不会通过 onmessage 接收自己的消息
      * 
      * 如果设置为空字符、null、undefined，则不会发送额外的 id
+     * 
+     * 默认 '__WS_ID__'，如果你未进行任何设置，则会发送如下消息到服务端
+     * @example
+     * {
+     *      __WS_ID__: '唯一id',
+     *      message: '消息内容'
+     * }
      */
-    id: string | null | undefined = '__WS_ID__'
+    customId: string | null | undefined = '__WS_ID__'
 
     private rmNetEvent?: VoidFunction
     private static SPACE = '    '
@@ -66,9 +73,9 @@ export class WS extends EventBus {
 
     send(message: Parameters<WebSocket['send']>[0]) {
         if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-            if (this.id) {
+            if (this.customId) {
                 this.socket.send(JSON.stringify({
-                    [this.id]: this.myId,
+                    [this.customId]: this.myId,
                     message
                 }))
                 return
@@ -141,7 +148,7 @@ export class WS extends EventBus {
             /**
               * 是自己发的消息，不广播给自己
               */
-            if (this.id && data?.[this.id] === this.myId) {
+            if (this.customId && data?.[this.customId] === this.myId) {
                 return
             }
 
