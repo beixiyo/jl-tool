@@ -1,2 +1,2 @@
-export { EventBus } from './EventBus'
-export { Channel } from './Channel'
+export * from './EventBus'
+export * from './Observe'

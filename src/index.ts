@@ -3,7 +3,7 @@ export * from '@/tools/colorTools'
 export * from '@/tools/dateTools'
 export * from '@/tools/domTools'
 export * from '@/tools/fileTools'
-export { scheduleTask } from '@/tools/scheduleTask'
+export * from '@/tools/scheduleTask'
 export * from '@/tools/tools'
 
 export * from '@/channel'
@@ -18,6 +18,4 @@ export * from '@/animation'
 export * from '@/types'
 export * from '@/canvas'
 
-export {
-    autoUpdate
-} from '@/plugins'
+export * from '@/plugins'

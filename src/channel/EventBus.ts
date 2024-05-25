@@ -1,6 +1,11 @@
-/** 消息订阅与派发 */
+import type { BaseKey } from '..'
+
+
+/** 
+ * 消息订阅与派发，订阅和派发指定消息
+ */
 export class EventBus {
-    private eventMap = new Map<string, Set<{
+    private eventMap = new Map<BaseKey, Set<{
         once?: boolean
         fn: Function
     }>>()
@@ -10,7 +15,7 @@ export class EventBus {
      * @param eventName 事件名
      * @param fn 接收函数
      */
-    on(eventName: string, fn: Function) {
+    on(eventName: BaseKey, fn: Function) {
         this.subscribe(eventName, fn, false)
     }
 
@@ -19,24 +24,25 @@ export class EventBus {
      * @param eventName 事件名
      * @param fn 接收函数
      */
-    once(eventName: string, fn: Function) {
+    once(eventName: BaseKey, fn: Function) {
         this.subscribe(eventName, fn, true)
     }
 
     /**
-     * 发送事件
+     * 发送指定事件，通知所有订阅者
      * @param eventName 事件名
      * @param args 不定参数
      */
-    emit(eventName: string, ...args: any[]) {
-        for (const [key, fnSet] of this.eventMap) {
-            if (eventName === key) {
-                fnSet.forEach(({ fn, once }) => {
-                    fn(...args)
-                    once && this.off(eventName, fn)
-                })
-            }
+    emit(eventName: BaseKey, ...args: any[]) {
+        const fnSet = this.eventMap.get(eventName)
+        if (!fnSet) {
+            return
         }
+
+        fnSet.forEach(({ fn, once }) => {
+            fn(...args)
+            once && this.off(eventName, fn)
+        })
     }
 
     /**
@@ -44,7 +50,7 @@ export class EventBus {
      * @param eventName 空字符或者不传代表重置所有
      * @param func 要取关的函数，为空取关该事件的所有函数
      */
-    off(eventName?: string, func?: Function) {
+    off(eventName?: BaseKey, func?: Function) {
         if (!eventName) {
             this.eventMap = new Map()
         }
@@ -63,7 +69,7 @@ export class EventBus {
         })
     }
 
-    private subscribe(eventName: string, fn: Function, once = false) {
+    private subscribe(eventName: BaseKey, fn: Function, once = false) {
         const fnSet = this.eventMap.get(eventName)
         if (!fnSet) {
             this.eventMap.set(eventName, new Set())

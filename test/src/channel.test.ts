@@ -1,4 +1,4 @@
-import { Channel, EventBus } from '@/channel'
+import { EventBus } from '@/channel'
 
 
 const eb = new EventBus()
@@ -18,7 +18,7 @@ eb.once('once', () => console.log('once'))
 eb.emit('test', 1, 2, 3)
 /** 仅仅打印一次 once */
 eb.emit('once')
-eb.emit('once');
+eb.emit('once')
 split()
 
 /** 打印 test2 test3 test4 */
@@ -34,30 +34,6 @@ split()
 eb.off()
 eb.emit('test2')
 
-
-/** ================================================================== */
-console.log('测试 Channel ===============================================')
-
-const c = new Channel()
-
-c.add('test', testFn)
-c.add('test', testFn2)
-c.add('test', testFn3)
-c.add('test', testFn4)
-
-/** 将打印 test 到 test4 */
-c.trigger('test', 1, 2, 3)
-split()
-
-/** 单独删除 test，将打印 test2 到 test4 */
-c.del('test', testFn)
-c.trigger('test', 1, 2, 3)
-split()
-
-/** 全部删除 */
-c.del('test')
-console.log('删除后')
-c.trigger('test', 1, 2, 3)
 
 
 function split() {

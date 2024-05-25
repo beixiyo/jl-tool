@@ -1,7 +1,7 @@
 export type TransferType = 'base64' | 'blob'
 
 export type BaseType = string | number
-export type BaseKey = string | number | symbol
+export type BaseKey = keyof any
 
 export type TimeType = Date | number | string
 

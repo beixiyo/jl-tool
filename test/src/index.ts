@@ -6,6 +6,6 @@
 // import  './webApi.test'
 // import './scheduleTask.test'
 // import './canvas.test'
-// import  './channel.test'
+import  './channel.test'
 // import './date.test'
-import './str.test'
+// import './str.test'

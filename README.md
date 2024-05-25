@@ -21,7 +21,7 @@ https://beixiyo.github.io/
 
 ## 包含如下类型工具
 - [各种常用工具](#各种常用工具)
-- [网络请求工具，如最大并发，自动重试等](#网络请求工具)
+- [网络请求工具，如最大并发，自动重试、自动重连的 ws 等](#网络请求工具)
 - [数组处理](#数组处理)
 - [颜色处理](#颜色处理)
 - [日期处理](#日期处理)
@@ -31,7 +31,7 @@ https://beixiyo.github.io/
 - [Media API，如录屏、录音、文字语音互转](#media-api)
 - [一些数据结构，如：最小堆](#数据结构)
 - [动画处理](#动画处理)
-- [事件分发，如消息订阅](#事件分发)
+- [事件分发，如消息订阅、观察者模式](#事件分发)
 - [*is* 判断](#is-判断)
 - [canvas，可以压缩图片，截取部分图片...](#canvas)
 - [*Web* 小插件，如：客户端同步服务器更新](#web-小插件)
@@ -173,6 +173,36 @@ export declare function retryReq<T>(task: () => Promise<T>, maxCount?: number): 
  * @param maxCount 最大并发数，默认 4
  */
 export declare function concurrentTask<T>(tasks: (() => Promise<T>)[], maxCount?: number): Promise<T[]>;
+
+/**
+ * 根据网络状态自动重连的 WebSocket
+ */
+export declare class WS extends EventBus {
+    /** 最大重连数，默认 5 */
+    maxReconnectAttempts: number;
+    /** 重连间隔，默认 10000 ms（10s） */
+    reconnectInterval: number;
+    /** 发送心跳数据间隔，默认 30000 ms（30s） */
+    heartbeatInterval: number;
+
+    /**
+     * @param url 地址，如 ws://127.0.0.1:8080
+     * @example
+     * const ws = new WS('ws://127.0.0.1:8080')
+     * ws.connect()
+     * ws.onmessage(() => { ... })
+     */
+    constructor(url: string);
+
+    onopen<T>(callBack: SocketCb<T>): void;
+    onmessage<T>(callBack: SocketCb<T>): void;
+    onclose<T>(callBack: SocketCb<T>): void;
+    onerror<T>(callBack: SocketCb<T>): void;
+
+    send(message: Parameters<WebSocket['send']>[0]): void;
+    connect(): void;
+    close(): void;
+}
 ```
 
 
@@ -757,57 +787,48 @@ export declare class ATo {
 
 ## 事件分发
 ```ts
-/** 消息订阅与派发 */
+/**
+ * 消息订阅与派发，订阅和派发指定消息
+ */
 export declare class EventBus {
     /**
      * 订阅
      * @param eventName 事件名
      * @param fn 接收函数
      */
-    on(eventName: string, fn: Function): void;
+    on(eventName: BaseKey, fn: Function): void;
     /**
      * 订阅一次
      * @param eventName 事件名
      * @param fn 接收函数
      */
-    once(eventName: string, fn: Function): void;
+    once(eventName: BaseKey, fn: Function): void;
+
     /**
-     * 发送事件
+     * 发送指定事件，通知所有订阅者
      * @param eventName 事件名
      * @param args 不定参数
      */
-    emit(eventName: string, ...args: any[]): void;
+    emit(eventName: BaseKey, ...args: any[]): void;
     /**
      * 取关
      * @param eventName 空字符或者不传代表重置所有
      * @param func 要取关的函数，为空取关该事件的所有函数
      */
-    off(eventName?: string, func?: Function): void;
+    off(eventName?: BaseKey, func?: Function): void;
 }
 
 /**
- * 事件频道，用于批量触发事件
+ * 观察者模式，批量通知观察者
  */
-export declare class Channel {
-    /**
-     * 添加监听
-     * @param actionType 类型
-     * @param func 函数
-     * @returns 删除监听的 **函数**
-     */
-    add(actionType: BaseKey, func: Function): () => void;
-    /**
-     * 删除某个类型 或者 某个类型的具体函数
-     * @param actionType 类型
-     * @param func 具体函数，不传则删除所有
-     */
-    del(actionType: BaseKey, func?: Function): void;
-    /**
-     * 触发某个类型
-     * @param actionType 类型
-     * @param args 不定参数
-     */
-    trigger(actionType: BaseKey, ...args: any[]): void;
+export declare class Observer {
+
+    /** 添加观察者 */
+    addObserver(observer: IObserver): void;
+    /** 移除观察者 */
+    removeObserver(observer: IObserver): void;
+    /** 通知所有观察者 */
+    notify(data: any): void;
 }
 ```
 
