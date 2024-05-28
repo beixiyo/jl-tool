@@ -1,4 +1,4 @@
-import { scheduleTask } from '@jl-org/tool'
+import { scheduleTask } from '@deb/tools/scheduleTask'
 
 
 const

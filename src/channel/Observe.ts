@@ -18,8 +18,8 @@ export class Observer {
     }
 
     /** 通知所有观察者 */
-    notify(data: any) {
-        this.observers.forEach(observer => observer.update(data))
+    notify(...args: any[]) {
+        this.observers.forEach(observer => observer.update(args))
     }
 }
 

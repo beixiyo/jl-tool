@@ -1,6 +1,5 @@
-import { getColor, ATo } from '@jl-org/tool'
-// import { getColor } from '@jl-org/tool'
-// import { ATo } from '@deb/animation'
+import { getColor } from '@deb/tools/colorTools'
+import { ATo } from '@deb/animation'
 
 
 const square = document.createElement('div')

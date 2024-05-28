@@ -1,5 +1,5 @@
-import { ATo } from '@/animation'
-import { getColor } from '@jl-org/tool'
+import { ATo } from '@deb/animation'
+import { getColor } from '@deb/tools/colorTools'
 
 
 const div1 = genDiv('0', '0'),

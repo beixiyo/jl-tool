@@ -24,7 +24,7 @@ export class MinHeap<T extends HeapItem> {
     }
 
     /** 删除并返回堆顶的值 */
-    pop() {
+    pop(): T | undefined {
         const { data } = this
         if (data.length <= 1) {
             return data.pop()
@@ -139,7 +139,7 @@ export class MaxHeap<T extends HeapItem> {
     }
 
     /** 删除并返回堆顶的值 */
-    pop() {
+    pop(): T | undefined {
         const { data } = this
         if (data.length <= 1) {
             return data.pop()
@@ -226,6 +226,6 @@ export class MaxHeap<T extends HeapItem> {
     }
 }
 
-interface HeapItem {
+export interface HeapItem {
     sortIndex: number
 }

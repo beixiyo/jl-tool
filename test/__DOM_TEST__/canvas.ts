@@ -5,11 +5,10 @@ import {
     compressImg,
     cutImg,
     parseImgData,
-} from '@/canvas'
-import {
-    blobToBase64,
-    getImg,
-} from '@/tools/domTools'
+} from '@deb/canvas'
+
+import { getImg } from '@deb/tools/domTools'
+import { blobToBase64 } from '@deb/tools/fileTools'
 
 
 /** --------------------------------------------------------------
@@ -66,10 +65,13 @@ img.src = 'https://cdn.pixabay.com/photo/2023/04/10/20/41/bird-7914702_640.jpg'
 
 img.onload = async () => {
     document.body.appendChild(img)
-    const src = await cutImg(img, 'blob', 100, 0, 200, 100)
+    const src = await cutImg(img, {
+        height: 100,
+        width: 200,
+    })
 
     const newImg = new Image()
-    if (src instanceof Blob) {
+    if (typeof src !== 'string') {
         const url = URL.createObjectURL(src)
         newImg.src = url
         newImg.onload = () => {

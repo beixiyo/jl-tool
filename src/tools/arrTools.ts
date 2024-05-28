@@ -111,6 +111,7 @@ export function groupBy<T extends Record<BaseKey, any>>(
         }
         i++
     }
+
     function hanledRepeatKey(mapKey: keyof T, item: any) {
         const index = keyMap[mapKey]
         if (action !== 'arr' && !isPureNum(item[operateKey], enableParseFloat)) {
@@ -143,6 +144,9 @@ export function groupBy<T extends Record<BaseKey, any>>(
             }
         }
 
+        if (action !== 'arr') {
+            toParseFloat(res, index)
+        }
         switch (action) {
             case 'arr':
                 res[index][operateKey].push(curData)
@@ -164,8 +168,15 @@ export function groupBy<T extends Record<BaseKey, any>>(
                 break
 
             default:
+                const nv: never = action
                 break
         }
+    }
+
+    /** 根据配置决定是否解析 */
+    function toParseFloat(arr: any[], index: number) {
+        if (!enableParseFloat) return
+        arr[index][operateKey] = parseFloat(arr[index][operateKey])
     }
 }
 

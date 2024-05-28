@@ -1,14 +1,28 @@
-import { defineConfig } from 'vite'
-import { resolve } from 'node:path'
+import { defineConfig } from 'vitest/config'
+import { fileURLToPath } from 'node:url'
 
 
-export default defineConfig(() => {
-    return {
-        resolve: {
-            alias: {
-                // 方便调试用的
-                '@': resolve(__dirname, '../src'),
-            }
-        }
+const src = fileURLToPath(new URL('../src', import.meta.url))
+
+export default defineConfig({
+    test: {
+        alias: {
+            '@': src,
+        },
+        coverage: {
+            provider: 'v8',
+            clean: true,
+            enabled: true,
+            reporter: ['html'],
+            reportsDirectory: './coverage',
+            include: ['../src/**/*'],
+        },
+        environment: 'jsdom'
+    },
+    resolve: {
+        alias: {
+            '@deb': src,
+            '@': src,
+        },
     }
 })
