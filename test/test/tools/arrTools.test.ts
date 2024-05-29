@@ -1,5 +1,42 @@
-import { groupBy } from '@/tools/arrTools'
+import { arrToChunk, arrToTree, binarySearch, getPageData, getSum, groupBy } from '@/tools/arrTools'
 import { describe, expect, test } from 'vitest'
+
+
+describe('数组工具测试', () => {
+    const pageArr = Array.from({ length: 200 }, (_, i) => i + 1),
+        oneToTenArr = Array.from({ length: 10 }, (_, i) => i + 1)
+
+    test('分页测试', () => {
+        expect(getPageData(pageArr, 1, 10)).toEqual(oneToTenArr)
+        expect(getPageData(pageArr, 2, 10)).toEqual(Array.from({ length: 10 }, (_, i) => i + 11))
+    })
+
+    test('求和测试', () => {
+        const data = [
+            { v: 1 }, { v: 2 }, { v: 3 },
+        ]
+        expect(getSum([1, 2, 3])).toBe(6)
+        expect(getSum(data, item => item.v)).toBe(6)
+    })
+
+    test('数组分块测试', () => {
+        expect(arrToChunk(oneToTenArr, 5)).toEqual([
+            [1, 2, 3, 4, 5],
+            [6, 7, 8, 9, 10]
+        ])
+        
+        expect(arrToChunk([], 10)).toEqual([])
+        expect(arrToChunk([1], 10)).toEqual([[1]])
+    })
+
+    test('二分查找测试', () => {
+        expect(binarySearch(pageArr, 50)).toEqual(49)
+        expect(binarySearch(pageArr, 1000)).toEqual(-1)
+    })
+})
+
+
+// ================================================
 
 
 const input = [
@@ -142,7 +179,7 @@ const input2 = [
     }
 ]
 
-describe('配置测试', () => {
+describe('分组配置测试', () => {
     test('parseFloat 测试', () => {
         expect(groupBy(input2, 'type', 'size', '+', true)).toEqual([
             {
@@ -153,6 +190,65 @@ describe('配置测试', () => {
                 type: 'english',
                 size: 10 + 20
             },
+        ])
+    })
+})
+
+
+// ================================================
+
+
+describe('扁平数组转递归树测试', () => {
+    const arr = [
+        { id: 1, name: '部门1', pid: 0 },
+        { id: 2, name: '部门2', pid: 1 },
+        { id: 3, name: '部门3', pid: 1 },
+        { id: 4, name: '部门4', pid: 3 },
+        { id: 5, name: '部门5', pid: 4 },
+        { id: 6, name: '部门6', pid: 1 },
+    ]
+
+    test('扁平数组转递归树测试', () => {
+        expect(arrToTree(arr)).toEqual([
+            {
+                "id": 1,
+                "name": "部门1",
+                "pid": 0,
+                "children": [
+                    {
+                        "id": 2,
+                        "name": "部门2",
+                        "pid": 1,
+                        "children": []
+                    },
+                    {
+                        "id": 3,
+                        "name": "部门3",
+                        "pid": 1,
+                        "children": [
+                            {
+                                "id": 4,
+                                "name": "部门4",
+                                "pid": 3,
+                                "children": [
+                                    {
+                                        "id": 5,
+                                        "name": "部门5",
+                                        "pid": 4,
+                                        "children": []
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "id": 6,
+                        "name": "部门6",
+                        "pid": 1,
+                        "children": []
+                    }
+                ]
+            }
         ])
     })
 })

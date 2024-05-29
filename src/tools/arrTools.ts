@@ -232,7 +232,7 @@ export function arrToTree<T extends TreeItem>(arr: T[]): TreeData<T>[] {
 }
 
 /**
- * 把数组分成 n 块
+ * 把数组分成 n 块，空数组直接返回，其他情况均返回二维数组
  * @param arr 数组
  * @param size 每个数组大小
  * @returns 返回二维数组
@@ -249,7 +249,10 @@ export function arrToChunk<T>(arr: T[], size: number): T[][] {
     return _arr
 }
 
-/** 二分查找，必须是正序的数组 */
+/** 
+ * 二分查找，必须是正序的数组
+ * @returns 索引，找不到返回 -1
+ */
 export function binarySearch<T>(arr: T[], target: T) {
     let left = 0,
         right = arr.length - 1
