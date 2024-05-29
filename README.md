@@ -1,5 +1,6 @@
 # 介绍
-TypeScript编写的工具函数
+
+*TypeScript* 编写的工具函数
 
 支持 `ESM` | `CommonJS` | `iife`
 
@@ -279,14 +280,17 @@ const treeData = arrToTree(arr)
 export declare function arrToTree<T extends TreeItem>(arr: T[]): TreeData<T>[];
 
 /**
- * 把数组分成 n 块
+ * 把数组分成 n 块，空数组直接返回，其他情况均返回二维数组
  * @param arr 数组
  * @param size 每个数组大小
  * @returns 返回二维数组
  */
 export declare function arrToChunk<T>(arr: T[], size: number): T[][];
 
-/** 二分查找，必须是正序的数组 */
+/**
+ * 二分查找，必须是正序的数组
+ * @returns 索引，找不到返回 -1
+ */
 export declare function binarySearch<T>(arr: T[], target: T): number;
 ```
 
@@ -309,11 +313,11 @@ export declare function hexColorToRaw(color: string): string;
 /** 十六进制 转 RGB */
 export declare function hexToRGB(color: string): string;
 
-/** rgb转十六进制 */
+/** RGB 转十六进制 */
 export declare function rgbToHex(color: string): string;
 
 /**
- * 淡化颜色透明度 支持`rgb`和十六进制
+ * 淡化颜色透明度，支持 `RGB` 和 `十六进制`
  * @param color rgba(0, 239, 255, 1)
  * @param strength 淡化的强度
  * @returns 返回 RGBA 类似如下格式的颜色 `rgba(0, 0, 0, 0.1)`
@@ -321,7 +325,7 @@ export declare function rgbToHex(color: string): string;
 export declare function lightenColor(color: string, strength?: number): string;
 
 /**
- * 颜色添加透明度 支持`rgb`和十六进制
+ * 颜色添加透明度，支持 `RGB` 和 `十六进制`
  * @param color 颜色
  * @param opacity 透明度
  * @returns 返回十六进制 类似如下格式的颜色 `#ffffff11`

@@ -41,8 +41,7 @@ export function hexColorToRaw(color: string) {
 /** 十六进制 转 RGB */
 export function hexToRGB(color: string) {
     if (color.startsWith('#')) {
-        const
-            _color = hexColorToRaw(color) as string,
+        const _color = hexColorToRaw(color) as string,
             colorArr = []
 
         for (let i = 1; i < _color.length; i += 2) {
@@ -62,7 +61,7 @@ export function hexToRGB(color: string) {
     return genDefaultColor()
 }
 
-/** rgb转十六进制 */
+/** RGB 转十六进制 */
 export function rgbToHex(color: string) {
     let rgbColor: RegExpMatchArray
 
@@ -85,7 +84,7 @@ export function rgbToHex(color: string) {
 }
 
 /**
- * 淡化颜色透明度 支持`rgb`和十六进制
+ * 淡化颜色透明度，支持 `RGB` 和 `十六进制`
  * @param color rgba(0, 239, 255, 1)
  * @param strength 淡化的强度
  * @returns 返回 RGBA 类似如下格式的颜色 `rgba(0, 0, 0, 0.1)`
@@ -118,7 +117,7 @@ export function lightenColor(color: string, strength = 0) {
 }
 
 /**
- * 颜色添加透明度 支持`rgb`和十六进制
+ * 颜色添加透明度，支持 `RGB` 和 `十六进制`
  * @param color 颜色
  * @param opacity 透明度
  * @returns 返回十六进制 类似如下格式的颜色 `#ffffff11`
