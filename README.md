@@ -422,7 +422,7 @@ export declare const matchProtocol: (url: string) => string;
  */
 export declare const adaptPx: (px: number | string, designSize?: number, type?: 'height' | 'width') => string;
 
-/** 处理`CSS`单位 */
+/** 处理 `CSS` 单位，如果可以转换成数字，则添加 px */
 export declare function handleCssUnit(value: string | number): string | number;
 
 /**

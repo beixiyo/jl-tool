@@ -7,7 +7,7 @@ export default defineConfig({
         coverage: {
             provider: 'v8',
             clean: true,
-            enabled: true,
+            enabled: false,
             reporter: ['html'],
             reportsDirectory: './coverage',
             include: ['../src/**/*'],

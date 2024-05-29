@@ -49,7 +49,7 @@ export const adaptPx = (
     return `${size / designSize * px}px`
 }
 
-/** 处理`CSS`单位 */
+/** 处理 `CSS` 单位，如果可以转换成数字，则添加 px */
 export function handleCssUnit(value: string | number) {
     if (isPureNum(value)) {
         return value + 'px'
@@ -58,7 +58,7 @@ export function handleCssUnit(value: string | number) {
 }
 
 /**
- * 将像素值转换为`vw`或`vh`单位 如果传入百分比值 则直接返回
+ * 将像素值转换为`vw`或`vh`单位，如果传入百分比值，则直接返回
  * @param px - 要转换的像素值或百分比值
  * @param designSize 设计稿大小 默认为1920像素
  * @param unit 尺寸单位 默认为`vw`
