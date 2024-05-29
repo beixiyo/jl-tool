@@ -1,5 +1,5 @@
-import { getColor } from '@deb/tools/colorTools'
-import { ATo } from '@deb/animation'
+import { getColor } from '@deb'
+import { ATo } from '@deb'
 
 
 const square = document.createElement('div')

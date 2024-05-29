@@ -1,4 +1,4 @@
-import { Recorder, Speaker, openCamera, screenCAP, SpeakToTxt } from '@deb/webApi'
+import { Recorder, Speaker, openCamera, screenCAP, SpeakToTxt } from '@deb'
 
 
 const speakBtn = createBtn('文字转语音', 'speak-btn'),

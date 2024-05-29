@@ -1,5 +1,5 @@
-import { ATo } from '@deb/animation'
-import { getColor } from '@deb/tools/colorTools'
+import { ATo } from '@deb'
+import { getColor } from '@deb'
 
 
 const div1 = genDiv('0', '0'),

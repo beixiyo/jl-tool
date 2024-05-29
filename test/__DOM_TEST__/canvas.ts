@@ -5,10 +5,10 @@ import {
     compressImg,
     cutImg,
     parseImgData,
-} from '@deb/canvas'
+} from '@deb'
 
-import { getImg } from '@deb/tools/domTools'
-import { blobToBase64 } from '@deb/tools/fileTools'
+import { getImg } from '@deb'
+import { blobToBase64 } from '@deb'
 
 
 /** --------------------------------------------------------------

@@ -2,13 +2,8 @@ import { defineConfig } from 'vitest/config'
 import { fileURLToPath } from 'node:url'
 
 
-const src = fileURLToPath(new URL('../src', import.meta.url))
-
 export default defineConfig({
     test: {
-        alias: {
-            '@': src,
-        },
         coverage: {
             provider: 'v8',
             clean: true,
@@ -21,8 +16,8 @@ export default defineConfig({
     },
     resolve: {
         alias: {
-            '@deb': src,
-            '@': src,
+            '@': fileURLToPath(new URL('../src', import.meta.url)),
+            '@deb': fileURLToPath(new URL('../dist/index.js', import.meta.url))
         },
     }
 })

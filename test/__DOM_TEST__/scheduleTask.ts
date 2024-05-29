@@ -1,4 +1,4 @@
-import { scheduleTask } from '@deb/tools/scheduleTask'
+import { scheduleTask } from '@deb'
 
 
 const
