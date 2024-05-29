@@ -38,7 +38,7 @@ export function deepClone<T>(data: T, map = new WeakMap): T {
 }
 
 /**
- * 深度比较对象 `Map | Set`无法使用  
+ * 深度比较对象 `Map | Set` 无法使用  
  * 支持循环引用比较
  */
 export function deepCompare(o1: any, o2: any, seen = new WeakMap()) {
