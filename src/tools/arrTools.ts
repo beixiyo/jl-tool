@@ -34,7 +34,8 @@ export function getSum<T>(arr: T[], handler?: (item: T) => number): number {
 }
 
 /**
- * 给定一个数组，根据 key 进行分组  
+ * 给定一个数组，根据 key 进行分组
+ * 
  * 分组内容默认放入数组中，你也可以指定为 `'+' | '-' | '*' | '/' | '**'` 进行相应的操作  
  * 
  * 你也可以把整个对象进行分组（设置 `operateKey` 为 `null`），他会把整个对象放入数组。而不是进行 加减乘除 等操作
@@ -232,6 +233,49 @@ export function arrToTree<T extends TreeItem>(arr: T[]): TreeData<T>[] {
 }
 
 /**
+ * 树形结构搜索
+ * @param keyword 搜索关键字
+ * @param data 数据
+ * @param opts 配置项，包含搜索字段和是否忽略大小写
+ */
+export function searchTreeData<T extends { children?: T[] }>(
+    keyword: string,
+    data: T[],
+    opts: SearchOpts = { key: 'name', ignoreCase: true }
+): T[] {
+    const { key, ignoreCase } = opts
+
+    const loop = (data: T[]) => {
+        const result = <T[]>[]
+        data.forEach(item => {
+            let flag: boolean
+            if (ignoreCase) {
+                flag = item[key]?.toLowerCase()?.indexOf(keyword.toLowerCase()) > -1
+            }
+            else {
+                flag = item[key]?.indexOf(keyword) > -1
+            }
+
+            if (flag) {
+                result.push({ ...item })
+            }
+            else if (item.children) {
+                const filterData = loop(item.children)
+                if (filterData.length) {
+                    result.push({
+                        ...item,
+                        children: filterData
+                    })
+                }
+            }
+        })
+        return result
+    }
+
+    return loop(data)
+}
+
+/**
  * 把数组分成 n 块，空数组直接返回，其他情况均返回二维数组
  * @param arr 数组
  * @param size 每个数组大小
@@ -271,4 +315,12 @@ export function binarySearch<T>(arr: T[], target: T) {
     }
 
     return -1
+}
+
+
+type SearchOpts = {
+    /** 要搜索比对的键，@default name */
+    key?: string
+    /** 是否忽略大小写，@default true */
+    ignoreCase?: boolean
 }

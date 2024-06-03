@@ -92,34 +92,49 @@ export const getStyle = (el: HTMLElement, attr: string, pseudoElt?: string) => {
     return val
 }
 
-
-/** 节流 */
-export function throttle<P extends any[], T, R>(
-    fn: (this: T, ...args: P) => R,
+/**
+ * 节流
+ * @param delay 延迟时间（ms），@default 200
+ */
+export function throttle<
+    F extends (...args: any[]) => any,
+    T = ThisParameterType<F>,
+    P = Parameters<F>,
+    R = ReturnType<F>
+>(
+    fn: (this: T, args: P) => R,
     delay = 200
 ) {
     let st = 0
 
-    return function (this: T, ...args: P) {
+    return function (this: T, args: P) {
         const now = Date.now()
         if (now - st > delay) {
             st = now
-            return fn.apply(this, args) as R
+            return fn.apply(this, args)
         }
     }
 }
 
-/** 防抖 */
-export function debounce<P extends any[], T, R>(
-    fn: (this: T, ...args: P) => R,
+/**
+ * 防抖
+ * @param delay 延迟时间（ms），@default 200
+ */
+export function debounce<
+    F extends (...args: any[]) => any,
+    T = ThisParameterType<F>,
+    P = Parameters<F>,
+    R = ReturnType<F>
+>(
+    fn: (this: T, args: P) => R,
     delay = 200
 ) {
-    let id: number
+    let id: any
 
-    return function (this: T, ...args: P) {
+    return function (this: T, args: P) {
         id && clearTimeout(id)
-        id = window.setTimeout(() => {
-            return fn.apply(this, args) as R
+        id = setTimeout(() => {
+            return fn.apply(this, args)
         }, delay)
     }
 }
@@ -132,7 +147,7 @@ export function setLocalStorage(key: string, value: any) {
 export function getLocalStorage<T>(key: string): T | null {
     const item = localStorage.getItem(key)
     if (item === 'undefined') {
-        return null;
+        return null
     }
 
     return JSON.parse(item) as T
@@ -164,7 +179,7 @@ export const getAllStyle = async () => {
         const linkToStyleArr = linkArr.map(i => `<style>${i}</style>`)
 
         return styleTxtArr.concat(linkToStyleArr).join('')
-    } 
+    }
     catch (error) {
         console.error(`getAllStyle：数据加载失败，${error}`)
     }

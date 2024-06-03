@@ -2,4 +2,5 @@
 // import './createAnimationByTime'
 // import  './webApi'
 // import './scheduleTask'
-import './canvas'
+// import './canvas'
+import './debounce.test'

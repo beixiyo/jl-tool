@@ -1,4 +1,4 @@
-import { arrToChunk, arrToTree, binarySearch, getPageData, getSum, groupBy } from '@/tools/arrTools'
+import { arrToChunk, arrToTree, binarySearch, getPageData, getSum, groupBy, searchTreeData } from '@/tools/arrTools'
 import { describe, expect, test } from 'vitest'
 
 
@@ -24,7 +24,7 @@ describe('数组工具测试', () => {
             [1, 2, 3, 4, 5],
             [6, 7, 8, 9, 10]
         ])
-        
+
         expect(arrToChunk([], 10)).toEqual([])
         expect(arrToChunk([1], 10)).toEqual([[1]])
     })
@@ -32,6 +32,77 @@ describe('数组工具测试', () => {
     test('二分查找测试', () => {
         expect(binarySearch(pageArr, 50)).toEqual(49)
         expect(binarySearch(pageArr, 1000)).toEqual(-1)
+    })
+})
+
+
+describe('树形结构搜索测试', () => {
+    const treeData = [
+        {
+            'name': 'apple',
+            children: [
+                {
+                    'name': 'orange',
+                    children: [
+                        {
+                            'name': 'banana'
+                        }
+                    ]
+                },
+                {
+                    'name': 'pear'
+                }
+            ]
+        },
+        {
+            name: 'watermelon'
+        }
+    ]
+    
+
+    test('默认配置', () => {
+        expect(searchTreeData('apple', treeData)).toEqual([treeData[0]])
+        expect(searchTreeData('wat', treeData)).toEqual([treeData[1]])
+    })
+
+    test('手动配置', () => {
+        expect(searchTreeData('WAT', treeData, {
+            ignoreCase: false
+        })).not.toEqual([treeData[1]])
+
+        expect(searchTreeData('WAT', treeData, {
+            ignoreCase: true,
+            key: 'testKey'
+        })).not.toEqual([treeData[1]])
+    })
+
+    test('搜索子级', () => {
+        expect(searchTreeData('banana', treeData)).toEqual([
+            {
+                'name': 'apple',
+                children: [
+                    {
+                        'name': 'orange',
+                        children: [
+                            {
+                                'name': 'banana'
+                            }
+                        ]
+                    },
+                ]
+            },
+        ])
+
+        expect(searchTreeData('pe', treeData)).toEqual([
+            {
+                'name': 'apple',
+                children: [
+                    {
+                        'name': 'pear'
+                    }
+                ]
+            },
+        ])
     })
 })
 

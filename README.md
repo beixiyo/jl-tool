@@ -31,7 +31,7 @@ https://beixiyo.github.io/
 
 - [各种常用工具](#各种常用工具)
 - [网络请求工具，如最大并发，自动重试、自动重连的 ws 等](#网络请求工具)
-- [数组处理](#数组处理)
+- [数组处理](#数组处理，包含扁平数组转树，树搜索...)
 - [颜色处理](#颜色处理)
 - [日期处理](#日期处理)
 - [DOM 处理](#dom)
@@ -280,6 +280,16 @@ const treeData = arrToTree(arr)
 export declare function arrToTree<T extends TreeItem>(arr: T[]): TreeData<T>[];
 
 /**
+ * 树形结构搜索
+ * @param keyword 搜索关键字
+ * @param data 数据
+ * @param opts 配置项，包含搜索字段和是否忽略大小写
+ */
+export declare function searchTreeData<T extends {
+    children?: T[];
+}>(keyword: string, data: T[], opts?: SearchOpts): T[];
+
+/**
  * 把数组分成 n 块，空数组直接返回，其他情况均返回二维数组
  * @param arr 数组
  * @param size 每个数组大小
@@ -442,11 +452,17 @@ export declare function pxToVw(px: number | string, designSize?: number, unit?: 
  */
 export declare const getStyle: (el: HTMLElement, attr: string, pseudoElt?: string) => string | number;
 
-/** 节流 */
-export declare function throttle<P extends any[], T, R>(fn: (this: T, ...args: P) => R, delay?: number): (this: T, ...args: P) => R;
+/**
+ * 节流
+ * @param delay 延迟时间（ms），@default 200
+ */
+export declare function throttle<F extends (...args: any[]) => any, T = ThisParameterType<F>, P = Parameters<F>, R = ReturnType<F>>(fn: (this: T, args: P) => R, delay?: number): (this: T, args: P) => any;
 
-/** 防抖 */
-export declare function debounce<P extends any[], T, R>(fn: (this: T, ...args: P) => R, delay?: number): (this: T, ...args: P) => void;
+/**
+ * 防抖
+ * @param delay 延迟时间（ms），@default 200
+ */
+export declare function debounce<F extends (...args: any[]) => any, T = ThisParameterType<F>, P = Parameters<F>, R = ReturnType<F>>(fn: (this: T, args: P) => R, delay?: number): (this: T, args: P) => void;
 
 /** 设置 LocalStorage，无需手动序列化 */
 export declare function setLocalStorage(key: string, value: any): void;
