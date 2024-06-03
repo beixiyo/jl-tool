@@ -250,10 +250,10 @@ export function searchTreeData<T extends { children?: T[] }>(
         data.forEach(item => {
             let flag: boolean
             if (ignoreCase) {
-                flag = item[key]?.toLowerCase()?.indexOf(keyword.toLowerCase()) > -1
+                flag = item[key]?.toLowerCase()?.includes(keyword.toLowerCase())
             }
             else {
-                flag = item[key]?.indexOf(keyword) > -1
+                flag = item[key]?.includes(keyword)
             }
 
             if (flag) {

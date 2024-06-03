@@ -61,7 +61,7 @@ describe('树形结构搜索测试', () => {
     
 
     test('默认配置', () => {
-        expect(searchTreeData('apple', treeData)).toEqual([treeData[0]])
+        expect(searchTreeData('app', treeData)).toEqual([treeData[0]])
         expect(searchTreeData('wat', treeData)).toEqual([treeData[1]])
     })
 
@@ -77,7 +77,7 @@ describe('树形结构搜索测试', () => {
     })
 
     test('搜索子级', () => {
-        expect(searchTreeData('banana', treeData)).toEqual([
+        expect(searchTreeData('ban', treeData)).toEqual([
             {
                 'name': 'apple',
                 children: [
@@ -93,7 +93,7 @@ describe('树形结构搜索测试', () => {
             },
         ])
 
-        expect(searchTreeData('pe', treeData)).toEqual([
+        expect(searchTreeData('pear', treeData)).toEqual([
             {
                 'name': 'apple',
                 children: [
