@@ -96,22 +96,17 @@ export const getStyle = (el: HTMLElement, attr: string, pseudoElt?: string) => {
  * 节流
  * @param delay 延迟时间（ms），@default 200
  */
-export function throttle<
-    F extends (...args: any[]) => any,
-    T = ThisParameterType<F>,
-    P = Parameters<F>,
-    R = ReturnType<F>
->(
-    fn: (this: T, args: P) => R,
+export function throttle<R, T, P extends any[]>(
+    fn: (this: T, ...args: P) => R,
     delay = 200
 ) {
     let st = 0
 
-    return function (this: T, args: P) {
+    return function (this: T, ...args: P) {
         const now = Date.now()
         if (now - st > delay) {
             st = now
-            return fn.apply(this, args)
+            return fn.apply(this, args) as R
         }
     }
 }
@@ -120,21 +115,16 @@ export function throttle<
  * 防抖
  * @param delay 延迟时间（ms），@default 200
  */
-export function debounce<
-    F extends (...args: any[]) => any,
-    T = ThisParameterType<F>,
-    P = Parameters<F>,
-    R = ReturnType<F>
->(
-    fn: (this: T, args: P) => R,
+export function debounce<R, T, P extends any[]>(
+    fn: (this: T, ...args: P) => R,
     delay = 200
 ) {
-    let id: any
+    let id: number
 
-    return function (this: T, args: P) {
+    return function (this: T, ...args: P) {
         id && clearTimeout(id)
-        id = setTimeout(() => {
-            return fn.apply(this, args)
+        id = window.setTimeout(() => {
+            return fn.apply(this, args) as R
         }, delay)
     }
 }

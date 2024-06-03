@@ -456,13 +456,13 @@ export declare const getStyle: (el: HTMLElement, attr: string, pseudoElt?: strin
  * 节流
  * @param delay 延迟时间（ms），@default 200
  */
-export declare function throttle<F extends (...args: any[]) => any, T = ThisParameterType<F>, P = Parameters<F>, R = ReturnType<F>>(fn: (this: T, args: P) => R, delay?: number): (this: T, args: P) => any;
+export declare function throttle<R, T, P extends any[]>(fn: (this: T, ...args: P) => R, delay?: number): (this: T, ...args: P) => R;
 
 /**
  * 防抖
  * @param delay 延迟时间（ms），@default 200
  */
-export declare function debounce<F extends (...args: any[]) => any, T = ThisParameterType<F>, P = Parameters<F>, R = ReturnType<F>>(fn: (this: T, args: P) => R, delay?: number): (this: T, args: P) => void;
+export declare function debounce<R, T, P extends any[]>(fn: (this: T, ...args: P) => R, delay?: number): (this: T, ...args: P) => void;
 
 /** 设置 LocalStorage，无需手动序列化 */
 export declare function setLocalStorage(key: string, value: any): void;
