@@ -241,9 +241,9 @@ export function arrToTree<T extends TreeItem>(arr: T[]): TreeData<T>[] {
 export function searchTreeData<T extends { children?: T[] }>(
     keyword: string,
     data: T[],
-    opts: SearchOpts = { key: 'name', ignoreCase: true }
+    opts: SearchOpts = {}
 ): T[] {
-    const { key, ignoreCase } = opts
+    const { key = 'name', ignoreCase = true } = opts
 
     const loop = (data: T[]) => {
         const result = <T[]>[]
