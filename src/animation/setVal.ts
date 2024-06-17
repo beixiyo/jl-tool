@@ -15,7 +15,9 @@ import { numFixed } from '@/tools/tools'
  * ***不是 transform*** 属性 并且  
  * ***样式表和 finalProps 都没有单位***，则使用 `px` 作为 `CSS` 单位
  * @param onUpdate 更改的回调函数
+ * @param callback 每次更新值的回调
  * @param enableTransform 开启解析`transform` 默认`true`
+ * @param precision 精度
  */
 export function setVal<T, P>(
     target: T,
@@ -23,12 +25,16 @@ export function setVal<T, P>(
     progress: number,
     optUnit: string | null,
     onUpdate?: OnUpdate<T, P>,
+    callback?: OnUpdate<T, P>,
     enableTransform = true,
     precision?: number | undefined
 ) {
     if (onUpdate) {
-        onUpdate(diffProps as PropMap<P>, progress, target, optUnit)
+        onUpdate(diffProps as PropMap<P>, progress, target)
         return
+    }
+    if (callback) {
+        callback(diffProps as PropMap<P>, progress, target)
     }
 
     for (const k in diffProps) {

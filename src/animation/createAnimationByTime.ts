@@ -29,19 +29,20 @@ export const createAnimationByTime = <T, P extends FinalProp>(
     const
         stTime = Date.now(),
         endTime = stTime + durationMS,
-        enableTransform = opt?.transform,
+        enableTransform = opt?.transform ?? true,
         diffProps = getDiff<P>(target, finalProps, enableTransform),
 
         timeFunc = genTimeFunc(opt?.timeFunc),
         onUpdate = opt?.onUpdate,
         onEnd = opt?.onEnd,
+        callback = opt?.callback,
         unit = opt?.unit
 
     return applyAnimation(() => {
         const curTime = Date.now()
 
         if (curTime >= endTime) {
-            setVal<T, P>(target, diffProps, 1, unit, onUpdate, enableTransform)
+            setVal<T, P>(target, diffProps, 1, unit, onUpdate, callback, enableTransform, opt?.precision)
             onEnd && onEnd(target, diffProps)
             return 'stop'
         }
@@ -50,7 +51,7 @@ export const createAnimationByTime = <T, P extends FinalProp>(
             _progress = (curTime - stTime) / durationMS,
             progress = timeFunc(_progress)
 
-        setVal<T, P>(target, diffProps, progress, unit, onUpdate, enableTransform, opt?.precision)
+        setVal<T, P>(target, diffProps, progress, unit, onUpdate, callback, enableTransform, opt?.precision)
     })
 }
 

@@ -17,25 +17,24 @@ export type AnimationOpt<T, P> = {
     onUpdate?: OnUpdate<T, P>
     /** 动画结束回调 */
     onEnd?: (target: T, diffProps: PropMap<P>) => void
-    /** 开启自动解析 `transform` 属性 默认开启 */
+    /** 每次更新值的回调 */
+    callback?: OnUpdate<T, P>
+    /** 开启自动解析 `transform` 属性，默认开启 */
     transform?: boolean
     /** 是否开启精度修正，默认关闭 */
     precision?: number
 }
 
 /**
- * @param props [初始值, 最终值和初始值的差值] 的元组
+ * @param props **初始值, 最终值和初始值的差值** 的对象
  * @param progress 当前进度
  * @param target 要修改的对象
- * @param unit 动画单位 如果`target`是`CSSStyleDeclaration` 默认使用`px`
  */
 export type OnUpdate<T, P> = (
-    /** [初始值, 最终值和初始值的差值] 的元组 */
+    /** **初始值, 最终值和初始值的差值** 的对象 */
     props: PropMap<P>,
     /** 当前进度 */
     progress: number,
     /** 要修改的对象 */
     target: T,
-    /** 动画单位 优先级: `finalProps` > `opt.unit` > `rawEl`; */
-    unit?: string
 ) => void

@@ -1,6 +1,5 @@
-// import './Ato'
-// import './createAnimationByTime'
+import './createAnimationByTime'
 // import  './webApi'
 // import './scheduleTask'
 // import './canvas'
-import './debounce'
+// import './debounce'
