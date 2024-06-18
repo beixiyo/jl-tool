@@ -937,6 +937,9 @@ export declare function getCvsImg<T extends TransferType = 'base64'>(cvs: HTMLCa
  */
 export declare function calcCoord(r: number, deg: number): number[];
 
+/** 获取一度（Math.PI / 180） */
+export declare function getOneDeg(): number;
+
 /**
  * 创建一个指定宽高的画布
  * @param width 画布的宽度

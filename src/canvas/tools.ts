@@ -8,12 +8,17 @@ import { Pixel } from '@/types'
  */
 export function calcCoord(r: number, deg: number) {
     /** 弧度 */
-    const RADIAN = Math.PI / 180
+    const RADIAN = getOneDeg()
 
     const x = Math.sin(deg * RADIAN) * r,
         // 数学坐标系和图像坐标系相反
         y = -Math.cos(deg * RADIAN) * r
     return [x, y]
+}
+
+/** 获取一度（Math.PI / 180） */
+export function getOneDeg() {
+    return Math.PI / 180
 }
 
 
