@@ -31,9 +31,9 @@
             "src/channel/index.ts",
             
             "src/dataStructure/index.ts",
-            "src/http/index.ts",
+            "src/net/index.ts",
             "src/plugins/index.ts",
-            "src/shared/exportToDoc.ts",
+            "src/shared/index.ts",
 
             "src/tools/arrTools.ts",
             "src/tools/colorTools.ts",

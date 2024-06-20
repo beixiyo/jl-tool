@@ -3,7 +3,7 @@ import { setVal } from './setVal'
 import { genTimeFunc } from './timeFunc'
 import { FinalProp, PropMap } from '@/types/tools'
 import { applyAnimation } from './applyAnimation'
-import { CSS_DEFAULT_VAL_KEYS, TRANSFORM_KEYS, TRANSFORM_UNIT_MAP, WITHOUT_UNITS } from '@/config/animate'
+import { CSS_DEFAULT_VAL_KEYS, TRANSFORM_KEYS, TRANSFORM_UNIT_MAP, WITHOUT_UNITS } from '@/constants/animate'
 
 
 /**

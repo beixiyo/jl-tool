@@ -35,7 +35,7 @@ https://beixiyo.github.io/
 - [颜色处理](#颜色处理)
 - [日期处理](#日期处理)
 - [DOM 处理](#dom)
-- [文件处理，如 Base64 和 Blob 互转、下载文件](#files)
+- [文件处理，如 Base64 和 Blob 互转、下载文件](#文件处理)
 - [分时渲染函数，再多函数也不卡顿](#分时渲染函数)
 - [Media API，如录屏、录音、文字语音互转](#media-api)
 - [一些数据结构，如：最小堆](#数据结构)
@@ -44,6 +44,7 @@ https://beixiyo.github.io/
 - [*is* 判断](#is-判断)
 - [canvas，可以压缩图片，截取部分图片...](#canvas)
 - [*Web* 小插件，如：客户端同步服务器更新](#web-小插件)
+- [常用常量](#常量)
 
 
 ## 各种常用工具
@@ -526,7 +527,7 @@ export declare const fullScreen: (dom?: HTMLElement) => void;
 export declare const HTMLToStr: (HTMLStr: string) => string;
 ```
 
-## files
+## 文件处理
 ```ts
 /**
  * 用 `Blob` 下载
@@ -937,9 +938,6 @@ export declare function getCvsImg<T extends TransferType = 'base64'>(cvs: HTMLCa
  */
 export declare function calcCoord(r: number, deg: number): number[];
 
-/** 获取一度（Math.PI / 180） */
-export declare function getOneDeg(): number;
-
 /**
  * 创建一个指定宽高的画布
  * @param width 画布的宽度
@@ -993,4 +991,39 @@ export type CutImgOpts = {
 ```ts
 /** 检查页面更新 */
 export declare function autoUpdate(opts?: Opts): void;
+```
+
+
+## 常量
+```ts
+/** Math.PI / 180 */
+export declare const DEG_1: number;
+export declare const DEG_45: number;
+export declare const DEG_90: number;
+export declare const DEG_180: number;
+export declare const DEG_270: number;
+export declare const DEG_360: number;
+
+/** 各种正则表达式 */
+export declare const Reg: {
+    /** 手机号正则 */
+    phone: RegExp;
+    /** rgb 颜色正则 */
+    rgb: RegExp;
+    /** 身份证正则 */
+    cardId: RegExp;
+    /** 中文正则 */
+    chinese: RegExp;
+    /**
+     * 数字转千分位正则
+     * @example
+     * "123456789".replace(Reg.numToLocaleString, ",")
+     */
+    numToLocaleString: RegExp;
+    /** 密码校验正则：必须包含数字、大小写字母、特殊字符，6-12 位 */
+    pwd: RegExp;
+};
+
+/** 一整天的毫秒 */
+export declare const ONE_DAY: number;
 ```

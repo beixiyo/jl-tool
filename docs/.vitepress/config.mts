@@ -36,7 +36,7 @@ export default defineConfig({
                     },
                     {
                         text: "网络工具",
-                        link: "/type-doc/modules/http.md",
+                        link: "/type-doc/modules/net.md",
                     },
                     {
                         text: "Web 插件",
@@ -44,7 +44,7 @@ export default defineConfig({
                     },
                     {
                         text: "is 判断",
-                        link: "/type-doc/modules/shared_exportToDoc.md",
+                        link: "/type-doc/modules/shared.md",
                     },
 
                     {

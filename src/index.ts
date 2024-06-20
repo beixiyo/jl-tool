@@ -7,10 +7,10 @@ export * from '@/tools/scheduleTask'
 export * from '@/tools/tools'
 
 export * from '@/channel'
-export * from '@/shared/exportToDoc'
+export * from '@/shared'
 export * from '@/dataStructure'
 
-export * from '@/http'
+export * from '@/net'
 
 export * from '@/webApi'
 export * from '@/animation'

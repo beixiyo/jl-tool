@@ -1,3 +1,4 @@
+import { DEG_1 } from '@/constants/deg'
 import { Pixel } from '@/types'
 
 
@@ -7,20 +8,11 @@ import { Pixel } from '@/types'
  * @param deg 角度
  */
 export function calcCoord(r: number, deg: number) {
-    /** 弧度 */
-    const RADIAN = getOneDeg()
-
-    const x = Math.sin(deg * RADIAN) * r,
+    const x = Math.sin(deg * DEG_1) * r,
         // 数学坐标系和图像坐标系相反
-        y = -Math.cos(deg * RADIAN) * r
+        y = -Math.cos(deg * DEG_1) * r
     return [x, y]
 }
-
-/** 获取一度（Math.PI / 180） */
-export function getOneDeg() {
-    return Math.PI / 180
-}
-
 
 /**
  * 创建一个指定宽高的画布

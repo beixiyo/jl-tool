@@ -1,4 +1,4 @@
-import type { BaseKey } from '..'
+import type { BaseKey } from '../types'
 
 
 /** 

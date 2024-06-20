@@ -1,4 +1,4 @@
-import { ONE_DAY } from '@/shared/constant'
+import { ONE_DAY } from '@/shared'
 import type { TimeType } from '@/types/base'
 import { getType } from './tools'
 import { isFn } from '@/shared/is'

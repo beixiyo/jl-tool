@@ -1,4 +1,4 @@
-import { isNode } from './constant'
+import { isNode } from '@/constants'
 
 
 /** 检查是否为浏览器环境，并且根据参数决定是否警告 */
