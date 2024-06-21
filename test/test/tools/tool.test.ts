@@ -1,4 +1,4 @@
-import { celsiusToFahrenheit, cutStr, deepClone, excludeKeys, excludeVals, fahrenheitToCelsius, filterKeys, filterVals, genIcon, getType, numFixed, padEmptyObj, padNum, randomStr, toCamel } from '@/tools/tools'
+import { celsiusToFahrenheit, cutStr, deepClone, excludeKeys, excludeVals, fahrenheitToCelsius, filterKeys, filterVals, genIcon, getRandomNum, getType, numFixed, padEmptyObj, padNum, randomStr, toCamel } from '@/tools/tools'
 import { describe, expect, test } from 'vitest'
 
 
@@ -28,6 +28,27 @@ test('随机字符串', () => {
 test('温度转换', () => {
     expect(celsiusToFahrenheit(40)).toBe(104)
     expect(fahrenheitToCelsius(104)).toBe(40)
+})
+
+
+describe('随机数字', () => {
+    const count = 2000
+
+    test('整数', () => {
+        for (let i = 0; i < count; i++) {
+            const n = getRandomNum(0, 100)
+            expect(n).toBeGreaterThanOrEqual(0)
+            expect(n).toBeLessThan(100)
+        }
+    })
+
+    test('浮点数', () => {
+        for (let i = 0; i < count; i++) {
+            const n = getRandomNum(0.1, 100.9, true)
+            expect(n).toBeGreaterThanOrEqual(0.1)
+            expect(n).toBeLessThan(100.9)
+        }
+    })
 })
 
 

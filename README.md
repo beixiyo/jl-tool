@@ -62,9 +62,12 @@ export declare const celsiusToFahrenheit: (celsius: number) => number;
 export declare const fahrenheitToCelsius: (fahrenheit: number) => number;
 
 /**
- * 获取随机范围整型数值 不包含最大值
+ * 获取随机范围数值，不包含最大值
+ * @param min 最小值
+ * @param max 最大值
+ * @param enableFloat 是否返回浮点数，默认 false
  */
-export declare function getRandomNum(min: number, max: number): number;
+export declare function getRandomNum(min: number, max: number, enableFloat?: boolean): number;
 
 /** 深拷贝 */
 export declare function deepClone<T>(data: T, map?: WeakMap<WeakKey, any>): T;
@@ -998,11 +1001,15 @@ export declare function autoUpdate(opts?: Opts): void;
 ```ts
 /** Math.PI / 180 */
 export declare const DEG_1: number;
+export declare const DEG_30: number;
 export declare const DEG_45: number;
+export declare const DEG_60: number;
+
 export declare const DEG_90: number;
 export declare const DEG_180: number;
 export declare const DEG_270: number;
 export declare const DEG_360: number;
+
 
 /** 各种正则表达式 */
 export declare const Reg: {

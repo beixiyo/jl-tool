@@ -13,10 +13,20 @@ export const celsiusToFahrenheit = (celsius: number) => celsius * 9 / 5 + 32
 export const fahrenheitToCelsius = (fahrenheit: number) => (fahrenheit - 32) * 5 / 9
 
 /**
- * 获取随机范围整型数值 不包含最大值
+ * 获取随机范围数值，不包含最大值
+ * @param min 最小值
+ * @param max 最大值
+ * @param enableFloat 是否返回浮点数，默认 false
  */
-export function getRandomNum(min: number, max: number) {
-    return Math.floor(Math.random() * (max - min) + min)
+export function getRandomNum(min: number, max: number, enableFloat = false) {
+    const r = Math.random()
+
+    if (!enableFloat) {
+        return Math.floor(r * (max - min) + min)
+    }
+
+    if (r < .01) return min
+    return r * (max - min) + min
 }
 
 /** 深拷贝 */
@@ -119,7 +129,7 @@ export function padEmptyObj<T extends object>(data: T, config?: {
         if (!Object.hasOwnProperty.call(data, k)) continue
 
         const item = data[k] as any
-        
+
         if (isStr(item) && item.trim() === '') {
             _data[k] = padStr
             continue
