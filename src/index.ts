@@ -6,6 +6,8 @@ export * from '@/tools/fileTools'
 export * from '@/tools/scheduleTask'
 export * from '@/tools/tools'
 
+export * from '@/tools/Clock'
+
 export * from '@/channel'
 export * from '@/shared'
 export * from '@/dataStructure'

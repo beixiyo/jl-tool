@@ -55,10 +55,16 @@ export default defineConfig({
                         text: "颜色处理",
                         link: "/type-doc/modules/tools_colorTools.md",
                     },
+
+                    {
+                        text: "时钟",
+                        link: "/type-doc/modules/tools_Clock.md",
+                    },
                     {
                         text: "日期处理",
                         link: "/type-doc/modules/tools_dateTools.md",
                     },
+                    
                     {
                         text: "DOM 处理",
                         link: "/type-doc/modules/tools_domTools.md",

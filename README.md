@@ -34,6 +34,7 @@ https://beixiyo.github.io/
 - [数组处理，包含扁平数组转树，树搜索...](#数组处理)
 - [颜色处理](#颜色处理)
 - [日期处理](#日期处理)
+- [时钟，获取帧间隔、过去时间...](#时钟)
 - [DOM 处理](#dom)
 - [文件处理，如 Base64 和 Blob 互转、下载文件](#文件处理)
 - [分时渲染函数，再多函数也不卡顿](#分时渲染函数)
@@ -415,6 +416,42 @@ export type TimeGapOpts = {
     /** 以后日期格式化 */
     afterFn?: (dateStr: string) => string;
 };
+```
+
+## 时钟
+```ts
+export declare class Clock {
+
+    /** 开始时间 */
+    startTime: number;
+    /** 当前时间 */
+    curTime: number;
+
+    /** 每帧时间间隔 */
+    delta: number;
+
+    /** 停止时间计算函数 */
+    stop: VoidFunction;
+
+    /**
+     * 利用 requestAnimationFrame 循环计算时间，可获取
+     * - 帧间时间间隔
+     * - 累计时间
+     * - 起始时间
+     * - 当前时间
+     * @param timeApi 用来选取获取时间的 Api，`performance` 更加精准（默认值）
+     */
+    constructor(timeApi?: 'performance' | 'date');
+
+    /** 开始计算时间，构造器默认调用一次 */
+    start(): void;
+    
+    /** 累计时间（毫秒） */
+    get elapsedMS(): number;
+    /** 累计时间（秒） */
+    get elapsed(): number;
+}
+
 ```
 
 
