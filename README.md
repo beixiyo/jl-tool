@@ -271,15 +271,15 @@ export declare function groupBy<T extends Record<BaseKey, any>>(data: T[], key: 
 /**
  * 扁平数组转递归树
  * @example
-const arr = [
-    { id: 1, name: '部门1', pid: 0 },
-    { id: 2, name: '部门2', pid: 1 },
-    { id: 3, name: '部门3', pid: 1 },
-    { id: 4, name: '部门4', pid: 3 },
-    { id: 5, name: '部门5', pid: 4 },
-    { id: 6, name: '部门6', pid: 1 },
-]
-const treeData = arrToTree(arr)
+ * const arr = [
+ *     { id: 1, name: '部门1', pid: 0 },
+ *     { id: 2, name: '部门2', pid: 1 },
+ *     { id: 3, name: '部门3', pid: 1 },
+ *     { id: 4, name: '部门4', pid: 3 },
+ *     { id: 5, name: '部门5', pid: 4 },
+ *     { id: 6, name: '部门6', pid: 1 },
+ * ]
+ * const treeData = arrToTree(arr)
  */
 export declare function arrToTree<T extends TreeItem>(arr: T[]): TreeData<T>[];
 
@@ -777,30 +777,31 @@ export declare function genTimeFunc(name?: TimeFunc): (v: number) => number;
 
 /**
  * 一个动画类 能够链式调用; 请先调用`start`函数, 参数和`createAnimationByTime`一致
-@example
-const aTo = new ATo()
-aTo
-    .start(
-        div1.style,
-        {
-            left: '200px',
-            top: '200px',
-            opacity: '0.1'
-        },
-        1000
-    )
-    .next(
-        div2.style,
-        {
-            translateX: '50vw',
-            translateY: '300px',
-        },
-        2000,
-        {
-            transform: true,
-            timeFunc: 'ease-in-out'
-        }
-    )
+ * @example
+ * const aTo = new ATo()
+ * aTo
+ *     .start(
+ *         div1.style,
+ *         {
+ *             left: '200px',
+ *             top: '200px',
+ *             opacity: '0.1'
+ *         },
+ *         1000
+ *     )
+ *     .next(
+ *         div2.style,
+ *         {
+ *             translateX: '50vw',
+ *             translateY: '300px',
+ *         },
+ *         2000,
+ *         {
+ *             transform: true,
+ *             timeFunc: 'ease-in-out'
+ *         }
+ *     )
+ * 
  */
 export declare class ATo {
 
