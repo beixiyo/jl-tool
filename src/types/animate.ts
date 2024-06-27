@@ -3,7 +3,7 @@ import type { TimeFunc as _TimeFunc } from '@/animation/timeFunc'
 
 
 export type TimeFunc = _TimeFunc
-export type AnimationOpt<T, P> = {
+export type AnimationOpts<T, P> = {
     /** 动画缓动函数类型 支持内置函数和函数 函数需要返回一个 `0 ~ 1` 之间的值 */
     timeFunc?: TimeFunc
     /** 

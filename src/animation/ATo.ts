@@ -1,5 +1,5 @@
 import { createAnimationByTime } from '@/animation/createAnimationByTime'
-import { AnimationOpt } from '@/types'
+import { AnimationOpts } from '@/types'
 import { AnimiateParams, FinalProp } from '@/types/tools'
 import { isFn } from '@/shared'
 
@@ -44,16 +44,16 @@ export class ATo {
      * @param target 要修改的对象 如果是`CSSStyleDeclaration`对象 则单位默认为`px`
      * @param finalProps 要修改对象的最终属性值
      * @param durationMS 动画持续时间
-     * @param opt 配置项 可选参数
+     * @param animationOpts 配置项 可选参数
      * @returns 返回一个停止动画函数
      */
     start<T, P extends FinalProp>(
         target: T,
         finalProps: P,
         durationMS: number,
-        opt?: AnimationOpt<T, P>
+        animationOpts?: AnimationOpts<T, P>
     ) {
-        this.animateArr.push([target, finalProps, durationMS, opt || {}])
+        this.animateArr.push([target, finalProps, durationMS, animationOpts || {}])
         this.addAnimate(this.animateArr)
         return this
     }
@@ -63,16 +63,16 @@ export class ATo {
      * @param target 要修改的对象，可以是一个函数（用来获取同一个对象不同时间的值）。如果是`CSSStyleDeclaration`对象，则单位默认为`px`
      * @param finalProps 要修改对象的最终属性值
      * @param durationMS 动画持续时间
-     * @param opt 配置项 可选参数
+     * @param animationOpts 配置项 可选参数
      * @returns 返回一个停止动画函数
      */
     next<T, P extends FinalProp>(
         target: T | (() => any),
         finalProps: P,
         durationMS: number,
-        opt?: AnimationOpt<T, P>
+        animationOpts?: AnimationOpts<T, P>
     ) {
-        this.pendingAnimateArr.push([target, finalProps, durationMS, opt || {}])
+        this.pendingAnimateArr.push([target, finalProps, durationMS, animationOpts || {}])
         return this
     }
 

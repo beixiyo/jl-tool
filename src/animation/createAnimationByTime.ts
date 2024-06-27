@@ -1,4 +1,4 @@
-import { AnimationOpt } from '@/types'
+import { AnimationOpts } from '@/types'
 import { setVal } from './setVal'
 import { genTimeFunc } from './timeFunc'
 import { FinalProp, PropMap } from '@/types/tools'
@@ -11,7 +11,7 @@ import { CSS_DEFAULT_VAL_KEYS, TRANSFORM_KEYS, TRANSFORM_UNIT_MAP, WITHOUT_UNITS
  * @param target 要修改的对象 如果是`CSSStyleDeclaration`对象 则单位默认为`px`
  * @param finalProps 要修改对象的最终属性值 不支持`transform`的复合属性
  * @param durationMS 动画持续时间
- * @param opt 配置项 可选参数; 动画单位优先级: `finalProps` > `opt.unit` > `rawEl(原始 DOM 的单位)`;
+ * @param animationOpts 配置项，可选参数; 动画单位优先级: `finalProps` > `option.unit` > `rawEl(原始 DOM 的单位)`;
  *
  * 如果 ***target 是 CSSStyleDeclaration*** 并且  
  * ***不是 transform*** 属性 并且  
@@ -22,27 +22,27 @@ export const createAnimationByTime = <T, P extends FinalProp>(
     target: T,
     finalProps: P,
     durationMS: number,
-    opt?: AnimationOpt<T, P>
+    animationOpts?: AnimationOpts<T, P>
 ) => {
     durationMS < 1 && (durationMS = 1)
 
     const
         stTime = Date.now(),
         endTime = stTime + durationMS,
-        enableTransform = opt?.transform ?? true,
+        enableTransform = animationOpts?.transform ?? true,
         diffProps = getDiff<P>(target, finalProps, enableTransform),
 
-        timeFunc = genTimeFunc(opt?.timeFunc),
-        onUpdate = opt?.onUpdate,
-        onEnd = opt?.onEnd,
-        callback = opt?.callback,
-        unit = opt?.unit
+        timeFunc = genTimeFunc(animationOpts?.timeFunc),
+        onUpdate = animationOpts?.onUpdate,
+        onEnd = animationOpts?.onEnd,
+        callback = animationOpts?.callback,
+        unit = animationOpts?.unit
 
     return applyAnimation(() => {
         const curTime = Date.now()
 
         if (curTime >= endTime) {
-            setVal<T, P>(target, diffProps, 1, unit, onUpdate, callback, enableTransform, opt?.precision)
+            setVal<T, P>(target, diffProps, 1, unit, onUpdate, callback, enableTransform, animationOpts?.precision)
             onEnd && onEnd(target, diffProps)
             return 'stop'
         }
@@ -51,7 +51,7 @@ export const createAnimationByTime = <T, P extends FinalProp>(
             _progress = (curTime - stTime) / durationMS,
             progress = timeFunc(_progress)
 
-        setVal<T, P>(target, diffProps, progress, unit, onUpdate, callback, enableTransform, opt?.precision)
+        setVal<T, P>(target, diffProps, progress, unit, onUpdate, callback, enableTransform, animationOpts?.precision)
     })
 }
 
@@ -70,7 +70,12 @@ function getDiff<P extends FinalProp>(
     let originTransform: any = {}
     /** transform 的属性要特殊处理 这里解析所有`transform`的属性 */
     if (enableTransform) {
-        originTransform = parseTransform(target, finalProps)
+        try {
+            originTransform = parseTransform(target, finalProps)
+        } 
+        catch (error) {
+            console.warn('请尝试把配置项的 `transform` 设置为 false（Please try set animationOpts `transform` to false）')
+        }
     }
 
     const res: any = {}

@@ -759,14 +759,14 @@ export declare function createAnimation(stVal: number, endVal: number, animateSt
  * @param target 要修改的对象 如果是`CSSStyleDeclaration`对象 则单位默认为`px`
  * @param finalProps 要修改对象的最终属性值 不支持`transform`的复合属性
  * @param durationMS 动画持续时间
- * @param opt 配置项 可选参数; 动画单位优先级: `finalProps` > `opt.unit` > `rawEl(原始 DOM 的单位)`;
+ * @param animationOpts 配置项，可选参数; 动画单位优先级: `finalProps` > `option.unit` > `rawEl(原始 DOM 的单位)`;
  *
  * 如果 ***target 是 CSSStyleDeclaration*** 并且
  * ***不是 transform*** 属性 并且
  * ***样式表和 finalProps 都没有单位***，则使用 `px` 作为 `CSS` 单位
  * @returns 返回一个停止动画函数
  */
-export declare const createAnimationByTime: <T, P extends FinalProp>(target: T, finalProps: P, durationMS: number, opt?: AnimationOpt<T, P>) => () => void;
+export declare const createAnimationByTime: <T, P extends FinalProp>(target: T, finalProps: P, durationMS: number, animationOpts?: AnimationOpts<T, P>) => () => void;
 
 /**
  * 生成贝塞尔曲线函数
@@ -810,20 +810,20 @@ export declare class ATo {
      * @param target 要修改的对象 如果是`CSSStyleDeclaration`对象 则单位默认为`px`
      * @param finalProps 要修改对象的最终属性值
      * @param durationMS 动画持续时间
-     * @param opt 配置项 可选参数
+     * @param animationOpts 配置项 可选参数
      * @returns 返回一个停止动画函数
      */
-
-    start<T, P extends FinalProp>(target: T, finalProps: P, durationMS: number, opt?: AnimationOpt<T, P>): this;
+    start<T, P extends FinalProp>(target: T, finalProps: P, durationMS: number, animationOpts?: AnimationOpts<T, P>): this;
+    
     /**
      * 等待上一个动画完成后执行 ***第一次请先调用`start`函数***
      * @param target 要修改的对象，可以是一个函数（用来获取同一个对象不同时间的值）。如果是`CSSStyleDeclaration`对象，则单位默认为`px`
      * @param finalProps 要修改对象的最终属性值
      * @param durationMS 动画持续时间
-     * @param opt 配置项 可选参数
+     * @param animationOpts 配置项 可选参数
      * @returns 返回一个停止动画函数
      */
-    next<T, P extends FinalProp>(target: T | (() => any), finalProps: P, durationMS: number, opt?: AnimationOpt<T, P>): this;
+    next<T, P extends FinalProp>(target: T | (() => any), finalProps: P, durationMS: number, animationOpts?: AnimationOpts<T, P>): this;
     
     /** 停止所有动画 */
     stop(): void;
