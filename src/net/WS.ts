@@ -35,12 +35,13 @@ export class WS extends EventBus {
      * 默认 '__WS_ID__'，如果你未进行任何设置，则会发送如下消息到服务端
      * @example
      * {
-     *      __WS_ID__: '唯一id',
+     *      __WS_ID__: Date.now().toString(),
      *      message: '消息内容'
      * }
      */
     customId: string | null | undefined = '__WS_ID__'
 
+    /** 删除事件 */
     private rmNetEvent?: VoidFunction
     private static SPACE = '    '
 
@@ -187,6 +188,10 @@ export class WS extends EventBus {
 
     /** 网络状态变更处理逻辑 */
     private bindNetEvent() {
+        if (typeof window === 'undefined' || typeof window.addEventListener === 'undefined') {
+            return () => { }
+        }
+
         const onOnline = () => {
             this.logInfo('网络恢复，尝试重连...')
             this.connect()
