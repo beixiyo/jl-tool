@@ -1,5 +1,5 @@
-import { arrToChunk, arrToTree, binarySearch, getPageData, getSum, groupBy, searchTreeData } from '@/tools/arrTools'
-import { describe, expect, test } from 'vitest'
+import { arrToChunk, arrToTree, binarySearch, genTypedArr, getPageData, getSum, groupBy, searchTreeData } from '@/tools/arrTools'
+import { describe, expect, test, vi } from 'vitest'
 
 
 describe('数组工具测试', () => {
@@ -36,6 +36,34 @@ describe('数组工具测试', () => {
 })
 
 
+describe('类型化数组生成测试', () => {
+    test('should generate a Float32Array of specified size with generated values', () => {
+        const size = 5
+        const genVal = vi.fn((index) => index * 2)
+        const result = genTypedArr(size, genVal)
+
+        expect(result).toBeInstanceOf(Float32Array)
+        expect(result.length).toBe(size)
+        for (let i = 0; i < result.length; i++) {
+            expect(result[i]).toBe(i * 2)
+            expect(genVal).toHaveBeenCalledWith(i)
+        }
+    })
+
+    test('should generate a Uint8Array of specified size with generated values', () => {
+        const size = 5
+        const genVal = (index: number) => index * 2
+        const result = genTypedArr(size, genVal, Uint8Array)
+
+        expect(result).toBeInstanceOf(Uint8Array)
+        expect(result.length).toBe(size)
+        for (let i = 0; i < result.length; i++) {
+            expect(result[i]).toBe(i * 2)
+        }
+    })
+})
+
+
 describe('树形结构搜索测试', () => {
     const treeData = [
         {
@@ -58,7 +86,7 @@ describe('树形结构搜索测试', () => {
             name: 'watermelon'
         }
     ]
-    
+
 
     test('默认配置', () => {
         expect(searchTreeData('app', treeData)).toEqual([treeData[0]])

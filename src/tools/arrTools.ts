@@ -315,6 +315,47 @@ export function binarySearch<T>(arr: T[], target: T) {
     return -1
 }
 
+/**
+ * 生成一个指定大小的类型化数组，默认 `Float32Array`，并用指定的生成函数填充
+ * @param size 数组的长度
+ * @param genVal 一个生成数值的函数，用于填充数组
+ * @param ArrayFn 填充数组的构造函数，默认 `Float32Array`
+ * @returns 返回一个填充了指定生成函数数值的数组
+ */
+export function genTypedArr<T extends AllTypedArrConstructor = Float32ArrayConstructor>(
+    size: number,
+    genVal: (index: number) => number,
+    ArrayFn: T = Float32Array as T
+): ArrReturnType<T> {
+    const arr = new ArrayFn(size)
+    for (let i = 0; i < arr.length; i++) {
+        arr[i] = genVal(i)
+    }
+
+    return arr as ArrReturnType<T>
+}
+
+
+type AllTypedArrConstructor =
+    | Float32ArrayConstructor
+    | Float64ArrayConstructor
+    | Int8ArrayConstructor
+    | Uint8ArrayConstructor
+    | Int16ArrayConstructor
+    | Uint16ArrayConstructor
+    | Int32ArrayConstructor
+    | Uint32ArrayConstructor
+
+type ArrReturnType<T extends AllTypedArrConstructor = Float32ArrayConstructor> =
+    T extends Float32ArrayConstructor ? Float32Array
+    : T extends Float64ArrayConstructor ? Float64Array
+    : T extends Int8ArrayConstructor ? Int8Array
+    : T extends Uint8ArrayConstructor ? Uint8Array
+    : T extends Int16ArrayConstructor ? Int16Array
+    : T extends Uint16ArrayConstructor ? Uint16Array
+    : T extends Int32ArrayConstructor ? Int32Array
+    : T extends Uint32ArrayConstructor ? Uint32Array
+    : never
 
 type SearchOpts = {
     /** 要搜索比对的键，@default name */

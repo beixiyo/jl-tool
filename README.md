@@ -307,6 +307,15 @@ export declare function arrToChunk<T>(arr: T[], size: number): T[][];
  * @returns 索引，找不到返回 -1
  */
 export declare function binarySearch<T>(arr: T[], target: T): number;
+
+/**
+ * 生成一个指定大小的类型化数组，默认 `Float32Array`，并用指定的生成函数填充
+ * @param size 数组的长度
+ * @param genVal 一个生成数值的函数，用于填充数组
+ * @param ArrayFn 填充数组的构造函数，默认 `Float32Array`
+ * @returns 返回一个填充了指定生成函数数值的数组
+ */
+export declare function genTypedArr<T extends AllTypedArrConstructor = Float32ArrayConstructor>(size: number, genVal: (index: number) => number, ArrayFn?: T): ArrReturnType<T>;
 ```
 
 
