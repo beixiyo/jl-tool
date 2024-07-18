@@ -154,11 +154,13 @@ export function padEmptyObj<T extends object>(data: T, config?: {
 
 /**
  * 蛇形转驼峰 也可以指定转换其他的
- * @param key 需要转换的字符串
- * @param replaceStr 默认是 `_`，也就是蛇形转驼峰
+ * 
  * @example
  * toCamel('test_a') => 'testA'
  * toCamel('test/a', '/') => 'testA'
+ * 
+ * @param key 需要转换的字符串
+ * @param replaceStr 默认是 `_`，也就是蛇形转驼峰
  */
 export function toCamel(key: string, replaceStr = '_') {
     const reg = new RegExp(`${replaceStr}([a-z])`, 'ig')
@@ -239,8 +241,8 @@ export function genIcon(name: string, prefix = 'iconfont', suffix = 'icon', conn
 
 
 /**
- * 提取值在 extractArr，中的元素
- * 例如提取所有空字符串
+ * - 提取值在 extractArr，中的元素
+ * - 例如提取所有空字符串
  * @example filterVals(data, [''])
  */
 export function filterVals<T>(data: T, extractArr: any[]) {
@@ -258,8 +260,8 @@ export function filterVals<T>(data: T, extractArr: any[]) {
 }
 
 /**
- * 排除值在 excludeArr，中的元素
- * 例如排除所有空字符串
+ * - 排除值在 excludeArr，中的元素
+ * - 例如排除所有空字符串
  * @example excludeVals(data, [''])
  */
 export function excludeVals<T>(data: T, excludeArr: any[]) {
@@ -277,8 +279,8 @@ export function excludeVals<T>(data: T, excludeArr: any[]) {
 }
 
 /**
- * 提取 `keys` 数组，返回一个对象
- * 例如：提取 `name`
+ * - 提取 `keys` 数组，返回一个对象
+ * - 例如：提取 `name`
  * @example filterKeys(data, ['name'])
  */
 export function filterKeys<T, K extends keyof T>(
@@ -299,8 +301,8 @@ export function filterKeys<T, K extends keyof T>(
 }
 
 /**
- * 排除 `keys` 数组，返回一个对象
- * 例如：排除 `name`
+ * - 排除 `keys` 数组，返回一个对象
+ * - 例如：排除 `name`
  * @example excludeKeys(data, ['name'])
  */
 export function excludeKeys<T, K extends keyof T>(

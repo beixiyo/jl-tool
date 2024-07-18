@@ -19,10 +19,13 @@ npm i @jl-org/tool
 
 ## 文档地址
 
-https://beixiyo.github.io/
+- https://beixiyo.github.io/
 
-> 其实不如看 *VSCode* 的代码提示方便  
+其实不如看 *VSCode* 的代码提示方便  
+
 **鼠标悬浮在变量上即可查看，几乎所有地方我都写了文档注释**
+
+所有类型，**你都能在文档注释看到说明**
 
 ---
 
@@ -35,17 +38,17 @@ https://beixiyo.github.io/
 - [颜色处理](#颜色处理)
 - [日期处理](#日期处理)
 - [时钟，获取帧间隔、过去时间...](#时钟)
-- [DOM 处理](#dom)
-- [文件处理，如 Base64 和 Blob 互转、下载文件](#文件处理)
+- [DOM，如节流、防抖、鼠标坐标转换、CSS单位处理...](#dom)
+- [文件处理，如 Base64 和 Blob 互转、下载文件...](#文件处理)
 - [分时渲染函数，再多函数也不卡顿](#分时渲染函数)
-- [Media API，如录屏、录音、文字语音互转](#media-api)
+- [Media API，如录屏、录音、文字语音互转...](#media-api)
 - [一些数据结构，如：最小堆](#数据结构)
-- [动画处理](#动画处理)
+- [动画处理，类似 GSAP，但是会自动处理 CSS 单位](#动画处理)
 - [事件分发，如消息订阅、观察者模式](#事件分发)
 - [*is* 判断](#is-判断)
 - [canvas，可以压缩图片，截取部分图片...](#canvas)
 - [*Web* 小插件，如：客户端同步服务器更新](#web-小插件)
-- [常用常量](#常量)
+- [常用常量，如角度、正则表达式...](#常量)
 
 
 ## 各种常用工具
@@ -470,6 +473,28 @@ export declare class Clock {
 export declare function getWinWidth(): number;
 /** 获取浏览器内容高度 */
 export declare function getWinHeight(): number;
+
+/**
+ * 将鼠标的坐标转换为在一个特定范围内的坐标
+ *
+ * @example
+ * // 范围在 [-1, 1]
+ * calcDOMCoord(e, innerWidth, innerHeight, 1, false)
+ *
+ * // 范围在 [-1, 1]，y 轴反转
+ * calcDOMCoord(e, innerWidth, innerHeight, 1, true)
+ *
+ * // 范围在 [0, 1]
+ * calcDOMCoord(e, innerWidth, innerHeight, false)
+ *
+ * @param point 鼠标的 x y 坐标
+ * @param width 窗口的宽度，默认窗口宽度
+ * @param height 窗口的高度，默认窗口高度
+ * @param range 坐标转换的范围，默认为 1，表示范围在 `[-1, 1]`。如果传 false，则范围在 `[0, 1]`
+ * @param isReverse 是否反转 y 坐标，默认 false，DOM 坐标的 y 轴和数学坐标系是相反的
+ * @returns 返回一个包含 x 和 y 坐标的数组
+ */
+export declare function calcDOMCoord(point: Pick<MouseEvent, 'clientX' | 'clientY'>, width?: number, height?: number, range?: number | false, isReverse?: boolean): readonly [number, number];
 
 /** 把`http`协议转换成当前站的 */
 export declare const matchProtocol: (url: string) => string;
@@ -1021,19 +1046,6 @@ export declare function parseImgData(imgData: ImageData['data'], width: number, 
 
 /** 给 canvas 某个像素点填充颜色的函数 */
 export declare function fillPixel(ctx: CanvasRenderingContext2D, x: number, y: number, color: string): void;
-
-
-/** ======================= Type ========================= */
-export type CutImgOpts = {
-    x?: number;
-    y?: number;
-    width?: number;
-    height?: number;
-    /** 图片的 MIME 格式 */
-    mimeType?: string;
-    /** 图像质量，取值范围 0 ~ 1 */
-    quality?: number;
-};
 ```
 
 
@@ -1048,14 +1060,25 @@ export declare function autoUpdate(opts?: Opts): void;
 ```ts
 /** Math.PI / 180 */
 export declare const DEG_1: number;
+
+/** Math.PI / 180 * 15 */
+export declare const DEG_15: number;
+/** Math.PI / 180 * 30 */
 export declare const DEG_30: number;
+/** Math.PI / 180 * 45 */
 export declare const DEG_45: number;
+/** Math.PI / 180 * 60 */
 export declare const DEG_60: number;
 
+/** Math.PI / 180 * 90 */
 export declare const DEG_90: number;
+/** Math.PI */
 export declare const DEG_180: number;
+/** Math.PI / 180 * 270 */
 export declare const DEG_270: number;
+/** Math.PI * 2 */
 export declare const DEG_360: number;
+
 
 
 /** 各种正则表达式 */

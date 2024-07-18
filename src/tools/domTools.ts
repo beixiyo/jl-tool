@@ -20,6 +20,59 @@ export function getWinHeight() {
         document.body.clientHeight
 }
 
+/**
+ * 将鼠标的坐标转换为在一个特定范围内的坐标
+ * 
+ * @example
+ * // 范围在 [-1, 1]
+ * calcDOMCoord(e, innerWidth, innerHeight, 1, false)
+ * 
+ * // 范围在 [-1, 1]，y 轴反转
+ * calcDOMCoord(e, innerWidth, innerHeight, 1, true)
+ * 
+ * // 范围在 [0, 1]
+ * calcDOMCoord(e, innerWidth, innerHeight, false)
+ * 
+ * @param point 鼠标的 x y 坐标
+ * @param width 窗口的宽度，默认窗口宽度
+ * @param height 窗口的高度，默认窗口高度
+ * @param range 坐标转换的范围，默认为 1，表示范围在 `[-1, 1]`。如果传 false，则范围在 `[0, 1]`
+ * @param isReverse 是否反转 y 坐标，默认 false，DOM 坐标的 y 轴和数学坐标系是相反的
+ * @returns 返回一个包含 x 和 y 坐标的数组
+ */
+export function calcDOMCoord(
+    point: Pick<MouseEvent, 'clientX' | 'clientY'>,
+    width = getWinWidth(),
+    height = getWinHeight(),
+    range: number | false = 1,
+    isReverse = false,
+) {
+    const { clientX, clientY } = point
+
+    let x: number,
+        y: number
+
+    if (range === false) {
+        x = clientX / width
+        y = -clientY / height + 1
+
+        if (isReverse) {
+            y = clientY / height
+        }
+    }
+    else {
+        x = (clientX / width) * range * 2 - range
+        y = -(clientY / height) * range * 2 + range
+
+        if (isReverse) {
+            y = (clientY / height) * range * 2 - range
+        }
+    }
+
+    return [x, y] as const
+}
+
+
 /** 把`http`协议转换成当前站的 */
 export const matchProtocol = (url: string) => {
     const proto = window.location.protocol

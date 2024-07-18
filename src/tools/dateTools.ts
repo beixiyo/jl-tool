@@ -132,9 +132,7 @@ export function timeGap(date?: TimeType, opts: TimeGapOpts = {}) {
 
 /**
  * 格式化时间，你也可以放在 Date.prototype 上，然后 new Date().formatDate()
- * @param formatter 格式化函数或者字符串，默认 `yyyy-MM-dd HH:mm:ss`
- * @param date 日期，默认当前时间
- * @param padZero 是否补零，默认 true
+ * 
  * @example
  * console.log(formatDate('yyyy-MM-dd 00:00'))
  * console.log(formatDate('yyyy-MM-dd', new Date(66600), false))
@@ -142,6 +140,10 @@ export function timeGap(date?: TimeType, opts: TimeGapOpts = {}) {
  * console.log(formatDate((dateInfo) => {
  *     return `今年是${dateInfo.yyyy}年`
  * }))
+ * 
+ * @param formatter 格式化函数或者字符串，默认 `yyyy-MM-dd HH:mm:ss`
+ * @param date 日期，默认当前时间
+ * @param padZero 是否补零，默认 true
  */
 export function formatDate(
     formatter: DateFormat = 'yyyy-MM-dd HH:mm:ss',
