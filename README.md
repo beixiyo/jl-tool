@@ -810,31 +810,38 @@ export declare class MaxHeap<T extends HeapItem> {
 ## 动画处理
 ```ts
 /**
- * @param fn 将此函数放在`requestAnimationFrame`内递归执行 如果此函数返回`stop`则停止执行
- * @returns 返回一个函数 用于取消函数执行
+ * 在一帧中执行你的函数
+ * @param fn 将此函数放在 *requestAnimationFrame* 内递归执行，如果此函数返回 `stop` 则停止执行
+ * @returns 返回一个函数，用于取消函数执行
  */
 export declare const applyAnimation: (fn: () => 'stop' | void) => () => void;
 
 /**
- * 根据传入的值 返回一个动画函数
- * @param stVal 动画起点 比如滚动起始位置
- * @param endVal 动画终点 比如滚动终点位置
+ * 根据传入的值，返回一个动画函数。通常用来做滚动动画值映射
+ * #### 你可以拿到返回的函数，传入指定范围的值，他会映射成对应的值
+ *
+ * @param stVal 动画起点，比如滚动起始位置
+ * @param endVal 动画终点，比如滚动终点位置
  * @param animateStVal 动画起点对应的值
  * @param animateEndVal 动画终点对应的值
- * @param timeFunc 动画缓动函数 支持内置函数和自定义函数
+ * @param timeFunc 动画缓动函数，支持内置函数和自定义函数
  */
 export declare function createAnimation(stVal: number, endVal: number, animateStVal: number, animateEndVal: number, timeFunc?: TimeFunc): (curVal: number) => number;
 
 /**
- * 根据传入对象 随着时间推移 自动更新值
- * @param target 要修改的对象 如果是`CSSStyleDeclaration`对象 则单位默认为`px`
- * @param finalProps 要修改对象的最终属性值 不支持`transform`的复合属性
- * @param durationMS 动画持续时间
- * @param animationOpts 配置项，可选参数; 动画单位优先级: `finalProps` > `option.unit` > `rawEl(原始 DOM 的单位)`;
+ * 根据传入对象，随着时间推移，自动更新值。类似 GSAP 等动画库
  *
- * 如果 ***target 是 CSSStyleDeclaration*** 并且
- * ***不是 transform*** 属性 并且
- * ***样式表和 finalProps 都没有单位***，则使用 `px` 作为 `CSS` 单位
+ * ### 不是 CSS 也能用，注意把配置项的 transform 设置为 false，就不会去解析了
+ *
+ * - 如果 target 是 *CSSStyleDeclaration* 并且
+ * - 不是 *transform* 属性 并且
+ * - 样式表和 *finalProps* 都没有单位，则使用 `px` 作为 `CSS` 单位
+ *
+ * @param target 要修改的对象，如果是`CSSStyleDeclaration`对象 则单位默认为`px`
+ * @param finalProps 要修改对象的最终属性值，不支持 `transform` 的复合属性
+ * @param durationMS 动画持续时间
+ * @param animationOpts 配置项，可以控制动画曲线等; 动画单位优先级: `finalProps` > `animationOpts.unit` > `rawEl(原始 DOM 的单位)`;
+ *
  * @returns 返回一个停止动画函数
  */
 export declare const createAnimationByTime: <T, P extends FinalProp>(target: T, finalProps: P, durationMS: number, animationOpts?: AnimationOpts<T, P>) => () => void;
@@ -872,7 +879,6 @@ export declare function genTimeFunc(name?: TimeFunc): (v: number) => number;
  *             timeFunc: 'ease-in-out'
  *         }
  *     )
- * 
  */
 export declare class ATo {
 
