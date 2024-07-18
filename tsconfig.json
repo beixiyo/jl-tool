@@ -36,9 +36,9 @@
             "src/shared/index.ts",
 
             "src/tools/arrTools.ts",
-            "src/tools/colorTools.ts",
-
             "src/tools/Clock.ts",
+
+            "src/tools/colorTools.ts",
             "src/tools/dateTools.ts",
 
             "src/tools/domTools.ts",
