@@ -39,9 +39,11 @@ export function getSum<T>(arr: T[], handler?: (item: T) => number): number {
  * - 你也可以把整个对象进行分组（设置 `operateKey` 为 `null`），他会把整个对象放入数组。而不是进行 加减乘除 等操作
  * 
  * @example
+ * ```ts
  * const input = [{ type: 'chinese', score: 10 }, { type: 'chinese', score: 100 }]
  * groupBy(input, 'type', 'score') => [{ type: 'chinese', score: [10, 100] }]
  * groupBy(input, 'type', null) => [ { type: 'chinese', children: [{ ... }] }, ... ]
+ * ```
  * 
  * @param data 要分组的数组
  * @param key 要进行分组的 **键**
@@ -184,6 +186,7 @@ export function groupBy<T extends Record<BaseKey, any>>(
 /**
  * 扁平数组转递归树
  * @example
+ * ```ts
  * const arr = [
  *     { id: 1, name: '部门1', pid: 0 },
  *     { id: 2, name: '部门2', pid: 1 },
@@ -193,6 +196,7 @@ export function groupBy<T extends Record<BaseKey, any>>(
  *     { id: 6, name: '部门6', pid: 1 },
  * ]
  * const treeData = arrToTree(arr)
+ * ```
  */
 export function arrToTree<T extends TreeItem>(arr: T[]): TreeData<T>[] {
     if (arr.length < 2) return arr

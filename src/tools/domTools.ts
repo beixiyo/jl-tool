@@ -24,6 +24,7 @@ export function getWinHeight() {
  * 将鼠标的坐标转换为在一个特定范围内的坐标
  * 
  * @example
+ * ```ts
  * // 范围在 [-1, 1]
  * calcDOMCoord(e, innerWidth, innerHeight, 1, false)
  * 
@@ -32,6 +33,7 @@ export function getWinHeight() {
  * 
  * // 范围在 [0, 1]
  * calcDOMCoord(e, innerWidth, innerHeight, false)
+ * ```
  * 
  * @param point 鼠标的 x y 坐标
  * @param width 窗口的宽度，默认窗口宽度

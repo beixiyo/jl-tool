@@ -4,7 +4,7 @@ import { getColor } from '@deb'
 
 const div1 = genDiv('0', '0'),
     div2 = genDiv('40px', '100px'),
-    div3 = genDiv('300px', '0')
+    div3 = genDiv('300px', '0', '#000')
 
 
 createAnimationByTime(
@@ -13,19 +13,14 @@ createAnimationByTime(
         left: '100px',
         top: '500px',
     },
-    1000,
-    {
-        // callback() {
-        //     console.log(arguments)
-        // },
-        // onEnd() {
-        //     console.log('end', arguments)
-        // }
-    }
+    1000
 )
 
 
 const aTo = new ATo()
+/**
+ * 点击暂停动画
+ */
 window.addEventListener('click', aTo.stop.bind(aTo))
 
 aTo
@@ -55,6 +50,7 @@ aTo
         {
             translateX: '10px',
             translateY: '0px',
+            rotate: 135
         },
         1000,
         {
@@ -65,10 +61,10 @@ aTo
     )
 
 
-function genDiv(left: string, top: string) {
+function genDiv(left: string, top: string, color = getColor()) {
     const div = document.createElement('div')
     div.style.cssText = `
-        background-color: ${getColor()};
+        background-color: ${color};
         width: 100px;
         height: 100px;
         position: fixed;

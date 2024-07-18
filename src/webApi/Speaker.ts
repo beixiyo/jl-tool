@@ -1,8 +1,10 @@
 /**
  * 语音播放
  * @example
+ * ```ts
  * const speaker = new Speaker('你好')
  * speaker.play()
+ * ```
  */
 export class Speaker {
     /** 默认播放语音名称 */

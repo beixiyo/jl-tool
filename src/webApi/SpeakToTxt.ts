@@ -1,10 +1,12 @@
 /**
  * 语音转文字，默认中文识别
  * @example
+ * ```ts
  * const speakToTxt = new SpeakToTxt((data) => {
  *     console.log(data)
  * })
  * speakTxtBtn.onclick = () => speakToTxt.start()
+ * ```
  */
 export class SpeakToTxt {
     private recognition: SpeechRecognition

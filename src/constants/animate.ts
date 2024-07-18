@@ -1,4 +1,4 @@
-/** 默认`CSS`值为 *1* 的`CSS`属性 */
+/** 默认 `CSS` 值为 *1* 的`CSS`属性 */
 export const CSS_DEFAULT_VAL_KEYS = [
     'opacity',
     'fill-opacity',
@@ -10,7 +10,7 @@ export const CSS_DEFAULT_VAL_KEYS = [
     'zoom',
 ]
 
-/** 没有单位的`CSS`属性 */
+/** 没有单位的 `CSS` 属性 */
 export const WITHOUT_UNITS = [
     'opacity',
     'line-height',
@@ -26,7 +26,7 @@ export const WITHOUT_UNITS = [
     'z-index',
 ]
 
-/** 所有`transform`的键 */
+/** 所有 `transform` 的键 */
 export const TRANSFORM_KEYS = [
     'matrix',
     'matrix3d',
@@ -51,7 +51,7 @@ export const TRANSFORM_KEYS = [
     'translate3d',
 ]
 
-/** `transform`属性的默认映射单位 */
+/** `transform` 属性的默认映射单位 */
 export const TRANSFORM_UNIT_MAP = {
     scale: '',
     scaleX: '',

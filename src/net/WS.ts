@@ -34,10 +34,12 @@ export class WS extends EventBus {
      * 
      * 默认 '__WS_ID__'，如果你未进行任何设置，则会发送如下消息到服务端
      * @example
+     * ```ts
      * {
      *      __WS_ID__: Date.now().toString(),
      *      message: '消息内容'
      * }
+     * ```
      */
     customId: string | null | undefined = '__WS_ID__'
 
@@ -48,9 +50,11 @@ export class WS extends EventBus {
     /**
      * @param url 地址，如 ws://127.0.0.1:8080
      * @example
+     * ```ts
      * const ws = new WS('ws://127.0.0.1:8080')
      * ws.connect()
      * ws.onmessage(() => { ... })
+     * ```
      */
     constructor(url: string, protocols?: string | string[]) {
         super()

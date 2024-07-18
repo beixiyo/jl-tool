@@ -7,15 +7,19 @@ import { CSS_DEFAULT_VAL_KEYS, TRANSFORM_KEYS, TRANSFORM_UNIT_MAP, WITHOUT_UNITS
 
 
 /**
- * 根据传入对象 随着时间推移 自动更新值
- * @param target 要修改的对象 如果是`CSSStyleDeclaration`对象 则单位默认为`px`
- * @param finalProps 要修改对象的最终属性值 不支持`transform`的复合属性
+ * 根据传入对象，随着时间推移，自动更新值。类似 GSAP 等动画库
+ * 
+ * ### 不是 CSS 也能用，注意把配置项的 transform 设置为 false，就不会去解析了
+ * 
+ * - 如果 target 是 *CSSStyleDeclaration* 并且  
+ * - 不是 *transform* 属性 并且  
+ * - 样式表和 *finalProps* 都没有单位，则使用 `px` 作为 `CSS` 单位
+ * 
+ * @param target 要修改的对象，如果是`CSSStyleDeclaration`对象 则单位默认为`px`
+ * @param finalProps 要修改对象的最终属性值，不支持 `transform` 的复合属性
  * @param durationMS 动画持续时间
- * @param animationOpts 配置项，可选参数; 动画单位优先级: `finalProps` > `option.unit` > `rawEl(原始 DOM 的单位)`;
+ * @param animationOpts 配置项，可以控制动画曲线等; 动画单位优先级: `finalProps` > `animationOpts.unit` > `rawEl(原始 DOM 的单位)`;
  *
- * 如果 ***target 是 CSSStyleDeclaration*** 并且  
- * ***不是 transform*** 属性 并且  
- * ***样式表和 finalProps 都没有单位***，则使用 `px` 作为 `CSS` 单位
  * @returns 返回一个停止动画函数
  */
 export const createAnimationByTime = <T, P extends FinalProp>(
@@ -68,7 +72,7 @@ function getDiff<P extends FinalProp>(
 ) {
     /** 要修改对象的原始`transform`值 */
     let originTransform: any = {}
-    /** transform 的属性要特殊处理 这里解析所有`transform`的属性 */
+    /** transform 的属性要特殊处理，这里解析所有`transform`的属性 */
     if (enableTransform) {
         try {
             originTransform = parseTransform(target, finalProps)
@@ -109,14 +113,19 @@ function getDiff<P extends FinalProp>(
     return res as PropMap<P>
 }
 
-/** 有些`CSS`属性默认是 1  但是从样式表拿到是空字串 比如`opacity` 该函数就是解决此问题的 */
+/**
+ * ### 给 CSS 属性去除单位，转为 number，并处理特殊情况
+ * - 有些 `CSS` 属性默认是 1
+ * - 但是从样式表拿到是空字串，比如 `opacity` 
+ * - 该函数就是解决此问题的
+ */
 function getDefaultVal(target: any, k: string) {
     if (!(target instanceof CSSStyleDeclaration)) {
         return parseFloat(target[k]) || 0
     }
 
     return CSS_DEFAULT_VAL_KEYS.includes(k)
-        /** 有些`CSS`属性默认是 1  但是从样式表拿到是空字串 比如`opacity` */
+        /** 有些`CSS`属性默认是 1，但是从样式表拿到是空字串 比如 `opacity` */
         ? 1
         /** parseFloat是为了去处可能存在的`CSS`单位 */
         : parseFloat(target[k]) || 0

@@ -1,9 +1,11 @@
 /**
  * 录音
  * @example
+ * ```ts
  * const recorder = new Recorder()
  * await recorder.init()
  * recorder.start()
+ * ```
  */
 export class Recorder {
     /** 录制的音频的临时 `URL` 。录制完毕自动赋值，每次录制前都会清空 */

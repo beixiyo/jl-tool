@@ -156,8 +156,10 @@ export function padEmptyObj<T extends object>(data: T, config?: {
  * 蛇形转驼峰 也可以指定转换其他的
  * 
  * @example
+ * ```ts
  * toCamel('test_a') => 'testA'
  * toCamel('test/a', '/') => 'testA'
+ * ```
  * 
  * @param key 需要转换的字符串
  * @param replaceStr 默认是 `_`，也就是蛇形转驼峰
@@ -215,8 +217,10 @@ export function padNum(num: string | number, precision = 2, placeholder = '0') {
 /**
  * 解决 Number.toFixed 计算错误
  * @example
+ * ```ts
  * 1.335.toFixed(2) => '1.33'
  * numFixed(1.335) => 1.34
+ * ```
  *
  * @param num 数值
  * @param precision 精度，默认 2
@@ -243,7 +247,9 @@ export function genIcon(name: string, prefix = 'iconfont', suffix = 'icon', conn
 /**
  * - 提取值在 extractArr，中的元素
  * - 例如提取所有空字符串
+ * ```ts
  * @example filterVals(data, [''])
+ * ```
  */
 export function filterVals<T>(data: T, extractArr: any[]) {
     const _data: Partial<T> = {}
@@ -262,7 +268,9 @@ export function filterVals<T>(data: T, extractArr: any[]) {
 /**
  * - 排除值在 excludeArr，中的元素
  * - 例如排除所有空字符串
+ * ```ts
  * @example excludeVals(data, [''])
+ * ```
  */
 export function excludeVals<T>(data: T, excludeArr: any[]) {
     const _data: Partial<T> = {}
@@ -281,7 +289,9 @@ export function excludeVals<T>(data: T, excludeArr: any[]) {
 /**
  * - 提取 `keys` 数组，返回一个对象
  * - 例如：提取 `name`
+ * ```ts
  * @example filterKeys(data, ['name'])
+ * ```
  */
 export function filterKeys<T, K extends keyof T>(
     target: T,
@@ -303,7 +313,9 @@ export function filterKeys<T, K extends keyof T>(
 /**
  * - 排除 `keys` 数组，返回一个对象
  * - 例如：排除 `name`
+ * ```ts
  * @example excludeKeys(data, ['name'])
+ * ```
  */
 export function excludeKeys<T, K extends keyof T>(
     target: T,

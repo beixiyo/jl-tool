@@ -7,6 +7,7 @@ import { isFn } from '@/shared'
 /**
  * 一个动画类 能够链式调用; 请先调用`start`函数, 参数和`createAnimationByTime`一致
  * @example
+ * ```ts
  * const aTo = new ATo()
  * aTo
  *     .start(
@@ -30,7 +31,7 @@ import { isFn } from '@/shared'
  *             timeFunc: 'ease-in-out'
  *         }
  *     )
- * 
+ * ```
  */
 export class ATo {
     private animateArr: AnimiateParams[] = []
