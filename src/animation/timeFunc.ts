@@ -1,4 +1,6 @@
-/** 贝塞尔曲线对象 */
+/** 
+ * 贝塞尔曲线对象
+ */
 export const timeFunc = {
     linear: (progress: number) => progress,
     ease: (progress: number) => 0.5 - 0.5 * Math.cos(progress * Math.PI),
@@ -171,7 +173,9 @@ export const timeFunc = {
             1
         )
     },
-    /** 在某一动画开始沿指示的路径进行动画处理前稍稍收回该动画的移动 */
+    /** 
+     * 在某一动画开始沿指示的路径进行动画处理前稍稍收回该动画的移动
+     */
     backIn(k: number) {
         let s = 1.70158
         return k * k * ((s + 1) * k - s)
@@ -187,7 +191,9 @@ export const timeFunc = {
         }
         return 0.5 * ((k -= 2) * k * ((s + 1) * k + s) + 2)
     },
-    /** 弹跳效果 */
+    /** 
+     * 弹跳效果
+     */
     bounceIn(k: number) {
         return 1 - timeFunc.bounceOut(1 - k)
     },
@@ -220,13 +226,14 @@ export function genTimeFunc(name?: TimeFunc) {
         return name
     }
 
-    const fn = timeFunc[name]
+    const fn = timeFunc[name ?? 'linear']
     return fn
-        ? fn
-        : timeFunc.linear
 }
 
 
 export type TimeFuncStr = keyof typeof timeFunc
-/** 动画过渡函数，支持内置函数和函数，函数需要返回一个`0 ~ 1`之间的值 */
+/** 
+ * ### 动画过渡函数
+ * 支持内置函数和函数，函数需要返回一个 `0 ~ 1` 之间的值
+ */
 export type TimeFunc = TimeFuncStr | ((progress: number) => number)

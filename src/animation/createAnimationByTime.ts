@@ -4,6 +4,7 @@ import { genTimeFunc } from './timeFunc'
 import { FinalProp, PropMap } from '@/types/tools'
 import { applyAnimation } from './applyAnimation'
 import { CSS_DEFAULT_VAL_KEYS, TRANSFORM_KEYS, TRANSFORM_UNIT_MAP, WITHOUT_UNITS } from '@/constants/animate'
+import { Clock } from '@/tools/Clock'
 
 
 /**
@@ -15,10 +16,10 @@ import { CSS_DEFAULT_VAL_KEYS, TRANSFORM_KEYS, TRANSFORM_UNIT_MAP, WITHOUT_UNITS
  * - 不是 *transform* 属性 并且  
  * - 样式表和 *finalProps* 都没有单位，则使用 `px` 作为 `CSS` 单位
  * 
- * @param target 要修改的对象，如果是`CSSStyleDeclaration`对象 则单位默认为`px`
+ * @param target 要修改的对象，如果是 `CSSStyleDeclaration` 对象，则单位默认为`px`
  * @param finalProps 要修改对象的最终属性值，不支持 `transform` 的复合属性
  * @param durationMS 动画持续时间
- * @param animationOpts 配置项，可以控制动画曲线等; 动画单位优先级: `finalProps` > `animationOpts.unit` > `rawEl(原始 DOM 的单位)`;
+ * @param animationOpts 配置项，可以控制动画曲线等; 动画单位优先级: `finalProps` > `animationOpts.unit` > `rawEl(原始 DOM 的单位)`
  *
  * @returns 返回一个停止动画函数
  */
@@ -31,8 +32,7 @@ export const createAnimationByTime = <T, P extends FinalProp>(
     durationMS < 1 && (durationMS = 1)
 
     const
-        stTime = Date.now(),
-        endTime = stTime + durationMS,
+        clock = new Clock(),
         enableTransform = animationOpts?.transform ?? true,
         diffProps = getDiff<P>(target, finalProps, enableTransform),
 
@@ -43,19 +43,37 @@ export const createAnimationByTime = <T, P extends FinalProp>(
         unit = animationOpts?.unit
 
     return applyAnimation(() => {
-        const curTime = Date.now()
+        const elapsedMS = clock.elapsedMS
 
-        if (curTime >= endTime) {
-            setVal<T, P>(target, diffProps, 1, unit, onUpdate, callback, enableTransform, animationOpts?.precision)
+        if (elapsedMS >= durationMS) {
+            setVal<T>({
+                target,
+                diffProps,
+                progress: 1,
+                optUnit: unit,
+                onUpdate,
+                callback,
+                precision: animationOpts?.precision,
+                enableTransform
+            })
             onEnd && onEnd(target, diffProps)
             return 'stop'
         }
 
         const
-            _progress = (curTime - stTime) / durationMS,
+            _progress = elapsedMS / durationMS,
             progress = timeFunc(_progress)
 
-        setVal<T, P>(target, diffProps, progress, unit, onUpdate, callback, enableTransform, animationOpts?.precision)
+        setVal<T>({
+            target,
+            diffProps,
+            progress: progress,
+            optUnit: unit,
+            onUpdate,
+            callback,
+            precision: animationOpts?.precision,
+            enableTransform
+        })
     })
 }
 
@@ -70,13 +88,16 @@ function getDiff<P extends FinalProp>(
     finalProps: P,
     enableTransform: boolean
 ) {
-    /** 要修改对象的原始`transform`值 */
+    /** 要修改对象的原始 `transform` 值 */
     let originTransform: any = {}
-    /** transform 的属性要特殊处理，这里解析所有`transform`的属性 */
+    /** 
+     * transform 的属性要特殊处理
+     * 这里解析所有 `transform` 的属性
+     */
     if (enableTransform) {
         try {
             originTransform = parseTransform(target, finalProps)
-        } 
+        }
         catch (error) {
             console.warn('请尝试把配置项的 `transform` 设置为 false（Please try set animationOpts `transform` to false）')
         }
@@ -133,7 +154,7 @@ function getDefaultVal(target: any, k: string) {
 
 
 /**
- * 匹配`transform`的每个属性 如果是复合属性 则放入数组
+ * 匹配`transform`的每个属性，如果是复合属性 则放入数组
  * @param cssText CSS transform 的内容
  */
 function parseTransform(
@@ -170,7 +191,7 @@ function parseTransform(
 }
 
 /**
- * 如果有`propName`则先查询默认值 否则返回解析的字符串
+ * 如果有 `propName` 则先查询默认值，否则返回解析的字符串
  * @param s 解析的字符串
  * @param propName 要从默认值映射表查询的键
  */

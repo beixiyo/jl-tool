@@ -1,5 +1,5 @@
-import { TimeFunc } from '@/types'
-import { genTimeFunc } from '@/animation/timeFunc'
+import type { TimeFunc } from './timeFunc'
+import { genTimeFunc } from './timeFunc'
 
 
 /**

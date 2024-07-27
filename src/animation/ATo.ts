@@ -42,7 +42,7 @@ export class ATo {
 
     /**
      * 开始执行动画 首次执行请先调用此函数
-     * @param target 要修改的对象 如果是`CSSStyleDeclaration`对象 则单位默认为`px`
+     * @param target 要修改的对象 如果是 `CSSStyleDeclaration` 对象，则单位默认为 `px`
      * @param finalProps 要修改对象的最终属性值
      * @param durationMS 动画持续时间
      * @param animationOpts 配置项 可选参数
@@ -60,8 +60,8 @@ export class ATo {
     }
 
     /**
-     * 等待上一个动画完成后执行 ***第一次请先调用`start`函数***
-     * @param target 要修改的对象，可以是一个函数（用来获取同一个对象不同时间的值）。如果是`CSSStyleDeclaration`对象，则单位默认为`px`
+     * 等待上一个动画完成后执行，**第一次请先调用 `start` 函数**
+     * @param target 要修改的对象，可以是一个函数（用来获取同一个对象不同时间的值）。如果是 `CSSStyleDeclaration` 对象，则单位默认为 `px`
      * @param finalProps 要修改对象的最终属性值
      * @param durationMS 动画持续时间
      * @param animationOpts 配置项 可选参数
