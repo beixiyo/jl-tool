@@ -69,6 +69,11 @@ export default defineConfig({
                     link: "/type-doc/modules/tools_domTools.md",
                 },
                 {
+                    text: "DOM 处理",
+                    link: "/type-doc/modules/tools_eventTools.md",
+                },
+
+                {
                     text: "文件处理",
                     link: "/type-doc/modules/tools_fileTools.md",
                 },

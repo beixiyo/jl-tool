@@ -42,6 +42,8 @@
             "src/tools/dateTools.ts",
 
             "src/tools/domTools.ts",
+            "src/tools/eventTools.ts",
+
             "src/tools/fileTools.ts",
             "src/tools/scheduleTask.ts",
             "src/tools/tools.ts",

@@ -2,6 +2,8 @@ export * from '@/tools/arrTools'
 export * from '@/tools/colorTools'
 export * from '@/tools/dateTools'
 export * from '@/tools/domTools'
+export * from '@/tools/eventTools'
+
 export * from '@/tools/fileTools'
 export * from '@/tools/scheduleTask'
 export * from '@/tools/tools'

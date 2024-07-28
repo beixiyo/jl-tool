@@ -1,6 +1,6 @@
-import { setElCrossOrigin } from '@/canvas/imgHandle'
 import { isNode } from '@/shared'
 import { isPureNum } from '@/shared/is'
+import { judgeImgLoad } from './eventTools'
 
 
 /** 获取浏览器内容宽度 */
@@ -231,7 +231,7 @@ export const getAllStyle = async () => {
 }
 
 /**
- * 打印 必须启动一个服务器才能用; ***建议使用事件交互，如按钮点击，否则可能打开多个窗口***
+ * 打印 必须启动一个服务器才能用; **建议使用事件交互，如按钮点击，否则可能打开多个窗口**
  * @param el 要打印的元素
  * @param styleStr 样式 建议使用`getAllStyle`函数，可不传
  * @param href 打开的链接 默认使用`location.href`
@@ -268,72 +268,8 @@ export const print: Print = (
     })
 }
 
-
 /**
- * 判断页面所有图片是否加载完成
- * @param el 要判断的元素 默认 document
- * @returns 是否加载完成
- */
-export const judgeImgLoad = (el = document): Promise<boolean> => {
-    const imgArr = el.querySelectorAll('img')
-
-    const promArr = Array.from(imgArr).map(
-        img => new Promise((resolve, reject) => {
-            img.onload = resolve
-            img.onerror = reject
-        })
-    )
-
-    return new Promise((resolve) => {
-        Promise.all(promArr)
-            .then(() => resolve(true))
-            .catch(() => resolve(false))
-    })
-}
-
-/**
- * 判断图片的 src 是否可用，可用则返回图片
- * @param src 图片
- */
-export const getImg = (src: string) => {
-    const img = new Image()
-    img.src = src
-    setElCrossOrigin(img)
-
-    return new Promise<false | HTMLImageElement>((resolve) => {
-        img.onload = () => resolve(img)
-        img.onerror = () => resolve(false)
-    })
-}
-
-/**
- * 返回一个双击键盘事件
- * @param code 上下左右
- * @param fn 双击后执行函数
- * @param gap 间隔时间
- */
-export function doubleKeyDown<T, P, R>(
-    code: string,
-    fn: (this: T, ...args: P[]) => R,
-    gap = 150
-) {
-    // 调用函数记录初始时间 你不可能立即点击 所以下面的判断进不去
-    let st = Date.now()
-
-    return (e: KeyboardEvent) => {
-        if (e.code !== code) return
-
-        const now = Date.now()
-        // 第一次点击肯定超过了间隔时间 所以重新赋值`st` 下次按下按键 只要在间隔时间内就算双击
-        if (now - st <= gap) {
-            return fn.call(this, e) as R
-        }
-        st = now
-    }
-}
-
-/**
- * 检查并设置父元素的`overflow: hidden`
+ * 检查并设置父元素的 `overflow: hidden`
  * @param el 当前元素
  */
 export const setParentOverflow = (el: HTMLElement) => {
@@ -342,44 +278,6 @@ export const setParentOverflow = (el: HTMLElement) => {
 
     if (overflow !== 'hidden') {
         parent.style.overflow = 'hidden'
-    }
-}
-
-
-/** 全屏 若已全屏 则退出全屏 */
-export const fullScreen = (dom?: HTMLElement) => {
-    const
-        doc = document as any,
-        root = document.documentElement as any,
-        rfs =
-            root.requestFullscreen ||
-            root.webkitRequestFullscreen ||
-            root.mozRequestFullScreen ||
-            root.msRequestFullscreen,
-        efs =
-            doc.exitFullscreen ||
-            doc.webkitCancelFullScreen ||
-            doc.webkitExitFullscreen ||
-            doc.mozCancelFullScreen ||
-            doc.msExitFullscreen
-
-    if (!rfs) return
-
-    const isFull =
-        doc.fullscreenElement ||
-        doc.webkitFullscreenElement ||
-        doc.mozFullScreenElement ||
-        doc.msFullscreenElement
-
-    if (dom) {
-        isFull
-            ? efs.call(dom)
-            : rfs.call(dom)
-    }
-    else {
-        isFull
-            ? efs.call(root)
-            : rfs.call(root)
     }
 }
 

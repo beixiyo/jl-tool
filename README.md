@@ -34,18 +34,35 @@ npm i @jl-org/tool
 
 - [各种常用工具](#各种常用工具)
 - [网络请求工具，如最大并发，自动重试、自动重连的 ws 等](#网络请求工具)
+<br />
+
 - [数组处理，包含扁平数组转树，树搜索...](#数组处理)
 - [颜色处理](#颜色处理)
 - [日期处理](#日期处理)
 - [时钟，获取帧间隔、过去时间...](#时钟)
+<br />
+
 - [DOM，如节流、防抖、鼠标坐标转换、CSS单位处理...](#dom)
+- [事件工具，如主题变化、双击键盘事件、全屏...](#事件工具)
+<br />
+
 - [文件处理，如 Base64 和 Blob 互转、下载文件...](#文件处理)
+<br />
+
 - [分时渲染函数，再多函数也不卡顿](#分时渲染函数)
 - [Media API，如录屏、录音、文字语音互转...](#media-api)
 - [一些数据结构，如：最小堆](#数据结构)
+<br />
+
 - [动画处理，类似 GSAP，但是会自动处理 CSS 单位](#动画处理)
+<br />
+
 - [事件分发，如消息订阅、观察者模式](#事件分发)
+<br />
+
 - [*is* 判断](#is-判断)
+<br />
+
 - [canvas，可以压缩图片，截取部分图片...](#canvas)
 - [*Web* 小插件，如：客户端同步服务器更新](#web-小插件)
 - [常用常量，如角度、正则表达式...](#常量)
@@ -174,6 +191,8 @@ export declare function filterKeys<T, K extends keyof T>(target: T, keys: K[]): 
 export declare function excludeKeys<T, K extends keyof T>(target: T, keys: K[]): Omit<T, Extract<keyof T, K>>;
 ```
 
+---
+
 
 ## 网络请求工具
 ```ts
@@ -236,6 +255,8 @@ export declare class WS extends EventBus {
     close(): void;
 }
 ```
+
+---
 
 
 ## 数组处理
@@ -321,6 +342,7 @@ export declare function binarySearch<T>(arr: T[], target: T): number;
 export declare function genTypedArr<T extends AllTypedArrConstructor = Float32ArrayConstructor>(size: number, genVal: (index: number) => number, ArrayFn?: T): ArrReturnType<T>;
 ```
 
+---
 
 
 ## 颜色处理
@@ -359,6 +381,8 @@ export declare function lightenColor(color: string, strength?: number): string;
  */
 export declare function colorAddOpacity(color: string, opacity?: number): string;
 ```
+
+---
 
 
 ## 日期处理
@@ -430,6 +454,9 @@ export type TimeGapOpts = {
 };
 ```
 
+---
+
+
 ## 时钟
 ```ts
 export declare class Clock {
@@ -465,6 +492,8 @@ export declare class Clock {
 }
 
 ```
+
+---
 
 
 ## DOM
@@ -568,6 +597,40 @@ export declare const getAllStyle: () => Promise<string>;
 export declare const print: Print;
 
 /**
+ * 检查并设置父元素的`overflow: hidden`
+ * @param el 当前元素
+ */
+export declare const setParentOverflow: (el: HTMLElement) => void;
+
+/** 解析出`HTML`的所有字符串 */
+export declare const HTMLToStr: (HTMLStr: string) => string;
+```
+
+## 事件工具
+```ts
+/**
+ * 监听用户主题变化
+ * @param onLight 用户切换到浅色模式时触发
+ * @param onDark 用户切换到深色模式时触发
+ * @returns 解绑事件函数
+ */
+export declare function onChangeTheme(onLight: VoidFunction, onDark: VoidFunction): () => void;
+
+/**
+ * 获取当前主题
+ */
+export declare function getCurTheme(): "dark" | "light";
+
+/**
+ * 绑定 window 事件，返回解绑事件
+ * @param eventName window.addEventListener 事件名称
+ * @param listener window.addEventListener 事件回调
+ * @param options window.addEventListener 配置项
+ * @returns 解绑事件函数
+ */
+export declare function bindWinEvent(eventName: (keyof WindowEventMap) | (string & {}), listener: WinListenerParams[1], options?: WinListenerParams[2]): () => void;
+
+/**
  * 判断页面所有图片是否加载完成
  * @param el 要判断的元素 默认 document
  * @returns 是否加载完成
@@ -582,24 +645,21 @@ export declare const getImg: (src: string) => Promise<false | HTMLImageElement>;
 
 /**
  * 返回一个双击键盘事件
- * @param code 上下左右
+ * @param key 键盘码（KeyboardEvent.key）
  * @param fn 双击后执行函数
- * @param gap 间隔时间
+ * @param gap 间隔时间，默认 150
  */
-export declare function doubleKeyDown<T, P, R>(code: KeyCode, fn: (this: T, ...args: P[]) => R, gap?: number): (e: KeyboardEvent) => R;
+export declare function doubleKeyDown<T, R>(key: string, fn: (this: T, e: KeyboardEvent, ...args: any[]) => R, gap?: number, { triggerKey }?: DoubleKeyDownOpts): (e: KeyboardEvent) => R;
 
 /**
- * 检查并设置父元素的`overflow: hidden`
- * @param el 当前元素
+ * 适配主流浏览器的全屏。若已全屏，则退出全屏
+ * @param dom 要全屏的元素
  */
-export declare const setParentOverflow: (el: HTMLElement) => void;
-
-/** 全屏 若已全屏 则退出全屏 */
 export declare const fullScreen: (dom?: HTMLElement) => void;
-
-/** 解析出`HTML`的所有字符串 */
-export declare const HTMLToStr: (HTMLStr: string) => string;
 ```
+
+---
+
 
 ## 文件处理
 ```ts
@@ -643,6 +703,8 @@ export declare function blobToStream(blob: Blob): Promise<ReadableStream>;
 export declare function dataToStr(data: Blob | ArrayBuffer, encode?: string): Promise<string>;
 ```
 
+---
+
 
 ## 分时渲染函数
 ```ts
@@ -654,6 +716,8 @@ export declare function dataToStr(data: Blob | ArrayBuffer, encode?: string): Pr
  */
 export declare const scheduleTask: (taskArr: Function[], onEnd?: Function, needStop?: () => boolean) => void;
 ```
+
+---
 
 
 ## Media API
@@ -770,6 +834,8 @@ export declare const openCamera: (callbackOrVideoEl: HTMLVideoElement | ((stream
 export declare const screenCAP: (fileName?: string) => Promise<void>;
 ```
 
+---
+
 
 ## 数据结构
 ```ts
@@ -805,6 +871,8 @@ export declare class MaxHeap<T extends HeapItem> {
     pop(): T;
 }
 ```
+
+---
 
 
 ## 动画处理
@@ -908,6 +976,8 @@ export declare class ATo {
 }
 ```
 
+---
+
 
 ## 事件分发
 ```ts
@@ -956,6 +1026,8 @@ export declare class Observer {
 }
 ```
 
+---
+
 
 ## is 判断
 ```ts
@@ -977,6 +1049,8 @@ export declare const isArr: <T>(data: any) => data is T[];
 /** Object.is */
 export declare const isSame: (a: any, b: any) => boolean;
 ```
+
+---
 
 
 ## canvas
@@ -1054,12 +1128,16 @@ export declare function parseImgData(imgData: ImageData['data'], width: number, 
 export declare function fillPixel(ctx: CanvasRenderingContext2D, x: number, y: number, color: string): void;
 ```
 
+---
+
 
 ## Web 小插件
 ```ts
 /** 检查页面更新 */
 export declare function autoUpdate(opts?: Opts): void;
 ```
+
+---
 
 
 ## 常量
