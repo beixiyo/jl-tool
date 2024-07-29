@@ -33,13 +33,13 @@ npm i @jl-org/tool
 ## 工具目录
 
 - [各种常用工具](#各种常用工具)
-- [网络请求工具，如最大并发，自动重试、自动重连的 ws 等](#网络请求工具)
+- [网络请求工具，如最大并发、自动重试、自动重连的 ws 等](#网络请求工具)
 <br />
 
-- [数组处理，包含扁平数组转树，树搜索...](#数组处理)
+- [数组处理，如扁平数组转树、树搜索...](#数组处理)
 - [颜色处理](#颜色处理)
 - [日期处理](#日期处理)
-- [时钟，获取帧间隔、过去时间...](#时钟)
+- [时钟，如获取帧间隔、过去时间...](#时钟)
 <br />
 
 - [DOM，如节流、防抖、鼠标坐标转换、CSS单位处理...](#dom)
@@ -276,26 +276,30 @@ export declare function getPageData<T>(arr: T[], curPage: number, pageSize?: num
 export declare function getSum<T>(arr: T[], handler?: (item: T) => number): number;
 
 /**
- * 给定一个数组，根据 key 进行分组
- * 分组内容默认放入数组中，你也可以指定为 `'+' | '-' | '*' | '/' | '**'` 进行相应的操作
+ * - 给定一个数组，根据 key 进行分组
+ * - 分组内容默认放入数组中，你也可以指定为 `'+' | '-' | '*' | '/' | '**'` 进行相应的操作
+ * - 你也可以把整个对象进行分组（设置 `operateKey` 为 `null`），他会把整个对象放入数组。而不是进行 加减乘除 等操作
  *
- * 你也可以把整个对象进行分组（设置 `operateKey` 为 `null`），他会把整个对象放入数组。而不是进行 加减乘除 等操作
+ * @example
+ * ```ts
+ * const input = [{ type: 'chinese', score: 10 }, { type: 'chinese', score: 100 }]
+ * groupBy(input, 'type', 'score') => [{ type: 'chinese', score: [10, 100] }]
+ * groupBy(input, 'type', null) => [ { type: 'chinese', children: [{ ... }] }, ... ]
+ * ```
+ *
  * @param data 要分组的数组
  * @param key 要进行分组的 **键**
  * @param operateKey 要操作的 **键**，填 `null` 则对整个对象进行分组，并且会把 `action` 设置为 `arr`
  * @param action 操作行为，默认放入数组，你也可以进行相应的操作，`'+'` 为加法，`'-'` 为减法，`'*'` 为乘法，`'/'` 为除法，`'**'` 为乘方
  * @param enableParseFloat 默认 false，当你指定 action 为数值操作时，是否使用 parseFloat，这会把 '10px' 也当成数字
  * @param enableDeepClone 是否深拷贝，默认 false
- * @example
- * const input = [{ type: 'chinese', score: 10 }, { type: 'chinese', score: 100 }]
- * groupBy(input, 'type', 'score') => [{ type: 'chinese', score: [10, 100] }]
- * groupBy(input, 'type', null) => [ { type: 'chinese', children: [{ ... }] }, ... ]
  */
 export declare function groupBy<T extends Record<BaseKey, any>>(data: T[], key: keyof T, operateKey: null | (keyof T), action?: 'arr' | '+' | '-' | '*' | '/' | '**', enableParseFloat?: boolean, enableDeepClone?: boolean): any[];
 
 /**
  * 扁平数组转递归树
  * @example
+ * ```ts
  * const arr = [
  *     { id: 1, name: '部门1', pid: 0 },
  *     { id: 2, name: '部门2', pid: 1 },
@@ -305,6 +309,7 @@ export declare function groupBy<T extends Record<BaseKey, any>>(data: T[], key: 
  *     { id: 6, name: '部门6', pid: 1 },
  * ]
  * const treeData = arrToTree(arr)
+ * ```
  */
 export declare function arrToTree<T extends TreeItem>(arr: T[]): TreeData<T>[];
 
@@ -340,6 +345,14 @@ export declare function binarySearch<T>(arr: T[], target: T): number;
  * @returns 返回一个填充了指定生成函数数值的数组
  */
 export declare function genTypedArr<T extends AllTypedArrConstructor = Float32ArrayConstructor>(size: number, genVal: (index: number) => number, ArrayFn?: T): ArrReturnType<T>;
+
+/**
+ * 比较两个数组是否相等，默认不在乎顺序。空数组返回 true
+ * @param ignoreOrder 是否忽略顺序，默认 true
+ */
+export declare function arrIsEqual<T = string | number>(arr1: T[], arr2: T[], ignoreOrder?: boolean): boolean;
+
+export type AllTypedArrConstructor = Float32ArrayConstructor | Float64ArrayConstructor | Int8ArrayConstructor | Uint8ArrayConstructor | Int16ArrayConstructor | Uint16ArrayConstructor | Int32ArrayConstructor | Uint32ArrayConstructor;
 ```
 
 ---

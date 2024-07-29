@@ -339,8 +339,32 @@ export function genTypedArr<T extends AllTypedArrConstructor = Float32ArrayConst
     return arr as ArrReturnType<T>
 }
 
+/**
+ * 比较两个数组是否相等，默认不在乎顺序。空数组返回 true
+ * @param ignoreOrder 是否忽略顺序，默认 true
+ */
+export function arrIsEqual<T = string | number>(
+    arr1: T[], arr2: T[],
+    ignoreOrder = true
+): boolean {
+    if (arr1.length !== arr2.length) {
+        return false
+    }
+    if (arr1.length === 0 && arr2.length === 0) {
+        return true
+    }
 
-type AllTypedArrConstructor =
+    if (ignoreOrder) {
+        const sortedArray1 = [...arr1].sort()
+        const sortedArray2 = [...arr2].sort()
+        return sortedArray1.every((value, index) => value === sortedArray2[index])
+    }
+
+    return arr1.every((value, index) => value === arr2[index])
+}
+
+
+export type AllTypedArrConstructor =
     | Float32ArrayConstructor
     | Float64ArrayConstructor
     | Int8ArrayConstructor

@@ -1,4 +1,4 @@
-import { arrToChunk, arrToTree, binarySearch, genTypedArr, getPageData, getSum, groupBy, searchTreeData } from '@/tools/arrTools'
+import { arrIsEqual, arrToChunk, arrToTree, binarySearch, genTypedArr, getPageData, getSum, groupBy, searchTreeData } from '@/tools/arrTools'
 import { describe, expect, test, vi } from 'vitest'
 
 
@@ -37,7 +37,7 @@ describe('数组工具测试', () => {
 
 
 describe('类型化数组生成测试', () => {
-    test('should generate a Float32Array of specified size with generated values', () => {
+    test('类型和长度测试', () => {
         const size = 5
         const genVal = vi.fn((index) => index * 2)
         const result = genTypedArr(size, genVal)
@@ -50,7 +50,7 @@ describe('类型化数组生成测试', () => {
         }
     })
 
-    test('should generate a Uint8Array of specified size with generated values', () => {
+    test('指定类型测试', () => {
         const size = 5
         const genVal = (index: number) => index * 2
         const result = genTypedArr(size, genVal, Uint8Array)
@@ -349,5 +349,28 @@ describe('扁平数组转递归树测试', () => {
                 ]
             }
         ])
+    })
+})
+
+
+// ================================================
+
+
+describe('数组内容比较', () => {
+    const arr1 = [1, 8, '123', 'asdf2', 45],
+         arr2 = ['123', 8, 'asdf2', 45, 1]
+
+    test('默认忽略排序', () => {
+        expect(arrIsEqual(arr1, arr2)).toBeTruthy()
+    })
+
+    test('不忽略排序', () => {
+        expect(arrIsEqual(arr1, arr2, false)).toBeFalsy()
+        expect(arrIsEqual(arr1, arr1, true)).toBeTruthy()
+    })
+
+    test('空数组测试', () => {
+        expect(arrIsEqual([], [], true)).toBeTruthy()
+        expect(arrIsEqual([], [], false)).toBeTruthy()
     })
 })
