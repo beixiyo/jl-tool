@@ -1,4 +1,4 @@
-import { isNode } from '@/shared'
+import { DEG_1, isNode } from '@/shared'
 import { isPureNum } from '@/shared/is'
 import { judgeImgLoad } from './eventTools'
 
@@ -20,13 +20,26 @@ export function getWinHeight() {
         document.body.clientHeight
 }
 
+
+/**
+ * 根据半径和角度获取 DOM 坐标
+ * @param r 半径
+ * @param deg 角度
+ */
+export function calcCoord(r: number, deg: number) {
+    const x = Math.sin(deg * DEG_1) * r,
+        // 数学坐标系和图像坐标系相反
+        y = -Math.cos(deg * DEG_1) * r
+    return [x, y] as const
+}
+
 /**
  * 将鼠标的坐标转换为在一个特定范围内的坐标
  * 
  * @example
  * ```ts
  * // 范围在 [-1, 1]
- * calcDOMCoord(e, innerWidth, innerHeight, 1, false)
+ * calcDOMCoord(e, innerWidth, innerHeight, 1)
  * 
  * // 范围在 [-1, 1]，y 轴反转
  * calcDOMCoord(e, innerWidth, innerHeight, 1, true)

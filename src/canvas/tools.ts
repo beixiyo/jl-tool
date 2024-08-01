@@ -1,18 +1,5 @@
-import { DEG_1 } from '@/constants/deg'
 import { Pixel } from '@/types'
 
-
-/**
- * 根据半径和角度获取坐标
- * @param r 半径
- * @param deg 角度
- */
-export function calcCoord(r: number, deg: number) {
-    const x = Math.sin(deg * DEG_1) * r,
-        // 数学坐标系和图像坐标系相反
-        y = -Math.cos(deg * DEG_1) * r
-    return [x, y]
-}
 
 /**
  * 创建一个指定宽高的画布

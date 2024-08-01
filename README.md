@@ -517,11 +517,18 @@ export declare function getWinWidth(): number;
 export declare function getWinHeight(): number;
 
 /**
+ * 根据半径和角度获取 DOM 坐标
+ * @param r 半径
+ * @param deg 角度
+ */
+export declare function calcCoord(r: number, deg: number): readonly [number, number];
+
+/**
  * 将鼠标的坐标转换为在一个特定范围内的坐标
  *
  * @example
  * // 范围在 [-1, 1]
- * calcDOMCoord(e, innerWidth, innerHeight, 1, false)
+ * calcDOMCoord(e, innerWidth, innerHeight, 1)
  *
  * // 范围在 [-1, 1]，y 轴反转
  * calcDOMCoord(e, innerWidth, innerHeight, 1, true)
@@ -1098,13 +1105,6 @@ export declare function setElCrossOrigin(el: HTMLElement): void;
  */
 export declare function getCvsImg<T extends TransferType = 'base64'>(cvs: HTMLCanvasElement, resType?: T, mimeType?: string, quality?: number): HandleImgReturn<T>;
 
-
-/**
- * 根据半径和角度获取坐标
- * @param r 半径
- * @param deg 角度
- */
-export declare function calcCoord(r: number, deg: number): number[];
 
 /**
  * 创建一个指定宽高的画布
