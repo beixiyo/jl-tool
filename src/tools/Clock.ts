@@ -12,6 +12,8 @@ export class Clock {
 
     /** 每帧时间间隔 */
     delta = 0
+    /** 每帧时间间隔（毫秒） */
+    deltaMS = 0
     
     /** 停止时间计算函数 */
     stop!: VoidFunction
@@ -45,6 +47,8 @@ export class Clock {
             const now = this.getNow()
             
             this.delta = now - this.curTime
+            this.deltaMS = this.delta / 1000
+            
             this.curTime = now
         })
     }

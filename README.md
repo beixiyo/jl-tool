@@ -473,7 +473,7 @@ export type TimeGapOpts = {
 ## 时钟
 ```ts
 export declare class Clock {
-
+    
     /** 开始时间 */
     startTime: number;
     /** 当前时间 */
@@ -481,6 +481,8 @@ export declare class Clock {
 
     /** 每帧时间间隔 */
     delta: number;
+    /** 每帧时间间隔（毫秒） */
+    deltaMS: number;
 
     /** 停止时间计算函数 */
     stop: VoidFunction;
@@ -503,7 +505,6 @@ export declare class Clock {
     /** 累计时间（秒） */
     get elapsed(): number;
 }
-
 ```
 
 ---
