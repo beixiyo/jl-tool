@@ -160,7 +160,9 @@ test('自定义转换符号', () => {
 test('数字补齐精度', () => {
     expect(padNum(1)).toBe('1.00')
     expect(padNum(1, 3)).toBe('1.000')
+    
     expect(padNum(1, 3, '1')).toBe('1.111')
+    expect(padNum(3.59, 4)).toBe('3.5900')
 })
 
 test('解决 Number.toFixed 计算错误', () => {

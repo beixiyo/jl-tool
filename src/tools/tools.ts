@@ -92,11 +92,11 @@ export function deepCompare(o1: any, o2: any, seen = new WeakMap()) {
 }
 
 /**
- * 截取字符串，默认补 `...` 到后面  
- * 如果长度小于等于 `placeholder` 补充字符串的长度，则直接截取
+ * - 截取字符串，默认补 `...` 到后面
+ * - 如果长度小于等于 `placeholder` 补充字符串的长度，则直接截取
  * @param str 字符串
  * @param len 需要截取的长度
- * @param placeholder 补在后面的字符串 默认`...`
+ * @param placeholder 补在后面的字符串，默认`...`
  */
 export function cutStr(str: string, len: number, placeholder = '...') {
     const placeholderLen = placeholder.length
@@ -112,9 +112,11 @@ export function cutStr(str: string, len: number, placeholder = '...') {
 }
 
 /**
- * 把对象的空值转为指定字符串，默认 `--`  
- * 包含 空字符串、空格、null、undefined 等  
- * 默认不包含数值 0，可通过配置修改
+ * - 把对象的空值转为指定字符串，默认 `--`，返回一个对象
+ * - 空值包含 **空字符串、空格、null、undefined** 
+ * - 默认不包含数值 0，可通过配置修改
+ * 
+ * @param data 需要转换的对象
  */
 export function padEmptyObj<T extends object>(data: T, config?: {
     /** 要填补的字符串，默认 -- */
@@ -195,9 +197,16 @@ export function curry() {
 /**
  * 数字补齐精度
  * @param num 数字
- * @param precision 精度长度 默认`2`
- * @param placeholder 补齐内容 默认`0`
+ * @param precision 精度长度，默认 `2`
+ * @param placeholder 补齐内容，默认 `0`
  * @returns 数字字符串
+ * 
+ * @example
+ * ```ts
+ * padNum(1) => '1.00'
+ * padNum(1, 3) => '1.000')
+ * padNum(1, 3, '1') => '1.111'
+ * ```
  */
 export function padNum(num: string | number, precision = 2, placeholder = '0') {
     num = String(num)
@@ -237,7 +246,7 @@ export function numFixed(num: number | string, precision = 2) {
  * @param prefix 前缀默认 iconfont
  * @param suffix 后缀默认 icon
  * @param connector 连接符默认 -
- * @returns **iconfont icon-${name}**
+ * @returns iconfont icon-${name}
  */
 export function genIcon(name: string, prefix = 'iconfont', suffix = 'icon', connector = '-') {
     return `${prefix} ${suffix}${connector}${name}`
@@ -245,11 +254,15 @@ export function genIcon(name: string, prefix = 'iconfont', suffix = 'icon', conn
 
 
 /**
- * - 提取值在 extractArr，中的元素
- * - 例如提取所有空字符串
+ * - 提取值在 extractArr 中的元素，返回一个对象
+ * - 例如提取对象中所有空字符串
+ * 
+ * @example
  * ```ts
- * @example filterVals(data, [''])
+ * filterVals(data, [''])
  * ```
+ * @param data 一个对象
+ * @param extractArr 提取的值
  */
 export function filterVals<T>(data: T, extractArr: any[]) {
     const _data: Partial<T> = {}
@@ -266,13 +279,17 @@ export function filterVals<T>(data: T, extractArr: any[]) {
 }
 
 /**
- * - 排除值在 excludeArr，中的元素
- * - 例如排除所有空字符串
+ * - 排除值在 excludeArr 中的元素，返回一个对象
+ * - 例如排除对象中所有空字符串
+ *
+ * @example 
  * ```ts
- * @example excludeVals(data, [''])
+ * excludeVals(data, [''])
  * ```
+ * @param data 一个对象
+ * @param excludeArr 排除的值
  */
-export function excludeVals<T>(data: T, excludeArr: any[]) {
+export function excludeVals<T extends object>(data: T, excludeArr: any[]) {
     const _data: Partial<T> = {}
 
     for (const k in data) {
@@ -287,23 +304,26 @@ export function excludeVals<T>(data: T, excludeArr: any[]) {
 }
 
 /**
- * - 提取 `keys` 数组，返回一个对象
- * - 例如：提取 `name`
+ * - 从 `keys` 数组中提取属性，返回一个对象
+ * - 例如：从对象中提取 `name` 属性，返回一个对象
+ * @example
  * ```ts
- * @example filterKeys(data, ['name'])
+ * filterKeys(data, ['name'])
  * ```
+ * @param data 目标对象
+ * @param keys 需要提取的属性
  */
-export function filterKeys<T, K extends keyof T>(
-    target: T,
+export function filterKeys<T extends object, K extends keyof T>(
+    data: T,
     keys: K[]
 ) {
     const _data: any = {}
 
-    for (const k in target) {
-        if (!Object.hasOwnProperty.call(target, k)) continue
+    for (const k in data) {
+        if (!Object.hasOwnProperty.call(data, k)) continue
 
         if (keys.includes(k as unknown as K)) {
-            const item = target[k]
+            const item = data[k]
             _data[k] = item
         }
     }
@@ -311,23 +331,26 @@ export function filterKeys<T, K extends keyof T>(
 }
 
 /**
- * - 排除 `keys` 数组，返回一个对象
- * - 例如：排除 `name`
+ * - 从 `keys` 数组中排除属性，返回一个对象
+ * - 例如：从对象中排除 `name` 属性，返回一个对象
+ * @example
  * ```ts
- * @example excludeKeys(data, ['name'])
+ * excludeKeys(data, ['name'])
  * ```
+ * @param data 目标对象
+ * @param keys 需要提取的属性
  */
-export function excludeKeys<T, K extends keyof T>(
-    target: T,
+export function excludeKeys<T extends object, K extends keyof T>(
+    data: T,
     keys: K[]
 ) {
     const _data: any = {}
 
-    for (const k in target) {
-        if (!Object.hasOwnProperty.call(target, k)) continue
+    for (const k in data) {
+        if (!Object.hasOwnProperty.call(data, k)) continue
 
         if (!keys.includes(k as unknown as K)) {
-            const item = target[k]
+            const item = data[k]
             _data[k] = item
         }
     }
