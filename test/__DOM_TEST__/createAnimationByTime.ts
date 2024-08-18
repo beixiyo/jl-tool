@@ -11,9 +11,9 @@ createAnimationByTime(
     div3.style,
     {
         left: '100px',
-        top: '500px',
+        translateY: '500px'
     },
-    1000
+    1000,
 )
 
 
@@ -41,7 +41,6 @@ aTo
         },
         2000,
         {
-            transform: true,
             timeFunc: 'backInOut',
         }
     )

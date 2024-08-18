@@ -1,6 +1,6 @@
 import { createAnimationByTime } from '@/animation/createAnimationByTime'
-import { AnimationOpts } from '@/types'
-import { AnimiateParams, FinalProp } from '@/types/tools'
+import type { AnimationOpts } from '@/types'
+import type { AnimiateParams, FinalProp } from '@/types/tools'
 import { isFn } from '@/shared'
 
 

@@ -1,7 +1,7 @@
-import { AnimationOpts } from '@/types'
+import type { AnimationOpts } from '@/types'
+import type { FinalProp, PropMap } from '@/types/tools'
 import { setVal } from './setVal'
 import { genTimeFunc } from './timeFunc'
-import { FinalProp, PropMap } from '@/types/tools'
 import { applyAnimation } from './applyAnimation'
 import { CSS_DEFAULT_VAL_KEYS, TRANSFORM_KEYS, TRANSFORM_UNIT_MAP, WITHOUT_UNITS } from '@/constants/animate'
 import { Clock } from '@/tools/Clock'
@@ -33,7 +33,7 @@ export const createAnimationByTime = <T, P extends FinalProp>(
 
     const
         clock = new Clock(),
-        enableTransform = animationOpts?.transform ?? true,
+        enableTransform = animationOpts?.transform ?? hasTransformKey(finalProps),
         diffProps = getDiff<P>(target, finalProps, enableTransform),
 
         timeFunc = genTimeFunc(animationOpts?.timeFunc),
@@ -215,4 +215,14 @@ function getUnit(s: string, propName?: string): string | null {
     }
 
     return /\D+$/.exec(s)?.[0] ?? null
+}
+
+/**
+ * 是否包含 `transform` 属性
+ */
+function hasTransformKey(finalProps: Record<string, any>) {
+    const keys = Object.keys(finalProps)
+    if (keys.length === 0) return false
+    
+    return keys.some((k) => TRANSFORM_KEYS.includes(k))
 }

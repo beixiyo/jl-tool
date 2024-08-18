@@ -1,7 +1,7 @@
-import { TRANSFORM_KEYS } from '@/constants/animate'
-import { OnUpdate } from '@/types'
-import { PropMap } from '@/types/tools'
+import type { OnUpdate } from '@/types'
+import type { PropMap } from '@/types/tools'
 import { numFixed } from '@/tools/tools'
+import { TRANSFORM_KEYS } from '@/constants/animate'
 
 
 /**
@@ -97,7 +97,7 @@ type SetValOpts<T, P> = {
      * 单位
      * 动画单位优先级 : `finalProps` > `opt.unit` > `rawEl`
      */
-    optUnit: string | null
+    optUnit?: string
     /**
      * 更改的回调函数
      */

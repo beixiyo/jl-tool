@@ -402,7 +402,7 @@ type ArrReturnType<T extends AllTypedArrConstructor = Float32ArrayConstructor> =
     : T extends Uint32ArrayConstructor ? Uint32Array
     : never
 
-type SearchOpts = {
+export type SearchOpts = {
     /** 要搜索比对的键，@default name */
     key?: string
     /** 是否忽略大小写，@default true */
