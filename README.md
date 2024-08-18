@@ -385,6 +385,13 @@ export declare function binarySearch<T>(arr: T[], target: T): number;
 export declare function genTypedArr<T extends AllTypedArrConstructor = Float32ArrayConstructor>(size: number, genVal: (index: number) => number, ArrayFn?: T): ArrReturnType<T>;
 
 /**
+ * 生成一个指定大小的数组，并用指定的生成函数填充
+ * @param size 数组的长度
+ * @param genVal 一个生成数值的函数，用于填充数组
+ */
+export declare function genArr<V>(size: number, genVal: (index: number) => V): V[];
+
+/**
  * 比较两个数组是否相等，默认不在乎顺序。空数组返回 true
  * @param ignoreOrder 是否忽略顺序，默认 true
  */

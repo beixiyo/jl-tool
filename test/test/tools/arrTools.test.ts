@@ -1,4 +1,4 @@
-import { arrIsEqual, arrToChunk, arrToTree, binarySearch, genTypedArr, getPageData, getSum, groupBy, searchTreeData } from '@/tools/arrTools'
+import { arrIsEqual, arrToChunk, arrToTree, binarySearch, genArr, genTypedArr, getPageData, getSum, groupBy, searchTreeData } from '@/tools/arrTools'
 import { describe, expect, test, vi } from 'vitest'
 
 
@@ -61,6 +61,28 @@ describe('类型化数组生成测试', () => {
             expect(result[i]).toBe(i * 2)
         }
     })
+})
+
+test('数组生成测试', () => {
+    const size = 5
+    const genVal = vi.fn((index) => index * 2)
+    const result = genArr(size, genVal)
+
+    expect(result.length).toBe(size)
+    for (let i = 0; i < result.length; i++) {
+        expect(result[i]).toBe(i * 2)
+        expect(genVal).toHaveBeenCalledWith(i)
+    }
+
+
+    const genVal2 = vi.fn((index: number) => [index * 10])
+    const result2 = genArr(size, genVal2)
+
+    expect(result2.length).toBe(size)
+    for (let i = 0; i < result2.length; i++) {
+        expect(result2[i]).toEqual([i * 10])
+        expect(genVal).toHaveBeenCalledWith(i)
+    }
 })
 
 
@@ -358,7 +380,7 @@ describe('扁平数组转递归树测试', () => {
 
 describe('数组内容比较', () => {
     const arr1 = [1, 8, '123', 'asdf2', 45],
-         arr2 = ['123', 8, 'asdf2', 45, 1]
+        arr2 = ['123', 8, 'asdf2', 45, 1]
 
     test('默认忽略排序', () => {
         expect(arrIsEqual(arr1, arr2)).toBeTruthy()
