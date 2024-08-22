@@ -47,6 +47,7 @@
             "src/tools/fileTools.ts",
             "src/tools/scheduleTask.ts",
             "src/tools/tools.ts",
+            "src/tools/FakeProgress.ts",
 
             "src/webApi/index.ts",
         ],

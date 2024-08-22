@@ -87,6 +87,11 @@ export default defineConfig({
                 },
 
                 {
+                    text: "虚假进度条",
+                    link: "/type-doc/modules/FakeProgress.md",
+                },
+
+                {
                     text: "webApi",
                     link: "/type-doc/modules/webApi.md",
                 },

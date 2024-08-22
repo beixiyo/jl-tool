@@ -55,6 +55,7 @@ npm i @jl-org/tool
 <br />
 
 - [动画处理，类似 GSAP，但是会自动处理 CSS 单位](#动画处理)
+- [虚假进度条](#虚假进度条)
 <br />
 
 - [事件分发，如消息订阅、观察者模式](#事件分发)
@@ -1039,6 +1040,37 @@ export declare class ATo {
     /** 停止所有动画 */
     stop(): void;
 
+}
+```
+
+---
+
+
+## 虚假进度条
+
+```ts
+/**
+ * 虚假进度条
+ *
+ * @example
+ * ```ts
+ * const progress = new FakeProgress({ ... })
+ * console.log(progress.progress)
+ * ```
+ */
+export declare class FakeProgress {
+    timeConstant: number;
+    /** 进度，0 ~ 1 之间 */
+    progress: number;
+    onChange?: (progress: number) => void;
+
+    constructor(fakeProgressOpts?: FakeProgressOpts);
+
+    start(): void;
+    stop(): void;
+    end(): void;
+    
+    setProgress(value: number): void;
 }
 ```
 
