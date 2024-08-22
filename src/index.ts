@@ -9,6 +9,7 @@ export * from '@/tools/scheduleTask'
 export * from '@/tools/tools'
 
 export * from '@/tools/Clock'
+export * from '@/tools/FakeProgress'
 
 export * from '@/channel'
 export * from '@/shared'
