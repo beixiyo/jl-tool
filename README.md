@@ -1059,17 +1059,19 @@ export declare class ATo {
  * ```
  */
 export declare class FakeProgress {
+
     timeConstant: number;
+
     /** 进度，0 ~ 1 之间 */
     progress: number;
     onChange?: (progress: number) => void;
-
+    
     constructor(fakeProgressOpts?: FakeProgressOpts);
 
     start(): void;
     stop(): void;
     end(): void;
-    
+
     setProgress(value: number): void;
 }
 ```

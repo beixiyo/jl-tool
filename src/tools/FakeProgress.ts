@@ -9,7 +9,7 @@
  */
 export class FakeProgress {
 
-    timeConstant = 60000
+    timeConstant = 10000
     /** 进度，0 ~ 1 之间 */
     progress = 0
 
@@ -17,16 +17,20 @@ export class FakeProgress {
 
     private intervalId?: number
     private intervalFrequency = 100
-    private time = 0
+    private startTime = 0
+    private initialProgress = 0
 
     constructor(fakeProgressOpts: FakeProgressOpts = {}) {
         const {
             autoStart = true,
             timeConstant = 60000,
+            initialProgress = 0,
             onChange
         } = fakeProgressOpts
 
         this.timeConstant = timeConstant
+        this.progress = initialProgress
+        this.initialProgress = initialProgress
         this.onChange = onChange
 
         autoStart && this.start()
@@ -34,10 +38,17 @@ export class FakeProgress {
 
     start() {
         this.stop()
-        this.intervalId = window.setInterval(() => {
-            this.time += this.intervalFrequency
-            this.setProgress(1 - Math.exp(-1 * this.time / this.timeConstant))   
+        this.startTime = Date.now()
 
+        this.intervalId = window.setInterval(() => {
+            const elapsedTime = Date.now() - this.startTime
+            const deltaProgress = 1 - Math.exp(-elapsedTime / this.timeConstant * 2)
+            const nextProgress = this.initialProgress + (1 - this.initialProgress) * deltaProgress
+
+            // 更新进度，但确保不会回退
+            if (nextProgress > this.progress) {
+                this.setProgress(nextProgress)
+            }
         }, this.intervalFrequency)
     }
 
@@ -51,16 +62,19 @@ export class FakeProgress {
     }
 
     setProgress(value: number) {
+        value > 1 && (value = 1)
         this.progress = value
+        this.initialProgress = value
+
+        this.startTime = Date.now()
         this.onChange?.(value)
     }
 }
 
-
 export type FakeProgressOpts = {
     /**
-     * 时间系数
-     * @default 60000
+     * 时间系数，毫秒为单位
+     * @default 10000
      */
     timeConstant?: number
     /**
@@ -68,6 +82,11 @@ export type FakeProgressOpts = {
      * @default true
      */
     autoStart?: boolean
+    /**
+     * 初始进度
+     * @default 0
+     */
+    initialProgress?: number
 
     onChange?: (progress: number) => void
 }
