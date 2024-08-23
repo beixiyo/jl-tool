@@ -4,6 +4,7 @@ import { describe, expect, test, vi } from 'vitest'
 
 describe('数组工具测试', () => {
     const pageArr = Array.from({ length: 200 }, (_, i) => i + 1),
+        pageItemArr = Array.from({ length: 200 }, (_, i) => ({ data: i + 1 })),
         oneToTenArr = Array.from({ length: 10 }, (_, i) => i + 1)
 
     test('分页测试', () => {
@@ -32,6 +33,9 @@ describe('数组工具测试', () => {
     test('二分查找测试', () => {
         expect(binarySearch(pageArr, 50)).toEqual(49)
         expect(binarySearch(pageArr, 1000)).toEqual(-1)
+
+        expect(binarySearch(pageItemArr, 50, (item) => item.data)).toEqual(49)
+        expect(binarySearch(pageItemArr, 500, (item) => item.data)).toEqual(-1)
     })
 })
 

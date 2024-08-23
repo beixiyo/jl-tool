@@ -297,18 +297,25 @@ export function arrToChunk<T>(arr: T[], size: number): T[][] {
 
 /** 
  * 二分查找，必须是正序的数组
+ * @param arr 数组
+ * @param value 目标值
+ * @param getValFn 获取目标值的函数，可以从对象中取值
  * @returns 索引，找不到返回 -1
  */
-export function binarySearch<T>(arr: T[], target: T) {
+export function binarySearch<T>(
+    arr: T[],
+    value: number,
+    getValFn: (item: T) => number = (item: T) => item as number
+) {
     let left = 0,
         right = arr.length - 1
 
     while (left <= right) {
         const mid = Math.floor((left + right) / 2)
-        if (arr[mid] === target) {
+        if (getValFn(arr[mid]) === value) {
             return mid
         }
-        else if (arr[mid] < target) {
+        else if ((getValFn(arr[mid]) as any) < value) {
             left = mid + 1
         }
         else {

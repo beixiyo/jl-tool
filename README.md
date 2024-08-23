@@ -372,9 +372,12 @@ export declare function arrToChunk<T>(arr: T[], size: number): T[][];
 
 /**
  * 二分查找，必须是正序的数组
+ * @param arr 数组
+ * @param value 目标值
+ * @param getValFn 获取目标值的函数，可以从对象中取值
  * @returns 索引，找不到返回 -1
  */
-export declare function binarySearch<T>(arr: T[], target: T): number;
+export declare function binarySearch<T>(arr: T[], value: number, getValFn?: (item: T) => number): number;
 
 /**
  * 生成一个指定大小的类型化数组，默认 `Float32Array`，并用指定的生成函数填充
