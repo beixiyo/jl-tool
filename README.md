@@ -44,6 +44,7 @@ npm i @jl-org/tool
 
 - [DOM，如节流、防抖、鼠标坐标转换、CSS单位处理...](#dom)
 - [事件工具，如主题变化、双击键盘事件、全屏...](#事件工具)
+- [禁止调试](#禁止调试)
 <br />
 
 - [文件处理，如 Base64 和 Blob 互转、下载文件...](#文件处理)
@@ -726,6 +727,69 @@ export declare function doubleKeyDown<T, R>(key: string, fn: (this: T, e: Keyboa
  * @param dom 要全屏的元素
  */
 export declare const fullScreen: (dom?: HTMLElement) => void;
+```
+
+---
+
+
+## 禁止调试
+```ts
+/**
+ * 禁用调试
+ * @example
+ * ```ts
+ * disableDebug({
+ *   secret: '^sdf./][Cl32038df%……&*（）——+=',
+ * })
+ * ```
+ */
+export declare function disableDebug(debugOpts: DebugOpts): void;
+
+export type DebugOpts = {
+    /**
+     * 是否开启禁用调试，你可根据环境变量设置
+     * @default true
+     */
+    enable?: boolean;
+    secret: string;
+    /**
+     * 开发按键，例如传入 'd'，则按住 shift + d 键，可以输入密码打开调试
+     * @default 'd'
+     */
+    key?: string;
+    /**
+     * 是否禁用 F12 按键
+     * @default true
+     */
+    disableF12?: boolean;
+    /**
+     * 是否禁用右键菜单
+     * @default true
+     */
+    disableMenu?: boolean;
+    /**
+     * 输入框 label 文本
+     * @default '你想干什么？'
+     */
+    labelText?: string;
+    /**
+     * 输入框按钮文本
+     * @default '确定'
+     */
+    btnText?: string;
+    /**
+     * 输入框按钮样式的 style.cssText
+     */
+    btnStyleText?: string;
+    /**
+     * 外层样式的 style.cssText
+     */
+    wrapStyleText?: string;
+    /**
+     * input 样式的 style.cssText
+     */
+    inputStyleText?: string;
+}
 ```
 
 ---

@@ -65,6 +65,10 @@ export default defineConfig({
                 },
 
                 {
+                    text: "禁用调试",
+                    link: "/type-doc/modules/tools_disableDebug.md",
+                },
+                {
                     text: "DOM 处理",
                     link: "/type-doc/modules/tools_domTools.md",
                 },
