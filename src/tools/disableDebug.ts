@@ -142,12 +142,22 @@ function disableDebugAndContextMenu(disableF12 = true, disableMenu = true) {
  * 阻止调试
  */
 function preventDebug() {
+    const debug = new Function('debugger')
+    const getOut = () => location.href = 'about:blank'
+
     let id = setInterval(() => {
         const start = Date.now()
-        debugger
+        debug()
 
         if (Date.now() - start > 10) {
-            location.href = 'about:blank'
+            getOut()
+        }
+
+        if (
+            outerWidth - innerWidth > 250 ||
+            outerHeight - innerHeight > 250
+        ) {
+            getOut()
         }
     }, 1000)
 
