@@ -1,4 +1,4 @@
-import { colorAddOpacity, getColor, getColorArr, hexColorToRaw, hexToRGB, lightenColor } from '@/tools/colorTools'
+import { colorAddOpacity, getColor, getColorArr, getColorInfo, hexColorToRaw, hexToRGB, lightenColor } from '@/tools/colorTools'
 import { expect, test } from 'vitest'
 
 
@@ -47,4 +47,23 @@ test('颜色添加透明度', () => {
     expect(colorAddOpacity(blackRGBA, .5)).toBe('#00000080')
 
     expect(colorAddOpacity(blackRGBA)).toBe('#0000001a')
+})
+
+
+test('提取颜色', () => {
+    expect(getColorInfo('rgba(0, 0, 0, 1)'))
+        .toEqual({ r: 0, g: 0, b: 0, a: 1 })
+        
+    expect(getColorInfo('rgb(0, 0, 0, 1)'))
+        .toEqual({ r: 0, g: 0, b: 0, a: 1 })
+        
+    expect(getColorInfo('#fff'))
+        .toEqual({ r: 255, g: 255, b: 255, a: 1 })
+
+    expect(getColorInfo('#ffffff11'))
+        .toEqual({ r: 255, g: 255, b: 255, a: .07 })
+
+    expect(getColorInfo('#fff0'))
+        .toEqual({ r: 255, g: 255, b: 255, a: 0 })
+
 })
