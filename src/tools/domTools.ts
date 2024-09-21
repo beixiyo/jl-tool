@@ -165,12 +165,12 @@ export const getStyle = (el: HTMLElement, attr: string, pseudoElt?: string) => {
  * @param delay 延迟时间（ms），@default 200
  */
 export function throttle<R, T, P extends any[]>(
-    fn: (this: T, ...args: P) => R,
+    fn: (this: ThisType<T>, ...args: P) => R,
     delay = 200
 ) {
     let st = 0
 
-    return function (this: T, ...args: P) {
+    return function (this: ThisType<T>, ...args: P) {
         const now = Date.now()
         if (now - st > delay) {
             st = now
@@ -184,12 +184,12 @@ export function throttle<R, T, P extends any[]>(
  * @param delay 延迟时间（ms），@default 200
  */
 export function debounce<R, T, P extends any[]>(
-    fn: (this: T, ...args: P) => R,
+    fn: (this: ThisType<T>, ...args: P) => R,
     delay = 200
 ) {
     let id: number
 
-    return function (this: T, ...args: P) {
+    return function (this: ThisType<T>, ...args: P) {
         id && clearTimeout(id)
         id = window.setTimeout(() => {
             return fn.apply(this, args) as R
@@ -201,11 +201,11 @@ export function debounce<R, T, P extends any[]>(
  * 用 requestAnimationFrame 节流，只有一帧内执行完毕，才会继续执行
  */
 export function rafThrottle<R, T, P extends any[]>(
-    fn: (this: T, ...args: P) => R
+    fn: (this: ThisType<T>, ...args: P) => R
 ) {
     let lock = false
 
-    return function (this: T, ...args: P[]) {
+    return function (this: ThisType<T>, ...args: P) {
         if (lock) return
         lock = true
         
