@@ -657,6 +657,11 @@ export declare function throttle<R, T, P extends any[]>(fn: (this: T, ...args: P
  */
 export declare function debounce<R, T, P extends any[]>(fn: (this: T, ...args: P) => R, delay?: number): (this: T, ...args: P) => void;
 
+/**
+ * 用 requestAnimationFrame 节流，只有一帧内执行完毕，才会继续执行
+ */
+export declare function rafThrottle<R, T, P extends any[]>(fn: (this: T, ...args: P) => R): (this: T, ...args: P[]) => void;
+
 /** 设置 LocalStorage，无需手动序列化 */
 export declare function setLocalStorage(key: string, value: any): void;
 /** 获取 LocalStorage，无需手动反序列化 */
@@ -717,7 +722,7 @@ export declare function getCurTheme(): "dark" | "light";
  * @param options window.addEventListener 配置项
  * @returns 解绑事件函数
  */
-export declare function bindWinEvent(eventName: (keyof WindowEventMap) | (string & {}), listener: WinListenerParams[1], options?: WinListenerParams[2]): () => void;
+export declare function bindWinEvent<K extends keyof WindowEventMap & {}>(eventName: K, listener: WinListenerParams<K>[1], options?: WinListenerParams<K>[2]): () => void;
 
 /**
  * 判断页面所有图片是否加载完成

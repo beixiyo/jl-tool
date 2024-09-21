@@ -197,6 +197,25 @@ export function debounce<R, T, P extends any[]>(
     }
 }
 
+/**
+ * 用 requestAnimationFrame 节流，只有一帧内执行完毕，才会继续执行
+ */
+export function rafThrottle<R, T, P extends any[]>(
+    fn: (this: T, ...args: P) => R
+) {
+    let lock = false
+
+    return function (this: T, ...args: P[]) {
+        if (lock) return
+        lock = true
+        
+        window.requestAnimationFrame(() => {
+            fn.apply(this, args)
+            lock = false
+        })
+    }
+}
+
 /** 设置 LocalStorage，无需手动转 JSON */
 export function setLocalStorage(key: string, value: any) {
     return localStorage.setItem(key, JSON.stringify(value))

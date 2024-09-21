@@ -39,10 +39,10 @@ export function getCurTheme() {
  * @param options window.addEventListener 配置项
  * @returns 解绑事件函数
  */
-export function bindWinEvent(
-    eventName: (keyof WindowEventMap) | (string & {}),
-    listener: WinListenerParams[1],
-    options?: WinListenerParams[2]
+export function bindWinEvent<K extends keyof WindowEventMap>(
+    eventName: K,
+    listener: WinListenerParams<K>[1],
+    options?: WinListenerParams<K>[2]
 ) {
     window.addEventListener(eventName, listener, options)
     const unBind = () => {
@@ -165,7 +165,7 @@ export const fullScreen = (dom?: HTMLElement) => {
 }
 
 
-export type WinListenerParams = Parameters<typeof window.addEventListener>
+export type WinListenerParams<K extends keyof WindowEventMap> = Parameters<typeof window.addEventListener<K>>
 
 export type DoubleKeyDownOpts = {
     /**
