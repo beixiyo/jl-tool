@@ -200,15 +200,15 @@ export function debounce<R, T, P extends any[]>(
 /**
  * 用 requestAnimationFrame 节流，只有一帧内执行完毕，才会继续执行
  */
-export function rafThrottle<R, T, P extends any[]>(
-    fn: (this: ThisType<T>, ...args: P) => R
+export function rafThrottle(
+    fn: Function
 ) {
     let lock = false
 
-    return function (this: ThisType<T>, ...args: P) {
+    return function (...args: any[]) {
         if (lock) return
         lock = true
-        
+
         window.requestAnimationFrame(() => {
             fn.apply(this, args)
             lock = false
