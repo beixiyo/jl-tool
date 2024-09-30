@@ -823,9 +823,9 @@ export type DebugOpts = {
 /**
  * 用 `Blob` 下载
  * @param data 数据
- * @param filename 文件名
+ * @param fileName 文件名
  */
-export declare const downloadByData: (data: Blob, filename: string) => void;
+export declare const downloadByData: (data: Blob, fileName?: string) => void;
 
 /**
  * 用 url 下载
@@ -833,7 +833,7 @@ export declare const downloadByData: (data: Blob, filename: string) => void;
  * @param fileName 文件名
  * @param matchProto 是否匹配协议，比如把 http 匹配为当前站的协议。默认 false
  */
-export declare const downloadByUrl: (url: string, fileName: string, matchProto?: boolean) => Promise<void>;
+export declare const downloadByUrl: (url: string, fileName?: string, matchProto?: boolean) => Promise<void>;
 
 /**
  * Blob 转 Base64

@@ -3,13 +3,13 @@ import { matchProtocol } from './domTools'
 /**
  * 用 `Blob` 下载
  * @param data 数据
- * @param filename 文件名
+ * @param fileName 文件名
  */
-export const downloadByData = (data: Blob, filename: string) => {
+export const downloadByData = (data: Blob, fileName = '') => {
     const a = document.createElement("a")
 
     a.href = URL.createObjectURL(data)
-    a.download = filename
+    a.setAttribute('download', fileName)
     a.click()
     URL.revokeObjectURL(a.href)
 }
@@ -20,17 +20,15 @@ export const downloadByData = (data: Blob, filename: string) => {
  * @param fileName 文件名
  * @param matchProto 是否匹配协议，比如把 http 匹配为当前站的协议。默认 false
  */
-export const downloadByUrl = async (url: string, fileName: string, matchProto = false) => {
+export const downloadByUrl = async (url: string, fileName = '', matchProto = false) => {
     if (matchProto) {
         url = matchProtocol(url)
     }
     const a = document.createElement('a')
-    const blob = await fetch(url).then(res => res.blob())
 
-    a.href = URL.createObjectURL(blob)
-    a.download = fileName
+    a.href = url
+    a.setAttribute('download', fileName)
     a.click()
-    URL.revokeObjectURL(a.href)
 }
 
 

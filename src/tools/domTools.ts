@@ -88,7 +88,7 @@ export function calcDOMCoord(
 }
 
 
-/** 把`http`协议转换成当前站的 */
+/** 把 `http` 协议转换成当前协议 */
 export const matchProtocol = (url: string) => {
     const proto = window.location.protocol
     return url.replace(/(http:|https:)/, proto)
