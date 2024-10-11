@@ -4,7 +4,7 @@ import type { BaseKey } from '../types'
 /** 
  * 消息订阅与派发，订阅和派发指定消息
  */
-export class EventBus {
+export class EventBus<T extends BaseKey = BaseKey> {
     private readonly eventMap = new Map<BaseKey, Set<{
         once?: boolean
         fn: Function
@@ -15,7 +15,7 @@ export class EventBus {
      * @param eventName 事件名
      * @param fn 接收函数
      */
-    on(eventName: BaseKey, fn: Function) {
+    on(eventName: T, fn: Function) {
         this.subscribe(eventName, fn, false)
     }
 
@@ -24,7 +24,7 @@ export class EventBus {
      * @param eventName 事件名
      * @param fn 接收函数
      */
-    once(eventName: BaseKey, fn: Function) {
+    once(eventName: T, fn: Function) {
         this.subscribe(eventName, fn, true)
     }
 
@@ -33,7 +33,7 @@ export class EventBus {
      * @param eventName 事件名
      * @param args 不定参数
      */
-    emit(eventName: BaseKey, ...args: any[]) {
+    emit(eventName: T, ...args: any[]) {
         const fnSet = this.eventMap.get(eventName)
         if (!fnSet) {
             return
@@ -50,7 +50,7 @@ export class EventBus {
      * @param eventName 空字符或者不传代表重置所有
      * @param func 要取关的函数，为空取关该事件的所有函数
      */
-    off(eventName?: BaseKey, func?: Function) {
+    off(eventName?: T, func?: Function) {
         if (!eventName) {
             this.eventMap.clear()
             return
@@ -70,7 +70,7 @@ export class EventBus {
         })
     }
 
-    private subscribe(eventName: BaseKey, fn: Function, once = false) {
+    private subscribe(eventName: T, fn: Function, once = false) {
         const fnSet = this.eventMap.get(eventName)
         if (!fnSet) {
             this.eventMap.set(eventName, new Set())

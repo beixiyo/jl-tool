@@ -1174,45 +1174,34 @@ export declare class FakeProgress {
 /**
  * 消息订阅与派发，订阅和派发指定消息
  */
-export declare class EventBus {
+export declare class EventBus<T extends BaseKey = BaseKey> {
     /**
      * 订阅
      * @param eventName 事件名
      * @param fn 接收函数
      */
-    on(eventName: BaseKey, fn: Function): void;
+    on(eventName: T, fn: Function): void;
+
     /**
      * 订阅一次
      * @param eventName 事件名
      * @param fn 接收函数
      */
-    once(eventName: BaseKey, fn: Function): void;
+    once(eventName: T, fn: Function): void;
 
     /**
      * 发送指定事件，通知所有订阅者
      * @param eventName 事件名
      * @param args 不定参数
      */
-    emit(eventName: BaseKey, ...args: any[]): void;
+    emit(eventName: T, ...args: any[]): void;
+    
     /**
      * 取关
      * @param eventName 空字符或者不传代表重置所有
      * @param func 要取关的函数，为空取关该事件的所有函数
      */
-    off(eventName?: BaseKey, func?: Function): void;
-}
-
-/**
- * 观察者模式，批量通知观察者
- */
-export declare class Observer {
-
-    /** 添加观察者 */
-    addObserver(observer: IObserver): void;
-    /** 移除观察者 */
-    removeObserver(observer: IObserver): void;
-    /** 通知所有观察者 */
-    notify(data: any): void;
+    off(eventName?: T, func?: Function): void;
 }
 ```
 
