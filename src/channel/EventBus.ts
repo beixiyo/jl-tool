@@ -47,7 +47,7 @@ export class EventBus<T extends BaseKey = BaseKey> {
 
     /**
      * 取关
-     * @param eventName 空字符或者不传代表重置所有
+     * @param eventName 不传代表重置所有
      * @param func 要取关的函数，为空取关该事件的所有函数
      */
     off(eventName?: T, func?: Function) {
