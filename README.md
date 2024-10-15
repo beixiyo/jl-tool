@@ -734,8 +734,9 @@ export declare const judgeImgLoad: (el?: Document) => Promise<boolean>;
 /**
  * 判断图片的 src 是否可用，可用则返回图片
  * @param src 图片
+ * @param setCrossOrigin 是否设置 setAttribute('crossOrigin', 'anonymous')
  */
-export declare const getImg: (src: string) => Promise<false | HTMLImageElement>;
+export declare const getImg: (src: string, setCrossOrigin?: boolean) => Promise<false | HTMLImageElement>;
 
 /**
  * 返回一个双击键盘事件
@@ -1247,10 +1248,11 @@ export declare function cutImg<T extends TransferType = 'base64'>(img: HTMLImage
  * @param img 图片
  * @param resType 需要返回的文件格式，默认 `base64`
  * @param quality 压缩质量，默认 0.5
- * @param mimeType 图片类型，默认 `image/webp`。`image/jpeg | image/webp` 才能压缩，
+ * @param mimeType 图片类型，默认 `image/webp`。`image/jpeg | image/webp` 才能压缩
+ * @param setCrossOrigin 是否设置 setAttribute('crossOrigin', 'anonymous')
  * @returns base64 | blob
  */
-export declare function compressImg<T extends TransferType = 'base64'>(img: HTMLImageElement, resType?: T, quality?: number, mimeType?: 'image/jpeg' | 'image/webp'): HandleImgReturn<T>;
+export declare function compressImg<T extends TransferType = 'base64'>(img: HTMLImageElement, resType?: T, quality?: number, mimeType?: 'image/jpeg' | 'image/webp', setCrossOrigin?: boolean): HandleImgReturn<T>;
 
 /** 设置元素的 crossOrigin 为 anonymous */
 export declare function setElCrossOrigin(el: HTMLElement): void;

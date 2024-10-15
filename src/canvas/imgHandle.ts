@@ -22,8 +22,8 @@ export function cutImg<T extends TransferType = 'base64'>(
         quality,
     } = opts
     const { cvs, ctx } = createCvs(width, height)
-    
-    setElCrossOrigin(img)
+
+    opts.setCrossOrigin && setElCrossOrigin(img)
     ctx.drawImage(img, x, y, width, height, 0, 0, width, height)
     return getCvsImg<T>(cvs, resType, mimeType, quality)
 }
@@ -33,17 +33,19 @@ export function cutImg<T extends TransferType = 'base64'>(
  * @param img 图片
  * @param resType 需要返回的文件格式，默认 `base64`
  * @param quality 压缩质量，默认 0.5
- * @param mimeType 图片类型，默认 `image/webp`。`image/jpeg | image/webp` 才能压缩，
+ * @param mimeType 图片类型，默认 `image/webp`。`image/jpeg | image/webp` 才能压缩
+ * @param setCrossOrigin 是否设置 setAttribute('crossOrigin', 'anonymous')
  * @returns base64 | blob
  */
 export function compressImg<T extends TransferType = 'base64'>(
     img: HTMLImageElement,
     resType: T = 'base64' as T,
     quality = .5,
-    mimeType: 'image/jpeg' | 'image/webp' = 'image/webp'
+    mimeType: 'image/jpeg' | 'image/webp' = 'image/webp',
+    setCrossOrigin?: boolean
 ): HandleImgReturn<T> {
     const { cvs, ctx } = createCvs(img.width, img.height)
-    setElCrossOrigin(img)
+    setCrossOrigin && setElCrossOrigin(img)
     ctx.drawImage(img, 0, 0)
 
     return getCvsImg<T>(cvs, resType, mimeType, quality)
@@ -105,4 +107,6 @@ export type CutImgOpts = {
     mimeType?: string
     /** 图像质量，取值范围 0 ~ 1 */
     quality?: number
+    /** 是否设置 setAttribute('crossOrigin', 'anonymous') */
+    setCrossOrigin?: boolean
 }
