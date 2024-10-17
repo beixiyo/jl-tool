@@ -649,18 +649,18 @@ export declare const getStyle: (el: HTMLElement, attr: string, pseudoElt?: strin
  * 节流
  * @param delay 延迟时间（ms），@default 200
  */
-export declare function throttle<R, T, P extends any[]>(fn: (this: ThisType<T>, ...args: P) => R, delay?: number): (this: ThisType<T>, ...args: P) => R;
+export declare function throttle<R, P extends any[]>(fn: (...args: P) => R, delay?: number): (this: any, ...args: P) => R;
 
 /**
  * 防抖
  * @param delay 延迟时间（ms），@default 200
  */
-export declare function debounce<R, T, P extends any[]>(fn: (this: ThisType<T>, ...args: P) => R, delay?: number): (this: ThisType<T>, ...args: P) => void;
+export declare function debounce<R, P extends any[]>(fn: (...args: P) => R, delay?: number): (this: any, ...args: P) => void;
 
 /**
  * 用 requestAnimationFrame 节流，只有一帧内执行完毕，才会继续执行
  */
-export declare function rafThrottle<R, T, P extends any[]>(fn: (this: ThisType<T>, ...args: P) => R): (this: ThisType<T>, ...args: P) => void;
+export declare function rafThrottle(fn: Function): (...args: any[]) => void;
 
 /** 设置 LocalStorage，无需手动序列化 */
 export declare function setLocalStorage(key: string, value: any): void;
