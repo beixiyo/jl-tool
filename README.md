@@ -381,6 +381,16 @@ export declare function arrToChunk<T>(arr: T[], size: number): T[][];
 export declare function binarySearch<T>(arr: T[], value: number, getValFn?: (item: T) => number): number;
 
 /**
+ * 广度遍历
+ */
+export declare function bfsFind<T extends TreeNode>(arr: T[], condition: (value: T) => boolean): T | null;
+
+/**
+ * 深度遍历
+ */
+export declare function dfsFind<T extends TreeNode>(arr: T[], condition: (value: T) => boolean): T | null;
+
+/**
  * 生成一个指定大小的类型化数组，默认 `Float32Array`，并用指定的生成函数填充
  * @param size 数组的长度
  * @param genVal 一个生成数值的函数，用于填充数组

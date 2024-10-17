@@ -1,4 +1,4 @@
-import { arrIsEqual, arrToChunk, arrToTree, binarySearch, genArr, genTypedArr, getPageData, getSum, groupBy, searchTreeData } from '@/tools/arrTools'
+import { arrIsEqual, arrToChunk, arrToTree, binarySearch, genArr, genTypedArr, getPageData, getSum, groupBy, searchTreeData, bfsFind, dfsFind } from '@/tools/arrTools'
 import { describe, expect, test, vi } from 'vitest'
 
 
@@ -399,4 +399,46 @@ describe('数组内容比较', () => {
         expect(arrIsEqual([], [], true)).toBeTruthy()
         expect(arrIsEqual([], [], false)).toBeTruthy()
     })
+})
+
+
+// ================================================
+
+
+const input3 = [
+    {
+        value: 1,
+        children: [
+            {
+                value: 2,
+                children: [
+                    { value: 4, children: [] },
+                    { value: 5, children: [] },
+                ],
+            },
+            {
+                value: 3,
+                children: [
+                    { value: 6, children: [] },
+                    { value: 7, children: [] },
+                ],
+            },
+        ],
+    },
+]
+
+const findValue = (target: number) => (node: typeof input3[0]) => node.value === target
+
+test('广度遍历测试', () => {
+    expect(bfsFind(input3, findValue(1)).value).toBe(1)
+    expect(bfsFind(input3, findValue(4)).value).toBe(4)
+    expect(bfsFind(input3, findValue(7)).value).toBe(7)
+    expect(bfsFind(input3, findValue(100))).toBe(null)
+})
+
+test('深度遍历测试', () => {
+    expect(dfsFind(input3, findValue(1)).value).toBe(1)
+    expect(dfsFind(input3, findValue(4)).value).toBe(4)
+    expect(dfsFind(input3, findValue(7)).value).toBe(7)
+    expect(dfsFind(input3, findValue(100))).toBe(null)
 })

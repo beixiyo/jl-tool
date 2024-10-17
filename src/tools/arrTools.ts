@@ -2,6 +2,7 @@ import type { BaseKey, TreeData, TreeItem } from '@/types/base'
 import { deepClone } from './tools'
 import { isPureNum } from '@/shared/is'
 
+
 /**
  * 计算分页的当前数据
  * @param arr 全部数据的数组
@@ -295,6 +296,7 @@ export function arrToChunk<T>(arr: T[], size: number): T[][] {
     return _arr
 }
 
+
 /** 
  * 二分查找，必须是正序的数组
  * @param arr 数组
@@ -325,6 +327,64 @@ export function binarySearch<T>(
 
     return -1
 }
+
+/**
+ * 广度遍历
+ */
+export function bfsFind<T extends TreeNode>(
+    arr: T[],
+    condition: (value: T) => boolean
+): T | null {
+    /** 当前层的节点 */
+    let currentLevel: T[] = arr
+    /** 下一层的节点 */
+    let nextLevel: T[] = []
+
+    // 循环遍历每一层
+    while (currentLevel.length > 0) {
+        for (const item of currentLevel) {
+            if (condition(item)) {
+                return item
+            }
+
+            // 将当前节点的子节点添加到下一层
+            if (item.children && item.children.length > 0) {
+                nextLevel.push(...item.children)
+            }
+        }
+
+        // 当前层遍历完毕，进入下一层
+        currentLevel = nextLevel
+        nextLevel = []
+    }
+
+    return null
+}
+
+/**
+ * 深度遍历
+ */
+export function dfsFind<T extends TreeNode>(
+    arr: T[],
+    condition: (value: T) => boolean
+): T | null {
+    for (const item of arr) {
+        if (condition(item)) {
+            return item
+        }
+
+        // 如果当前节点有子节点，递归搜索子节点
+        if (item.children && item.children.length > 0) {
+            const result = dfsFind(item.children, condition)
+            if (result) {
+                return result
+            }
+        }
+    }
+
+    return null
+}
+
 
 /**
  * 生成一个指定大小的类型化数组，默认 `Float32Array`，并用指定的生成函数填充
@@ -414,4 +474,8 @@ export type SearchOpts = {
     key?: string
     /** 是否忽略大小写，@default true */
     ignoreCase?: boolean
+}
+
+export type TreeNode<T = any> = {
+    children?: T[]
 }
