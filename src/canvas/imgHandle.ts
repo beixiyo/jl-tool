@@ -24,18 +24,18 @@ export function cutImg<T extends TransferType = 'base64'>(
         quality,
     } = opts
 
-    const scaledWidth = width * scaleX;
-    const scaledHeight = height * scaleY;
+    const scaledWidth = width * scaleX
+    const scaledHeight = height * scaleY
 
-    const { cvs, ctx } = createCvs(scaledWidth, scaledHeight);
+    const { cvs, ctx } = createCvs(scaledWidth, scaledHeight)
 
-    opts.setCrossOrigin && setElCrossOrigin(img);
+    opts.setCrossOrigin && setElCrossOrigin(img)
 
     // 在绘制之前设置缩放
-    ctx.scale(scaleX, scaleY);
-    ctx.drawImage(img, x, y, width, height, 0, 0, width, height);
+    ctx.scale(scaleX, scaleY)
+    ctx.drawImage(img, x, y, width, height, 0, 0, width, height)
 
-    return getCvsImg<T>(cvs, resType, mimeType, quality);
+    return getCvsImg<T>(cvs, resType, mimeType, quality)
 }
 
 /**
@@ -44,7 +44,7 @@ export function cutImg<T extends TransferType = 'base64'>(
  * @param resType 需要返回的文件格式，默认 `base64`
  * @param quality 压缩质量，默认 0.5
  * @param mimeType 图片类型，默认 `image/webp`。`image/jpeg | image/webp` 才能压缩
- * @param setCrossOrigin 是否设置 setAttribute('crossOrigin', 'anonymous')
+ * @param setCrossOrigin 是否设置元素的 crossorigin 为 anonymous
  * @returns base64 | blob
  */
 export function compressImg<T extends TransferType = 'base64'>(
@@ -62,9 +62,9 @@ export function compressImg<T extends TransferType = 'base64'>(
 }
 
 
-/** 设置元素的 crossOrigin 为 anonymous */
+/** 设置元素的 crossorigin 为 anonymous */
 export function setElCrossOrigin(el: HTMLElement) {
-    el.setAttribute('crossOrigin', 'anonymous')
+    (el as any).crossorigin = 'anonymous'
 }
 
 /**
@@ -120,6 +120,6 @@ export type CutImgOpts = {
     mimeType?: string
     /** 图像质量，取值范围 0 ~ 1 */
     quality?: number
-    /** 是否设置 setAttribute('crossOrigin', 'anonymous') */
+    /** 是否设置元素的 crossorigin 为 anonymous */
     setCrossOrigin?: boolean
 }

@@ -77,12 +77,18 @@ export const judgeImgLoad = (el = document): Promise<boolean> => {
 /**
  * 判断图片的 src 是否可用，可用则返回图片
  * @param src 图片
- * @param setCrossOrigin 是否设置 setAttribute('crossOrigin', 'anonymous')
+ * @param setCrossOrigin 是否设置元素的 crossorigin 为 anonymous
+ * @param setImg 图片加载前执行的回调函数
  */
-export const getImg = (src: string, setCrossOrigin?: boolean) => {
+export const getImg = (
+    src: string,
+    setCrossOrigin?: boolean,
+    setImg?: (img: HTMLImageElement) => void
+) => {
     const img = new Image()
     img.src = src
     setCrossOrigin && setElCrossOrigin(img)
+    setImg?.(img)
 
     return new Promise<false | HTMLImageElement>((resolve) => {
         img.onload = () => resolve(img)
