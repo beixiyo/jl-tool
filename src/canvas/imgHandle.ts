@@ -62,9 +62,10 @@ export function compressImg<T extends TransferType = 'base64'>(
 }
 
 
-/** 设置元素的 crossorigin 为 anonymous */
+/** 设置元素的 crossorigin 和 crossOrigin 为 anonymous */
 export function setElCrossOrigin(el: HTMLElement) {
-    (el as any).crossorigin = 'anonymous'
+    (el as any).crossorigin = 'anonymous';
+    (el as any).crossOrigin = 'anonymous';
 }
 
 /**
