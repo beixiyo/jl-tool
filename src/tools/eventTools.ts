@@ -1,6 +1,3 @@
-import { setElCrossOrigin } from '@/canvas/imgHandle'
-
-
 /**
  * 监听用户主题变化
  * @param onLight 用户切换到浅色模式时触发
@@ -8,28 +5,28 @@ import { setElCrossOrigin } from '@/canvas/imgHandle'
  * @returns 解绑事件函数
  */
 export function onChangeTheme(onLight: VoidFunction, onDark: VoidFunction) {
-    const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-    const handleThemeChange = (e: MediaQueryListEvent) => {
-        e.matches
-            ? onDark()
-            : onLight()
-    }
+  const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+  const handleThemeChange = (e: MediaQueryListEvent) => {
+    e.matches
+      ? onDark()
+      : onLight()
+  }
 
-    darkModeMediaQuery.addEventListener('change', handleThemeChange)
+  darkModeMediaQuery.addEventListener('change', handleThemeChange)
 
-    return () => {
-        darkModeMediaQuery.removeEventListener('change', handleThemeChange)
-    }
+  return () => {
+    darkModeMediaQuery.removeEventListener('change', handleThemeChange)
+  }
 }
 
 /**
  * 获取当前主题
  */
 export function getCurTheme() {
-    const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-    return darkModeMediaQuery.matches
-        ? 'dark'
-        : 'light'
+  const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+  return darkModeMediaQuery.matches
+    ? 'dark'
+    : 'light'
 }
 
 /**
@@ -40,16 +37,16 @@ export function getCurTheme() {
  * @returns 解绑事件函数
  */
 export function bindWinEvent<K extends keyof WindowEventMap>(
-    eventName: K,
-    listener: WinListenerParams<K>[1],
-    options?: WinListenerParams<K>[2]
+  eventName: K,
+  listener: WinListenerParams<K>[1],
+  options?: WinListenerParams<K>[2]
 ) {
-    window.addEventListener(eventName, listener, options)
-    const unBind = () => {
-        window.removeEventListener(eventName, listener, options)
-    }
+  window.addEventListener(eventName, listener, options)
+  const unBind = () => {
+    window.removeEventListener(eventName, listener, options)
+  }
 
-    return unBind
+  return unBind
 }
 
 /**
@@ -58,42 +55,39 @@ export function bindWinEvent<K extends keyof WindowEventMap>(
  * @returns 是否加载完成
  */
 export const judgeImgLoad = (el = document): Promise<boolean> => {
-    const imgArr = el.querySelectorAll('img')
+  const imgArr = el.querySelectorAll('img')
 
-    const promArr = Array.from(imgArr).map(
-        img => new Promise((resolve, reject) => {
-            img.onload = resolve
-            img.onerror = reject
-        })
-    )
-
-    return new Promise((resolve) => {
-        Promise.all(promArr)
-            .then(() => resolve(true))
-            .catch(() => resolve(false))
+  const promArr = Array.from(imgArr).map(
+    img => new Promise((resolve, reject) => {
+      img.onload = resolve
+      img.onerror = reject
     })
+  )
+
+  return new Promise((resolve) => {
+    Promise.all(promArr)
+      .then(() => resolve(true))
+      .catch(() => resolve(false))
+  })
 }
 
 /**
  * 判断图片的 src 是否可用，可用则返回图片
  * @param src 图片
- * @param setCrossOrigin 是否设置元素的 crossorigin 为 anonymous
  * @param setImg 图片加载前执行的回调函数
  */
 export const getImg = (
-    src: string,
-    setCrossOrigin?: boolean,
-    setImg?: (img: HTMLImageElement) => void
+  src: string,
+  setImg?: (img: HTMLImageElement) => void
 ) => {
-    const img = new Image()
-    img.src = src
-    setCrossOrigin && setElCrossOrigin(img)
-    setImg?.(img)
+  const img = new Image()
+  img.src = src
+  setImg?.(img)
 
-    return new Promise<false | HTMLImageElement>((resolve) => {
-        img.onload = () => resolve(img)
-        img.onerror = () => resolve(false)
-    })
+  return new Promise<false | HTMLImageElement>((resolve) => {
+    img.onload = () => resolve(img)
+    img.onerror = () => resolve(false)
+  })
 }
 
 /**
@@ -103,32 +97,32 @@ export const getImg = (
  * @param gap 间隔时间，默认 150
  */
 export function doubleKeyDown<T, R>(
-    key: string,
-    fn: (this: T, e: KeyboardEvent, ...args: any[]) => R,
-    gap = 150,
-    {
-        triggerKey = 'key'
-    }: DoubleKeyDownOpts = {}
+  key: string,
+  fn: (this: T, e: KeyboardEvent, ...args: any[]) => R,
+  gap = 150,
+  {
+    triggerKey = 'key'
+  }: DoubleKeyDownOpts = {}
 ) {
+  /**
+   * 调用函数记录初始时间，你不可能立即点击
+   * 所以下面的判断进不去
+   */
+  let st = Date.now()
+
+  return (e: KeyboardEvent) => {
+    if (e[triggerKey] !== key) return
+
+    const now = Date.now()
     /**
-     * 调用函数记录初始时间，你不可能立即点击
-     * 所以下面的判断进不去
+     * 第一次点击肯定超过了间隔时间，所以重新赋值 st
+     * 下次按下按键，只要在间隔时间内就算双击
      */
-    let st = Date.now()
-
-    return (e: KeyboardEvent) => {
-        if (e[triggerKey] !== key) return
-
-        const now = Date.now()
-        /**
-         * 第一次点击肯定超过了间隔时间，所以重新赋值 st
-         * 下次按下按键，只要在间隔时间内就算双击
-         */
-        if (now - st <= gap) {
-            return fn.call(this, e) as R
-        }
-        st = now
+    if (now - st <= gap) {
+      return fn.call(this, e) as R
     }
+    st = now
+  }
 }
 
 /** 
@@ -136,48 +130,48 @@ export function doubleKeyDown<T, R>(
  * @param dom 要全屏的元素
  */
 export const fullScreen = (dom?: HTMLElement) => {
-    const
-        doc = document as any,
-        root = document.documentElement as any,
-        rfs =
-            root.requestFullscreen ||
-            root.webkitRequestFullscreen ||
-            root.mozRequestFullScreen ||
-            root.msRequestFullscreen,
-        efs =
-            doc.exitFullscreen ||
-            doc.webkitCancelFullScreen ||
-            doc.webkitExitFullscreen ||
-            doc.mozCancelFullScreen ||
-            doc.msExitFullscreen
+  const
+    doc = document as any,
+    root = document.documentElement as any,
+    rfs =
+      root.requestFullscreen ||
+      root.webkitRequestFullscreen ||
+      root.mozRequestFullScreen ||
+      root.msRequestFullscreen,
+    efs =
+      doc.exitFullscreen ||
+      doc.webkitCancelFullScreen ||
+      doc.webkitExitFullscreen ||
+      doc.mozCancelFullScreen ||
+      doc.msExitFullscreen
 
-    if (!rfs) return
+  if (!rfs) return
 
-    const isFull =
-        doc.fullscreenElement ||
-        doc.webkitFullscreenElement ||
-        doc.mozFullScreenElement ||
-        doc.msFullscreenElement
+  const isFull =
+    doc.fullscreenElement ||
+    doc.webkitFullscreenElement ||
+    doc.mozFullScreenElement ||
+    doc.msFullscreenElement
 
-    if (dom) {
-        isFull
-            ? efs.call(dom)
-            : rfs.call(dom)
-    }
-    else {
-        isFull
-            ? efs.call(root)
-            : rfs.call(root)
-    }
+  if (dom) {
+    isFull
+      ? efs.call(dom)
+      : rfs.call(dom)
+  }
+  else {
+    isFull
+      ? efs.call(root)
+      : rfs.call(root)
+  }
 }
 
 
 export type WinListenerParams<K extends keyof WindowEventMap> = Parameters<typeof window.addEventListener<K>>
 
 export type DoubleKeyDownOpts = {
-    /**
-     * 触发的按键（KeyboardEvent.key）
-     * @default key
-     */
-    triggerKey?: keyof KeyboardEvent
+  /**
+   * 触发的按键（KeyboardEvent.key）
+   * @default key
+   */
+  triggerKey?: keyof KeyboardEvent
 }
