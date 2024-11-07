@@ -69,6 +69,9 @@ export function autoUpdate(opts: AutoUpdateOpts = {}) {
       return false
     }
 
+    if (scriptArr.length !== scriptList.length || styleArr.length !== styleList.length)
+      return true
+
     for (let i = 0; i < scriptArr.length; i++) {
       if (scriptArr[i] !== scriptList[i]) return true
     }
