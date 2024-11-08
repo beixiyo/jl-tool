@@ -1,12 +1,9 @@
-const CONFIRM_GAP = 1000 * 60 * 5,
-  REFRESH_GAP = 1000 * 10
-
-
-/** 检查页面更新 */
+/** 
+ * 检查页面更新
+ */
 export function autoUpdate(opts: AutoUpdateOpts = {}) {
-  let timer: number,
-    scriptArr: string[] = [],
-    styleArr: string[] = []
+  const CONFIRM_GAP = 1000 * 60 * 5,
+    REFRESH_GAP = 1000 * 10
 
   const {
     needUpate = () => true,
@@ -14,9 +11,15 @@ export function autoUpdate(opts: AutoUpdateOpts = {}) {
     refreshGap = REFRESH_GAP
   } = opts
 
+  if (!needUpate()) return
+
+  let timer: number,
+    scriptArr: string[] = [],
+    styleArr: string[] = []
+
   timer = window.setInterval(async () => {
     const flag = await hasChange()
-    if (flag && needUpate()) {
+    if (flag) {
       const userConfirm = window.confirm('页面有更新，是否刷新？')
       if (userConfirm) {
         window.location.reload()
@@ -24,7 +27,7 @@ export function autoUpdate(opts: AutoUpdateOpts = {}) {
       // 若用户点击不更新 则一定时间后 再重新轮询
       else {
         clear()
-        setTimeout(autoUpdate, confirmGap)
+        setTimeout(() => autoUpdate(opts), confirmGap)
       }
     }
   }, refreshGap)
@@ -93,8 +96,8 @@ export function autoUpdate(opts: AutoUpdateOpts = {}) {
 export type AutoUpdateOpts = {
   /** 你可以根据环境变量决定是否自动检查更新 */
   needUpate?: () => boolean
-  /** 再次询问是否更新的间隔，默认 5 分钟 */
+  /** 再次询问是否更新的间隔毫秒，默认 5 分钟 */
   confirmGap?: number
-  /** 检查更新间隔，默认 10 秒 */
+  /** 检查更新间隔毫秒，默认 10 秒 */
   refreshGap?: number
 }
