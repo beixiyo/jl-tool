@@ -1,22 +1,22 @@
 {
-    "include": [
-        "test/**/*",
-        "__DOM_TEST__/**/*"
+  "include": [
+    "test/**/*",
+    "__DOM_TEST__/**/*"
+  ],
+  "compilerOptions": {
+    "lib": [
+      "ESNext",
+      "DOM",
+      "DOM.Iterable"
     ],
-    "compilerOptions": {
-        "lib": [
-            "ESNext",
-            "DOM",
-            "DOM.Iterable"
-        ],
-        "baseUrl": ".",
-        "paths": {
-            "@/*": [
-                "../src/*"
-            ],
-            "@deb": [
-                "../src/index"
-            ],
-        },
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "../src/*"
+      ],
+      "@deb": [
+        "../src/index"
+      ],
     }
+  }
 }

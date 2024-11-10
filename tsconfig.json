@@ -1,61 +1,55 @@
 {
-    "compilerOptions": {
-        "target": "ESNext",
-        "module": "ESNext",
-        "moduleResolution": "Bundler",
-        "emitDeclarationOnly": true,
-        "lib": [
-            "ESNext",
-            "DOM",
-            "DOM.Iterable"
-        ],
-        "baseUrl": ".",
-        "paths": {
-            "@/*": [
-                "./src/*"
-            ],
-        },
-        "outDir": "dist",
-        "declaration": true,
-        "declarationDir": "./dist/typings",
-        "skipLibCheck": true,
-    },
-    "include": [
-        "src/**/*.ts",
-        "src/**/*.d.ts",
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "emitDeclarationOnly": true,
+    "lib": [
+      "ESNext",
+      "DOM",
+      "DOM.Iterable"
     ],
-    "typedocOptions": {
-        "entryPoints": [
-            "src/animation/index.ts",
-            "src/canvas/index.ts",
-            "src/channel/index.ts",
-            
-            "src/dataStructure/index.ts",
-            "src/net/index.ts",
-            "src/plugins/index.ts",
-            "src/shared/index.ts",
-
-            "src/tools/arrTools.ts",
-            "src/tools/Clock.ts",
-
-            "src/tools/colorTools.ts",
-            "src/tools/dateTools.ts",
-
-            "src/tools/disableDebug.ts",
-            "src/tools/domTools.ts",
-            "src/tools/eventTools.ts",
-
-            "src/tools/fileTools.ts",
-            "src/tools/scheduleTask.ts",
-            "src/tools/tools.ts",
-            "src/tools/FakeProgress.ts",
-
-            "src/webApi/index.ts",
-        ],
-        "out": "./docs/type-doc",
-        "plugin": [
-            "typedoc-plugin-markdown"
-        ],
-        "excludePrivate": true
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ],
     },
+    "outDir": "dist",
+    "declaration": true,
+    "declarationDir": "./dist/typings",
+    "skipLibCheck": true,
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+  ],
+  "typedocOptions": {
+    "entryPoints": [
+      "src/animation/index.ts",
+      "src/canvas/index.ts",
+      "src/channel/index.ts",
+      "src/dataStructure/index.ts",
+      "src/net/index.ts",
+      "src/plugins/index.ts",
+      "src/shared/index.ts",
+      "src/tools/arrTools.ts",
+      "src/tools/Clock.ts",
+      "src/tools/colorTools.ts",
+      "src/tools/dateTools.ts",
+      "src/tools/disableDebug.ts",
+      "src/tools/domTools.ts",
+      "src/tools/eventTools.ts",
+      "src/tools/fileTools.ts",
+      "src/tools/scheduleTask.ts",
+      "src/tools/tools.ts",
+      "src/tools/FakeProgress.ts",
+      "src/webApi/index.ts",
+    ],
+    "out": "./docs/type-doc",
+    "plugin": [
+      "typedoc-plugin-markdown"
+    ],
+    "excludePrivate": true
+  },
 }

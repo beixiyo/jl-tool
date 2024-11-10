@@ -5,19 +5,19 @@ import { judgeImgLoad } from './eventTools'
 
 /** 获取浏览器内容宽度 */
 export function getWinWidth() {
-    return isNode
-        ? 0
-        : window.innerWidth ||
-        document.documentElement.clientWidth ||
-        document.body.clientWidth
+  return isNode
+    ? 0
+    : window.innerWidth ||
+    document.documentElement.clientWidth ||
+    document.body.clientWidth
 }
 /** 获取浏览器内容高度 */
 export function getWinHeight() {
-    return isNode
-        ? 0
-        : window.innerHeight ||
-        document.documentElement.clientHeight ||
-        document.body.clientHeight
+  return isNode
+    ? 0
+    : window.innerHeight ||
+    document.documentElement.clientHeight ||
+    document.body.clientHeight
 }
 
 
@@ -27,10 +27,10 @@ export function getWinHeight() {
  * @param deg 角度
  */
 export function calcCoord(r: number, deg: number) {
-    const x = Math.sin(deg * DEG_1) * r,
-        // 数学坐标系和图像坐标系相反
-        y = -Math.cos(deg * DEG_1) * r
-    return [x, y] as const
+  const x = Math.sin(deg * DEG_1) * r,
+    // 数学坐标系和图像坐标系相反
+    y = -Math.cos(deg * DEG_1) * r
+  return [x, y] as const
 }
 
 /**
@@ -56,42 +56,42 @@ export function calcCoord(r: number, deg: number) {
  * @returns 返回一个包含 x 和 y 坐标的数组
  */
 export function calcDOMCoord(
-    point: Pick<MouseEvent, 'clientX' | 'clientY'>,
-    width = getWinWidth(),
-    height = getWinHeight(),
-    range: number | false = 1,
-    isReverse = false,
+  point: Pick<MouseEvent, 'clientX' | 'clientY'>,
+  width = getWinWidth(),
+  height = getWinHeight(),
+  range: number | false = 1,
+  isReverse = false,
 ) {
-    const { clientX, clientY } = point
+  const { clientX, clientY } = point
 
-    let x: number,
-        y: number
+  let x: number,
+    y: number
 
-    if (range === false) {
-        x = clientX / width
-        y = -clientY / height + 1
+  if (range === false) {
+    x = clientX / width
+    y = -clientY / height + 1
 
-        if (isReverse) {
-            y = clientY / height
-        }
+    if (isReverse) {
+      y = clientY / height
     }
-    else {
-        x = (clientX / width) * range * 2 - range
-        y = -(clientY / height) * range * 2 + range
+  }
+  else {
+    x = (clientX / width) * range * 2 - range
+    y = -(clientY / height) * range * 2 + range
 
-        if (isReverse) {
-            y = (clientY / height) * range * 2 - range
-        }
+    if (isReverse) {
+      y = (clientY / height) * range * 2 - range
     }
+  }
 
-    return [x, y] as const
+  return [x, y] as const
 }
 
 
 /** 把 `http` 协议转换成当前协议 */
 export const matchProtocol = (url: string) => {
-    const proto = window.location.protocol
-    return url.replace(/(http:|https:)/, proto)
+  const proto = window.location.protocol
+  return url.replace(/(http:|https:)/, proto)
 }
 
 /**
@@ -101,28 +101,28 @@ export const matchProtocol = (url: string) => {
  * @param type 根据什么缩放 默认是宽度
  */
 export const adaptPx = (
-    px: number | string,
-    designSize = 1920,
-    type: 'height' | 'width' = 'width'
+  px: number | string,
+  designSize = 1920,
+  type: 'height' | 'width' = 'width'
 ) => {
-    if (['%', 'vw', 'vh'].includes(String(px))) {
-        return px as string
-    }
+  if (['%', 'vw', 'vh'].includes(String(px))) {
+    return px as string
+  }
 
-    px = parseFloat(String(px))
-    const size = type === 'width'
-        ? getWinWidth()
-        : getWinHeight()
+  px = parseFloat(String(px))
+  const size = type === 'width'
+    ? getWinWidth()
+    : getWinHeight()
 
-    return `${size / designSize * px}px`
+  return `${size / designSize * px}px`
 }
 
 /** 处理 `CSS` 单位，如果可以转换成数字，则添加 px */
 export function handleCssUnit(value: string | number) {
-    if (isPureNum(value)) {
-        return value + 'px'
-    }
-    return value
+  if (isPureNum(value)) {
+    return value + 'px'
+  }
+  return value
 }
 
 /**
@@ -133,16 +133,16 @@ export function handleCssUnit(value: string | number) {
  * @returns 转换后的值 带有指定单位
  */
 export function pxToVw(
-    px: number | string,
-    designSize = 1920,
-    unit: 'vw' | 'vh' = 'vw'
+  px: number | string,
+  designSize = 1920,
+  unit: 'vw' | 'vh' = 'vw'
 ) {
-    if (['%', 'vw', 'vh'].includes(String(px))) {
-        return px
-    }
+  if (['%', 'vw', 'vh'].includes(String(px))) {
+    return px
+  }
 
-    px = parseFloat(String(px))
-    return (px / designSize) * 100 + unit
+  px = parseFloat(String(px))
+  return (px / designSize) * 100 + unit
 }
 
 /**
@@ -152,12 +152,32 @@ export function pxToVw(
  * @param pseudoElt 伪元素
  */
 export const getStyle = (el: HTMLElement, attr: string, pseudoElt?: string) => {
-    const val = window.getComputedStyle(el, pseudoElt).getPropertyValue(attr)
+  const val = window.getComputedStyle(el, pseudoElt).getPropertyValue(attr)
 
-    if (val.endsWith('px')) {
-        return parseFloat(val)
-    }
-    return val
+  if (val.endsWith('px')) {
+    return parseFloat(val)
+  }
+  return val
+}
+
+
+/**
+ * 判断图片的 src 是否可用，可用则返回图片
+ * @param src 图片
+ * @param setImg 图片加载前执行的回调函数
+ */
+export const getImg = (
+  src: string,
+  setImg?: (img: HTMLImageElement) => void
+) => {
+  const img = new Image()
+  img.src = src
+  setImg?.(img)
+
+  return new Promise<false | HTMLImageElement>((resolve) => {
+    img.onload = () => resolve(img)
+    img.onerror = () => resolve(false)
+  })
 }
 
 /**
@@ -165,18 +185,18 @@ export const getStyle = (el: HTMLElement, attr: string, pseudoElt?: string) => {
  * @param delay 延迟时间（ms），@default 200
  */
 export function throttle<R, P extends any[]>(
-    fn: (...args: P) => R,
-    delay = 200
+  fn: (...args: P) => R,
+  delay = 200
 ) {
-    let st = 0
+  let st = 0
 
-    return function (this: any, ...args: P) {
-        const now = Date.now()
-        if (now - st > delay) {
-            st = now
-            return fn.apply(this, args) as R
-        }
+  return function (this: any, ...args: P) {
+    const now = Date.now()
+    if (now - st > delay) {
+      st = now
+      return fn.apply(this, args) as R
     }
+  }
 }
 
 /**
@@ -184,50 +204,50 @@ export function throttle<R, P extends any[]>(
  * @param delay 延迟时间（ms），@default 200
  */
 export function debounce<R, P extends any[]>(
-    fn: (...args: P) => R,
-    delay = 200
+  fn: (...args: P) => R,
+  delay = 200
 ) {
-    let id: number
+  let id: number
 
-    return function (this: any, ...args: P) {
-        id && clearTimeout(id)
-        id = window.setTimeout(() => {
-            return fn.apply(this, args) as R
-        }, delay)
-    }
+  return function (this: any, ...args: P) {
+    id && clearTimeout(id)
+    id = window.setTimeout(() => {
+      return fn.apply(this, args) as R
+    }, delay)
+  }
 }
 
 /**
  * 用 requestAnimationFrame 节流，只有一帧内执行完毕，才会继续执行
  */
 export function rafThrottle(
-    fn: Function
+  fn: Function
 ) {
-    let lock = false
+  let lock = false
 
-    return function (...args: any[]) {
-        if (lock) return
-        lock = true
+  return function (...args: any[]) {
+    if (lock) return
+    lock = true
 
-        window.requestAnimationFrame(() => {
-            fn.apply(this, args)
-            lock = false
-        })
-    }
+    window.requestAnimationFrame(() => {
+      fn.apply(this, args)
+      lock = false
+    })
+  }
 }
 
 /** 设置 LocalStorage，无需手动转 JSON */
 export function setLocalStorage(key: string, value: any) {
-    return localStorage.setItem(key, JSON.stringify(value))
+  return localStorage.setItem(key, JSON.stringify(value))
 }
 /** 获取 LocalStorage，无需手动解析 */
 export function getLocalStorage<T>(key: string): T | null {
-    const item = localStorage.getItem(key)
-    if (item === 'undefined') {
-        return null
-    }
+  const item = localStorage.getItem(key)
+  if (item === 'undefined') {
+    return null
+  }
 
-    return JSON.parse(item) as T
+  return JSON.parse(item) as T
 }
 
 /** 获取选中的文本 */
@@ -245,21 +265,21 @@ export const isToBottom = () => getWinHeight() + window.scrollY >= document.docu
 
 /** 获取所有样式表 */
 export const getAllStyle = async () => {
-    const styleTxtArr = Array.from(document.querySelectorAll('style'))
-        .map((item: HTMLElement) => item.outerHTML)
+  const styleTxtArr = Array.from(document.querySelectorAll('style'))
+    .map((item: HTMLElement) => item.outerHTML)
 
-    const linkPromiseArr = Array.from(document.querySelectorAll('link[rel="stylesheet"]'))
-        .map((item: HTMLLinkElement) => fetch(item.href).then(res => res.text()))
+  const linkPromiseArr = Array.from(document.querySelectorAll('link[rel="stylesheet"]'))
+    .map((item: HTMLLinkElement) => fetch(item.href).then(res => res.text()))
 
-    try {
-        const linkArr = await Promise.all(linkPromiseArr)
-        const linkToStyleArr = linkArr.map(i => `<style>${i}</style>`)
+  try {
+    const linkArr = await Promise.all(linkPromiseArr)
+    const linkToStyleArr = linkArr.map(i => `<style>${i}</style>`)
 
-        return styleTxtArr.concat(linkToStyleArr).join('')
-    }
-    catch (error) {
-        console.error(`getAllStyle：数据加载失败，${error}`)
-    }
+    return styleTxtArr.concat(linkToStyleArr).join('')
+  }
+  catch (error) {
+    console.error(`getAllStyle：数据加载失败，${error}`)
+  }
 }
 
 /**
@@ -269,35 +289,35 @@ export const getAllStyle = async () => {
  * @param href 打开的链接 默认使用`location.href`
  */
 export const print: Print = (
-    el: string | HTMLElement,
-    styleStr: string | undefined,
-    href = location.href
+  el: string | HTMLElement,
+  styleStr: string | undefined,
+  href = location.href
 ) => {
-    if (window.location.protocol === 'file:') return console.warn('请启动服务运行; please start server')
+  if (window.location.protocol === 'file:') return console.warn('请启动服务运行; please start server')
 
-    const win = window.open(href, '_blank')
-    const doc = win?.document
-    if (!doc) return
+  const win = window.open(href, '_blank')
+  const doc = win?.document
+  if (!doc) return
 
-    const _elStr = typeof el === 'string'
-        ? el
-        : el.outerHTML
+  const _elStr = typeof el === 'string'
+    ? el
+    : el.outerHTML
 
-    doc.head.innerHTML = styleStr ?? ''
-    doc.body.innerHTML = _elStr
-    doc.body.style.padding = '10px'
+  doc.head.innerHTML = styleStr ?? ''
+  doc.body.innerHTML = _elStr
+  doc.body.style.padding = '10px'
 
-    // 定时器可以解决`window`因为开启深色模式打印的bug
-    setTimeout(async () => {
-        const loadDone = await judgeImgLoad(doc)
+  // 定时器可以解决`window`因为开启深色模式打印的bug
+  setTimeout(async () => {
+    const loadDone = await judgeImgLoad(doc)
 
-        if (!loadDone) {
-            win.confirm('图片加载失败，是否继续打印') && win.print()
-            return
-        }
+    if (!loadDone) {
+      win.confirm('图片加载失败，是否继续打印') && win.print()
+      return
+    }
 
-        win.print()
-    })
+    win.print()
+  })
 }
 
 /**
@@ -305,35 +325,35 @@ export const print: Print = (
  * @param el 当前元素
  */
 export const setParentOverflow = (el: HTMLElement) => {
-    const parent = el.parentNode as HTMLElement,
-        overflow = window.getComputedStyle(parent).overflow
+  const parent = el.parentNode as HTMLElement,
+    overflow = window.getComputedStyle(parent).overflow
 
-    if (overflow !== 'hidden') {
-        parent.style.overflow = 'hidden'
-    }
+  if (overflow !== 'hidden') {
+    parent.style.overflow = 'hidden'
+  }
 }
 
 /** 解析出`HTML`的所有字符串 */
 export const HTMLToStr = (HTMLStr: string) => {
-    const p = new DOMParser()
-    const doc = p.parseFromString(HTMLStr, 'text/html')
-    return doc.body.textContent
+  const p = new DOMParser()
+  const doc = p.parseFromString(HTMLStr, 'text/html')
+  return doc.body.textContent
 }
 
 
 interface Print {
-    /**
-     * 打印 必须启动一个服务器才能用; ***建议使用事件交互，如按钮点击，否则可能打开多个窗口***
-     * @param el 要打印的元素
-     * @param styleStr 样式 建议使用`getAllStyle`函数，可不传
-     * @param href 打开的链接 默认使用`location.href`
-     */
-    (el: HTMLElement, styleStr: string | undefined, href?: string): void
-    /**
-     * 打印 必须启动一个服务器才能用; ***建议使用事件交互，如按钮点击，否则可能打开多个窗口***
-     * @param elStr 要打印的元素字符串
-     * @param styleStr 样式 建议使用`getAllStyle`函数，可不传
-     * @param href 打开的链接 默认使用`location.href`
-     */
-    (elStr: string, styleStr: string | undefined, href?: string): void
+  /**
+   * 打印 必须启动一个服务器才能用; ***建议使用事件交互，如按钮点击，否则可能打开多个窗口***
+   * @param el 要打印的元素
+   * @param styleStr 样式 建议使用`getAllStyle`函数，可不传
+   * @param href 打开的链接 默认使用`location.href`
+   */
+  (el: HTMLElement, styleStr: string | undefined, href?: string): void
+  /**
+   * 打印 必须启动一个服务器才能用; ***建议使用事件交互，如按钮点击，否则可能打开多个窗口***
+   * @param elStr 要打印的元素字符串
+   * @param styleStr 样式 建议使用`getAllStyle`函数，可不传
+   * @param href 打开的链接 默认使用`location.href`
+   */
+  (elStr: string, styleStr: string | undefined, href?: string): void
 }

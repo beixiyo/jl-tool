@@ -10,7 +10,7 @@ import { isPureNum } from '@/shared/is'
  * @param pageSize 一页大小，默认 20
  */
 export function getPageData<T>(arr: T[], curPage: number, pageSize = 20) {
-    return arr.slice((curPage - 1) * pageSize, curPage * pageSize)
+  return arr.slice((curPage - 1) * pageSize, curPage * pageSize)
 }
 
 /**
@@ -18,20 +18,20 @@ export function getPageData<T>(arr: T[], curPage: number, pageSize = 20) {
  * @param handler 可以对数组每一项进行操作，返回值将会被相加
  */
 export function getSum<T>(arr: T[], handler?: (item: T) => number): number {
-    return arr.reduce(
-        (init, item) => {
-            const val = handler
-                ? handler(item)
-                : item
+  return arr.reduce(
+    (init, item) => {
+      const val = handler
+        ? handler(item)
+        : item
 
-            if (typeof val !== 'number') {
-                throw new Error('数组中的值或处理过的值必须是数字')
-            }
+      if (typeof val !== 'number') {
+        throw new Error('数组中的值或处理过的值必须是数字')
+      }
 
-            return init + val
-        },
-        0
-    )
+      return init + val
+    },
+    0
+  )
 }
 
 /**
@@ -54,134 +54,134 @@ export function getSum<T>(arr: T[], handler?: (item: T) => number): number {
  * @param enableDeepClone 是否深拷贝，默认 false
  */
 export function groupBy<T extends Record<BaseKey, any>>(
-    data: T[],
-    key: keyof T,
-    operateKey: null | (keyof T),
-    action: 'arr' | '+' | '-' | '*' | '/' | '**' = 'arr',
-    enableParseFloat = false,
-    enableDeepClone = false
+  data: T[],
+  key: keyof T,
+  operateKey: null | (keyof T),
+  action: 'arr' | '+' | '-' | '*' | '/' | '**' = 'arr',
+  enableParseFloat = false,
+  enableDeepClone = false
 ) {
-    let i = 0
-    const res: any[] = [],
-        /**
-         * 存储键对应的索引
-         * @example 
-         * {
-         *     'chinese': 0,
-         *     'math': 1
-         * }
-         */
-        keyMap: any = {}
+  let i = 0
+  const res: any[] = [],
+    /**
+     * 存储键对应的索引
+     * @example 
+     * {
+     *     'chinese': 0,
+     *     'math': 1
+     * }
+     */
+    keyMap: any = {}
+
+  if (operateKey === null) {
+    action = 'arr'
+  }
+
+  data.forEach(item => {
+    const mapKey = item[key]
+    /** 尚未存入数组的情况 */
+    if (keyMap[mapKey] === undefined) {
+      handleKeyMap(mapKey, item)
+    }
+    else {
+      hanledRepeatKey(mapKey, item)
+    }
+  })
+  return res
+
+  function handleKeyMap(mapKey: keyof T, item: any) {
+    keyMap[mapKey] = i
+    const _item = enableDeepClone
+      ? deepClone(item)
+      : item
 
     if (operateKey === null) {
-        action = 'arr'
+      res[i] = {
+        type: mapKey,
+        children: [_item]
+      }
+    }
+    else if (action === 'arr') {
+      res[i] = {
+        ..._item,
+        [operateKey]: [_item[operateKey]]
+      }
+    }
+    else {
+      res[i] = {
+        ..._item,
+        [operateKey]: _item[operateKey]
+      }
+    }
+    i++
+  }
+
+  function hanledRepeatKey(mapKey: keyof T, item: any) {
+    const index = keyMap[mapKey]
+    if (action !== 'arr' && !isPureNum(item[operateKey], enableParseFloat)) {
+      throw new TypeError('指定的键值无法当作数值计算（Is not like Number）')
     }
 
-    data.forEach(item => {
-        const mapKey = item[key]
-        /** 尚未存入数组的情况 */
-        if (keyMap[mapKey] === undefined) {
-            handleKeyMap(mapKey, item)
-        }
-        else {
-            hanledRepeatKey(mapKey, item)
-        }
-    })
-    return res
+    let num: number
+    let curData: any
 
-    function handleKeyMap(mapKey: keyof T, item: any) {
-        keyMap[mapKey] = i
-        const _item = enableDeepClone
-            ? deepClone(item)
-            : item
-
-        if (operateKey === null) {
-            res[i] = {
-                type: mapKey,
-                children: [_item]
-            }
-        }
-        else if (action === 'arr') {
-            res[i] = {
-                ..._item,
-                [operateKey]: [_item[operateKey]]
-            }
-        }
-        else {
-            res[i] = {
-                ..._item,
-                [operateKey]: _item[operateKey]
-            }
-        }
-        i++
+    if (operateKey === null) {
+      curData = enableDeepClone
+        ? deepClone(item)
+        : item
+    }
+    else {
+      curData = item[operateKey]
     }
 
-    function hanledRepeatKey(mapKey: keyof T, item: any) {
-        const index = keyMap[mapKey]
-        if (action !== 'arr' && !isPureNum(item[operateKey], enableParseFloat)) {
-            throw new TypeError('指定的键值无法当作数值计算（Is not like Number）')
-        }
-
-        let num: number
-        let curData: any
-
-        if (operateKey === null) {
-            curData = enableDeepClone
-                ? deepClone(item)
-                : item
-        }
-        else {
-            curData = item[operateKey]
-        }
-
-        if (operateKey === null) {
-            res[index].children.push(curData)
-            return
-        }
-
-        if (action !== 'arr') {
-            if (enableParseFloat) {
-                num = parseFloat(curData)
-            }
-            else {
-                num = Number(curData)
-            }
-        }
-
-        if (action !== 'arr') {
-            toParseFloat(res, index)
-        }
-        switch (action) {
-            case 'arr':
-                res[index][operateKey].push(curData)
-                break
-            case '+':
-                (res[index][operateKey] as number) += num
-                break
-            case '-':
-                (res[index][operateKey] as number) -= num
-                break
-            case '*':
-                (res[index][operateKey] as number) *= num
-                break
-            case '/':
-                (res[index][operateKey] as number) /= num
-                break
-            case '**':
-                (res[index][operateKey] as number) **= num
-                break
-
-            default:
-                const nv: never = action
-                break
-        }
+    if (operateKey === null) {
+      res[index].children.push(curData)
+      return
     }
 
-    /** 根据配置决定是否解析 */
-    function toParseFloat(arr: any[], index: number) {
-        if (!enableParseFloat) return
-        arr[index][operateKey] = parseFloat(arr[index][operateKey])
+    if (action !== 'arr') {
+      if (enableParseFloat) {
+        num = parseFloat(curData)
+      }
+      else {
+        num = Number(curData)
+      }
     }
+
+    if (action !== 'arr') {
+      toParseFloat(res, index)
+    }
+    switch (action) {
+      case 'arr':
+        res[index][operateKey].push(curData)
+        break
+      case '+':
+        (res[index][operateKey] as number) += num
+        break
+      case '-':
+        (res[index][operateKey] as number) -= num
+        break
+      case '*':
+        (res[index][operateKey] as number) *= num
+        break
+      case '/':
+        (res[index][operateKey] as number) /= num
+        break
+      case '**':
+        (res[index][operateKey] as number) **= num
+        break
+
+      default:
+        const nv: never = action
+        break
+    }
+  }
+
+  /** 根据配置决定是否解析 */
+  function toParseFloat(arr: any[], index: number) {
+    if (!enableParseFloat) return
+    arr[index][operateKey] = parseFloat(arr[index][operateKey])
+  }
 }
 
 /**
@@ -200,39 +200,39 @@ export function groupBy<T extends Record<BaseKey, any>>(
  * ```
  */
 export function arrToTree<T extends TreeItem>(arr: T[]): TreeData<T>[] {
-    if (arr.length < 2) return arr
-    const res = [],
-        /** id 为键，存放一个个深度递归的数组 */
-        map = {}
+  if (arr.length < 2) return arr
+  const res = [],
+    /** id 为键，存放一个个深度递归的数组 */
+    map = {}
 
-    arr.forEach(item => {
-        const { pid, id } = item
-        if (!map[id]) {
-            map[id] = { children: [] }
-        }
-        /** 把每个互相引用关联的节点，平铺开来。下面就能往对应的节点赋值 */
-        map[id] = {
-            ...item,
-            children: map[id].children
-        }
+  arr.forEach(item => {
+    const { pid, id } = item
+    if (!map[id]) {
+      map[id] = { children: [] }
+    }
+    /** 把每个互相引用关联的节点，平铺开来。下面就能往对应的节点赋值 */
+    map[id] = {
+      ...item,
+      children: map[id].children
+    }
 
-        const treeItem = map[id]
-        if (pid === 0) {
-            /** 这里存的是整个根节点的引用 */
-            res.push(treeItem)
-        }
-        /** 子节点 */
-        else {
-            /** 没有父节点，则新建 */
-            if (!map[pid]) {
-                map[pid] = { children: [] }
-            }
-            /** 往对应父节点的引用值添加子节点 */
-            map[pid].children.push(treeItem)
-        }
-    })
+    const treeItem = map[id]
+    if (pid === 0) {
+      /** 这里存的是整个根节点的引用 */
+      res.push(treeItem)
+    }
+    /** 子节点 */
+    else {
+      /** 没有父节点，则新建 */
+      if (!map[pid]) {
+        map[pid] = { children: [] }
+      }
+      /** 往对应父节点的引用值添加子节点 */
+      map[pid].children.push(treeItem)
+    }
+  })
 
-    return res
+  return res
 }
 
 /**
@@ -242,40 +242,40 @@ export function arrToTree<T extends TreeItem>(arr: T[]): TreeData<T>[] {
  * @param opts 配置项，包含搜索字段和是否忽略大小写
  */
 export function searchTreeData<T extends { children?: T[] }>(
-    keyword: string,
-    data: T[],
-    opts: SearchOpts = {}
+  keyword: string,
+  data: T[],
+  opts: SearchOpts = {}
 ): T[] {
-    const { key = 'name', ignoreCase = true } = opts
+  const { key = 'name', ignoreCase = true } = opts
 
-    const loop = (data: T[]) => {
-        const result = <T[]>[]
-        data.forEach(item => {
-            let flag: boolean
-            if (ignoreCase) {
-                flag = item[key]?.toLowerCase()?.includes(keyword.toLowerCase())
-            }
-            else {
-                flag = item[key]?.includes(keyword)
-            }
+  const loop = (data: T[]) => {
+    const result = <T[]>[]
+    data.forEach(item => {
+      let flag: boolean
+      if (ignoreCase) {
+        flag = item[key]?.toLowerCase()?.includes(keyword.toLowerCase())
+      }
+      else {
+        flag = item[key]?.includes(keyword)
+      }
 
-            if (flag) {
-                result.push({ ...item })
-            }
-            else if (item.children) {
-                const filterData = loop(item.children)
-                if (filterData.length) {
-                    result.push({
-                        ...item,
-                        children: filterData
-                    })
-                }
-            }
-        })
-        return result
-    }
+      if (flag) {
+        result.push({ ...item })
+      }
+      else if (item.children) {
+        const filterData = loop(item.children)
+        if (filterData.length) {
+          result.push({
+            ...item,
+            children: filterData
+          })
+        }
+      }
+    })
+    return result
+  }
 
-    return loop(data)
+  return loop(data)
 }
 
 /**
@@ -285,15 +285,15 @@ export function searchTreeData<T extends { children?: T[] }>(
  * @returns 返回二维数组
  */
 export function arrToChunk<T>(arr: T[], size: number): T[][] {
-    if (size <= 1) return arr.map((item) => [item])
+  if (size <= 1) return arr.map((item) => [item])
 
-    const _arr: any[] = []
-    const chunkSize = Math.ceil(arr.length / size)
-    for (let i = 0; i < chunkSize; i++) {
-        _arr.push(arr.slice(i * size, (i + 1) * size))
-    }
+  const _arr: any[] = []
+  const chunkSize = Math.ceil(arr.length / size)
+  for (let i = 0; i < chunkSize; i++) {
+    _arr.push(arr.slice(i * size, (i + 1) * size))
+  }
 
-    return _arr
+  return _arr
 }
 
 
@@ -305,84 +305,84 @@ export function arrToChunk<T>(arr: T[], size: number): T[][] {
  * @returns 索引，找不到返回 -1
  */
 export function binarySearch<T>(
-    arr: T[],
-    value: number,
-    getValFn: (item: T) => number = (item: T) => item as number
+  arr: T[],
+  value: number,
+  getValFn: (item: T) => number = (item: T) => item as number
 ) {
-    let left = 0,
-        right = arr.length - 1
+  let left = 0,
+    right = arr.length - 1
 
-    while (left <= right) {
-        const mid = Math.floor((left + right) / 2)
-        if (getValFn(arr[mid]) === value) {
-            return mid
-        }
-        else if ((getValFn(arr[mid]) as any) < value) {
-            left = mid + 1
-        }
-        else {
-            right = mid - 1
-        }
+  while (left <= right) {
+    const mid = Math.floor((left + right) / 2)
+    if (getValFn(arr[mid]) === value) {
+      return mid
     }
+    else if ((getValFn(arr[mid]) as any) < value) {
+      left = mid + 1
+    }
+    else {
+      right = mid - 1
+    }
+  }
 
-    return -1
+  return -1
 }
 
 /**
  * 广度遍历
  */
 export function bfsFind<T extends TreeNode>(
-    arr: T[],
-    condition: (value: T) => boolean
+  arr: T[],
+  condition: (value: T) => boolean
 ): T | null {
-    /** 当前层的节点 */
-    let currentLevel: T[] = arr
-    /** 下一层的节点 */
-    let nextLevel: T[] = []
+  /** 当前层的节点 */
+  let currentLevel: T[] = arr
+  /** 下一层的节点 */
+  let nextLevel: T[] = []
 
-    // 循环遍历每一层
-    while (currentLevel.length > 0) {
-        for (const item of currentLevel) {
-            if (condition(item)) {
-                return item
-            }
+  // 循环遍历每一层
+  while (currentLevel.length > 0) {
+    for (const item of currentLevel) {
+      if (condition(item)) {
+        return item
+      }
 
-            // 将当前节点的子节点添加到下一层
-            if (item.children && item.children.length > 0) {
-                nextLevel.push(...item.children)
-            }
-        }
-
-        // 当前层遍历完毕，进入下一层
-        currentLevel = nextLevel
-        nextLevel = []
+      // 将当前节点的子节点添加到下一层
+      if (item.children && item.children.length > 0) {
+        nextLevel.push(...item.children)
+      }
     }
 
-    return null
+    // 当前层遍历完毕，进入下一层
+    currentLevel = nextLevel
+    nextLevel = []
+  }
+
+  return null
 }
 
 /**
  * 深度遍历
  */
 export function dfsFind<T extends TreeNode>(
-    arr: T[],
-    condition: (value: T) => boolean
+  arr: T[],
+  condition: (value: T) => boolean
 ): T | null {
-    for (const item of arr) {
-        if (condition(item)) {
-            return item
-        }
-
-        // 如果当前节点有子节点，递归搜索子节点
-        if (item.children && item.children.length > 0) {
-            const result = dfsFind(item.children, condition)
-            if (result) {
-                return result
-            }
-        }
+  for (const item of arr) {
+    if (condition(item)) {
+      return item
     }
 
-    return null
+    // 如果当前节点有子节点，递归搜索子节点
+    if (item.children && item.children.length > 0) {
+      const result = dfsFind(item.children, condition)
+      if (result) {
+        return result
+      }
+    }
+  }
+
+  return null
 }
 
 
@@ -394,16 +394,16 @@ export function dfsFind<T extends TreeNode>(
  * @returns 返回一个填充了指定生成函数数值的数组
  */
 export function genTypedArr<T extends AllTypedArrConstructor = Float32ArrayConstructor>(
-    size: number,
-    genVal: (index: number) => number,
-    ArrayFn: T = Float32Array as T
+  size: number,
+  genVal: (index: number) => number,
+  ArrayFn: T = Float32Array as T
 ): ArrReturnType<T> {
-    const arr = new ArrayFn(size)
-    for (let i = 0; i < arr.length; i++) {
-        arr[i] = genVal(i)
-    }
+  const arr = new ArrayFn(size)
+  for (let i = 0; i < arr.length; i++) {
+    arr[i] = genVal(i)
+  }
 
-    return arr as ArrReturnType<T>
+  return arr as ArrReturnType<T>
 }
 
 /**
@@ -412,15 +412,15 @@ export function genTypedArr<T extends AllTypedArrConstructor = Float32ArrayConst
  * @param genVal 一个生成数值的函数，用于填充数组
  */
 export function genArr<V>(
-    size: number,
-    genVal: (index: number) => V,
+  size: number,
+  genVal: (index: number) => V,
 ): V[] {
-    const arr = new Array(size)
-    for (let i = 0; i < arr.length; i++) {
-        arr[i] = genVal(i)
-    }
+  const arr = new Array(size)
+  for (let i = 0; i < arr.length; i++) {
+    arr[i] = genVal(i)
+  }
 
-    return arr
+  return arr
 }
 
 /**
@@ -428,54 +428,54 @@ export function genArr<V>(
  * @param ignoreOrder 是否忽略顺序，默认 true
  */
 export function arrIsEqual<T = string | number>(
-    arr1: T[], arr2: T[],
-    ignoreOrder = true
+  arr1: T[], arr2: T[],
+  ignoreOrder = true
 ): boolean {
-    if (arr1.length !== arr2.length) {
-        return false
-    }
-    if (arr1.length === 0 && arr2.length === 0) {
-        return true
-    }
+  if (arr1.length !== arr2.length) {
+    return false
+  }
+  if (arr1.length === 0 && arr2.length === 0) {
+    return true
+  }
 
-    if (ignoreOrder) {
-        const sortedArray1 = [...arr1].sort()
-        const sortedArray2 = [...arr2].sort()
-        return sortedArray1.every((value, index) => value === sortedArray2[index])
-    }
+  if (ignoreOrder) {
+    const sortedArray1 = [...arr1].sort()
+    const sortedArray2 = [...arr2].sort()
+    return sortedArray1.every((value, index) => value === sortedArray2[index])
+  }
 
-    return arr1.every((value, index) => value === arr2[index])
+  return arr1.every((value, index) => value === arr2[index])
 }
 
 
 export type AllTypedArrConstructor =
-    | Float32ArrayConstructor
-    | Float64ArrayConstructor
-    | Int8ArrayConstructor
-    | Uint8ArrayConstructor
-    | Int16ArrayConstructor
-    | Uint16ArrayConstructor
-    | Int32ArrayConstructor
-    | Uint32ArrayConstructor
+  | Float32ArrayConstructor
+  | Float64ArrayConstructor
+  | Int8ArrayConstructor
+  | Uint8ArrayConstructor
+  | Int16ArrayConstructor
+  | Uint16ArrayConstructor
+  | Int32ArrayConstructor
+  | Uint32ArrayConstructor
 
 type ArrReturnType<T extends AllTypedArrConstructor = Float32ArrayConstructor> =
-    T extends Float32ArrayConstructor ? Float32Array
-    : T extends Float64ArrayConstructor ? Float64Array
-    : T extends Int8ArrayConstructor ? Int8Array
-    : T extends Uint8ArrayConstructor ? Uint8Array
-    : T extends Int16ArrayConstructor ? Int16Array
-    : T extends Uint16ArrayConstructor ? Uint16Array
-    : T extends Int32ArrayConstructor ? Int32Array
-    : T extends Uint32ArrayConstructor ? Uint32Array
-    : never
+  T extends Float32ArrayConstructor ? Float32Array
+  : T extends Float64ArrayConstructor ? Float64Array
+  : T extends Int8ArrayConstructor ? Int8Array
+  : T extends Uint8ArrayConstructor ? Uint8Array
+  : T extends Int16ArrayConstructor ? Int16Array
+  : T extends Uint16ArrayConstructor ? Uint16Array
+  : T extends Int32ArrayConstructor ? Int32Array
+  : T extends Uint32ArrayConstructor ? Uint32Array
+  : never
 
 export type SearchOpts = {
-    /** 要搜索比对的键，@default name */
-    key?: string
-    /** 是否忽略大小写，@default true */
-    ignoreCase?: boolean
+  /** 要搜索比对的键，@default name */
+  key?: string
+  /** 是否忽略大小写，@default true */
+  ignoreCase?: boolean
 }
 
 export type TreeNode<T = any> = {
-    children?: T[]
+  children?: T[]
 }

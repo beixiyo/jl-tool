@@ -19,32 +19,32 @@ export const fahrenheitToCelsius = (fahrenheit: number) => (fahrenheit - 32) * 5
  * @param enableFloat 是否返回浮点数，默认 false
  */
 export function getRandomNum(min: number, max: number, enableFloat = false) {
-    const r = Math.random()
+  const r = Math.random()
 
-    if (!enableFloat) {
-        return Math.floor(r * (max - min) + min)
-    }
+  if (!enableFloat) {
+    return Math.floor(r * (max - min) + min)
+  }
 
-    if (r < .01) return min
-    return r * (max - min) + min
+  if (r < .01) return min
+  return r * (max - min) + min
 }
 
 /** 深拷贝 */
 export function deepClone<T>(data: T, map = new WeakMap): T {
-    if (!isObj(data)) return data
-    if (data instanceof Date) return new Date(data) as T
-    if (data instanceof RegExp) return new RegExp(data) as T
+  if (!isObj(data)) return data
+  if (data instanceof Date) return new Date(data) as T
+  if (data instanceof RegExp) return new RegExp(data) as T
 
-    if (map.has(data)) return map.get(data)
+  if (map.has(data)) return map.get(data)
 
-    const tar = new (data as any).constructor()
-    map.set(data, tar)
-    for (const key in data) {
-        if (!data.hasOwnProperty(key)) continue
-        tar[key] = deepClone(data[key], map)
-    }
+  const tar = new (data as any).constructor()
+  map.set(data, tar)
+  for (const key in data) {
+    if (!data.hasOwnProperty(key)) continue
+    tar[key] = deepClone(data[key], map)
+  }
 
-    return tar as T
+  return tar as T
 }
 
 /**
@@ -52,43 +52,43 @@ export function deepClone<T>(data: T, map = new WeakMap): T {
  * 支持循环引用比较
  */
 export function deepCompare(o1: any, o2: any, seen = new WeakMap()) {
-    if (Object.is(o1, o2)) {
-        return true
-    }
-
-    /**
-     * !isObj，说明是基本类型，上面直接比较过了
-     * 主要是 WeakMap 的键不能是基本类型，为了避免报错
-     */
-    if (!isObj(o1) || !isObj(o2) || getType(o1) !== getType(o2)) {
-        return false
-    }
-
-    /** 循环引用 */
-    if (seen.has(o1) || seen.has(o2)) {
-        return false
-    }
-
-    seen.set(o1, true)
-    seen.set(o2, true)
-
-    const keys1 = Object.keys(o1).concat(Object.getOwnPropertySymbols(o1) as any)
-    const keys2 = Object.keys(o2).concat(Object.getOwnPropertySymbols(o2) as any)
-
-    if (keys1.length !== keys2.length) {
-        return false
-    }
-
-    for (const key of keys1) {
-        /**
-         * 键不同或者值不同
-         */
-        if (!keys2.includes(key) || !deepCompare(o1[key], o2[key], seen)) {
-            return false
-        }
-    }
-
+  if (Object.is(o1, o2)) {
     return true
+  }
+
+  /**
+   * !isObj，说明是基本类型，上面直接比较过了
+   * 主要是 WeakMap 的键不能是基本类型，为了避免报错
+   */
+  if (!isObj(o1) || !isObj(o2) || getType(o1) !== getType(o2)) {
+    return false
+  }
+
+  /** 循环引用 */
+  if (seen.has(o1) || seen.has(o2)) {
+    return false
+  }
+
+  seen.set(o1, true)
+  seen.set(o2, true)
+
+  const keys1 = Object.keys(o1).concat(Object.getOwnPropertySymbols(o1) as any)
+  const keys2 = Object.keys(o2).concat(Object.getOwnPropertySymbols(o2) as any)
+
+  if (keys1.length !== keys2.length) {
+    return false
+  }
+
+  for (const key of keys1) {
+    /**
+     * 键不同或者值不同
+     */
+    if (!keys2.includes(key) || !deepCompare(o1[key], o2[key], seen)) {
+      return false
+    }
+  }
+
+  return true
 }
 
 /**
@@ -99,16 +99,16 @@ export function deepCompare(o1: any, o2: any, seen = new WeakMap()) {
  * @param placeholder 补在后面的字符串，默认`...`
  */
 export function cutStr(str: string, len: number, placeholder = '...') {
-    const placeholderLen = placeholder.length
-    if (len <= placeholderLen) {
-        return str.slice(0, len)
-    }
+  const placeholderLen = placeholder.length
+  if (len <= placeholderLen) {
+    return str.slice(0, len)
+  }
 
-    const newStr = str.slice(0, len)
+  const newStr = str.slice(0, len)
 
-    return str.length > len
-        ? str.slice(0, len - placeholderLen) + placeholder
-        : newStr
+  return str.length > len
+    ? str.slice(0, len - placeholderLen) + placeholder
+    : newStr
 }
 
 /**
@@ -119,39 +119,39 @@ export function cutStr(str: string, len: number, placeholder = '...') {
  * @param data 需要转换的对象
  */
 export function padEmptyObj<T extends object>(data: T, config?: {
-    /** 要填补的字符串，默认 -- */
-    padStr?: string
-    /** 忽略数字 0，默认 true */
-    ignoreNum?: boolean
+  /** 要填补的字符串，默认 -- */
+  padStr?: string
+  /** 忽略数字 0，默认 true */
+  ignoreNum?: boolean
 }) {
-    const _data = {} as any
-    const { padStr = '--', ignoreNum = true } = config || {}
+  const _data = {} as any
+  const { padStr = '--', ignoreNum = true } = config || {}
 
-    for (const k in data) {
-        if (!Object.hasOwnProperty.call(data, k)) continue
+  for (const k in data) {
+    if (!Object.hasOwnProperty.call(data, k)) continue
 
-        const item = data[k] as any
+    const item = data[k] as any
 
-        if (isStr(item) && item.trim() === '') {
-            _data[k] = padStr
-            continue
-        }
-
-        if (ignoreNum) {
-            /** 排除空字符强转 0 */
-            if (
-                item != null
-                && Number(item) === 0
-            ) {
-                _data[k] = item
-                continue
-            }
-        }
-
-        _data[k] = item || padStr
+    if (isStr(item) && item.trim() === '') {
+      _data[k] = padStr
+      continue
     }
 
-    return _data as T
+    if (ignoreNum) {
+      /** 排除空字符强转 0 */
+      if (
+        item != null
+        && Number(item) === 0
+      ) {
+        _data[k] = item
+        continue
+      }
+    }
+
+    _data[k] = item || padStr
+  }
+
+  return _data as T
 }
 
 /**
@@ -167,31 +167,31 @@ export function padEmptyObj<T extends object>(data: T, config?: {
  * @param replaceStr 默认是 `_`，也就是蛇形转驼峰
  */
 export function toCamel(key: string, replaceStr = '_') {
-    const reg = new RegExp(`${replaceStr}([a-z])`, 'ig')
+  const reg = new RegExp(`${replaceStr}([a-z])`, 'ig')
 
-    return key.replace(reg, (_, g1) => {
-        return g1.toUpperCase()
-    })
+  return key.replace(reg, (_, g1) => {
+    return g1.toUpperCase()
+  })
 }
 
 /** 柯里化 */
 export function curry() {
-    const fn = Array.prototype.slice.call(arguments, 0, 1)[0],
-        argArr = Array.prototype.slice.call(arguments, 1)
+  const fn = Array.prototype.slice.call(arguments, 0, 1)[0],
+    argArr = Array.prototype.slice.call(arguments, 1)
 
-    if (arguments.length >= fn.length) {
-        return fn.apply(this, argArr)
+  if (arguments.length >= fn.length) {
+    return fn.apply(this, argArr)
+  }
+
+  return function curried(...args: any[]) {
+    if (args.length >= fn.length) {
+      return fn.apply(this, args)
     }
 
-    return function curried(...args: any[]) {
-        if (args.length >= fn.length) {
-            return fn.apply(this, args)
-        }
-
-        return function (...moreArgs: any[]) {
-            return curried.apply(this, moreArgs.concat(args))
-        }
+    return function (...moreArgs: any[]) {
+      return curried.apply(this, moreArgs.concat(args))
     }
+  }
 }
 
 /**
@@ -209,18 +209,18 @@ export function curry() {
  * ```
  */
 export function padNum(num: string | number, precision = 2, placeholder = '0') {
-    num = String(num)
-    if (!num) return ''
-    if (!num.includes('.')) {
-        return num + '.' + placeholder.repeat(precision)
-    }
+  num = String(num)
+  if (!num) return ''
+  if (!num.includes('.')) {
+    return num + '.' + placeholder.repeat(precision)
+  }
 
-    const arr = num.split('.'),
-        len = arr[1].length
-    if (len < precision) {
-        return num + placeholder.repeat(precision - len)
-    }
-    return num
+  const arr = num.split('.'),
+    len = arr[1].length
+  if (len < precision) {
+    return num + placeholder.repeat(precision - len)
+  }
+  return num
 }
 
 /**
@@ -235,9 +235,9 @@ export function padNum(num: string | number, precision = 2, placeholder = '0') {
  * @param precision 精度，默认 2
  */
 export function numFixed(num: number | string, precision = 2) {
-    num = Number(num)
-    const scale = 10 ** precision
-    return Math.round(num * scale) / scale
+  num = Number(num)
+  const scale = 10 ** precision
+  return Math.round(num * scale) / scale
 }
 
 /**
@@ -249,7 +249,7 @@ export function numFixed(num: number | string, precision = 2) {
  * @returns iconfont icon-${name}
  */
 export function genIcon(name: string, prefix = 'iconfont', suffix = 'icon', connector = '-') {
-    return `${prefix} ${suffix}${connector}${name}`
+  return `${prefix} ${suffix}${connector}${name}`
 }
 
 
@@ -265,17 +265,17 @@ export function genIcon(name: string, prefix = 'iconfont', suffix = 'icon', conn
  * @param extractArr 提取的值
  */
 export function filterVals<T>(data: T, extractArr: any[]) {
-    const _data: Partial<T> = {}
+  const _data: Partial<T> = {}
 
-    for (const k in data) {
-        if (!Object.hasOwnProperty.call(data, k)) continue
+  for (const k in data) {
+    if (!Object.hasOwnProperty.call(data, k)) continue
 
-        const item = data[k]
-        if (extractArr.includes(item)) {
-            _data[k] = item
-        }
+    const item = data[k]
+    if (extractArr.includes(item)) {
+      _data[k] = item
     }
-    return _data
+  }
+  return _data
 }
 
 /**
@@ -290,17 +290,17 @@ export function filterVals<T>(data: T, extractArr: any[]) {
  * @param excludeArr 排除的值
  */
 export function excludeVals<T extends object>(data: T, excludeArr: any[]) {
-    const _data: Partial<T> = {}
+  const _data: Partial<T> = {}
 
-    for (const k in data) {
-        if (!Object.hasOwnProperty.call(data, k)) continue
+  for (const k in data) {
+    if (!Object.hasOwnProperty.call(data, k)) continue
 
-        const item = data[k]
-        if (!excludeArr.includes(item)) {
-            _data[k] = item
-        }
+    const item = data[k]
+    if (!excludeArr.includes(item)) {
+      _data[k] = item
     }
-    return _data
+  }
+  return _data
 }
 
 /**
@@ -314,20 +314,20 @@ export function excludeVals<T extends object>(data: T, excludeArr: any[]) {
  * @param keys 需要提取的属性
  */
 export function filterKeys<T extends object, K extends keyof T>(
-    data: T,
-    keys: K[]
+  data: T,
+  keys: K[]
 ) {
-    const _data: any = {}
+  const _data: any = {}
 
-    for (const k in data) {
-        if (!Object.hasOwnProperty.call(data, k)) continue
+  for (const k in data) {
+    if (!Object.hasOwnProperty.call(data, k)) continue
 
-        if (keys.includes(k as unknown as K)) {
-            const item = data[k]
-            _data[k] = item
-        }
+    if (keys.includes(k as unknown as K)) {
+      const item = data[k]
+      _data[k] = item
     }
-    return _data as Pick<T, Extract<keyof T, K>>
+  }
+  return _data as Pick<T, Extract<keyof T, K>>
 }
 
 /**
@@ -341,20 +341,20 @@ export function filterKeys<T extends object, K extends keyof T>(
  * @param keys 需要提取的属性
  */
 export function excludeKeys<T extends object, K extends keyof T>(
-    data: T,
-    keys: K[]
+  data: T,
+  keys: K[]
 ) {
-    const _data: any = {}
+  const _data: any = {}
 
-    for (const k in data) {
-        if (!Object.hasOwnProperty.call(data, k)) continue
+  for (const k in data) {
+    if (!Object.hasOwnProperty.call(data, k)) continue
 
-        if (!keys.includes(k as unknown as K)) {
-            const item = data[k]
-            _data[k] = item
-        }
+    if (!keys.includes(k as unknown as K)) {
+      const item = data[k]
+      _data[k] = item
     }
-    return _data as Omit<T, Extract<keyof T, K>>
+  }
+  return _data as Omit<T, Extract<keyof T, K>>
 }
 
 

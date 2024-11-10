@@ -52,7 +52,7 @@ npm i @jl-org/tool
 
 - [分时渲染函数，再多函数也不卡顿](#分时渲染函数)
 - [Media API，如录屏、录音、文字语音互转...](#media-api)
-- [一些数据结构，如：最小堆](#数据结构)
+- [一些数据结构，如：最小堆、LRU缓存](#数据结构)
 <br />
 
 - [动画处理，类似 GSAP，但是会自动处理 CSS 单位](#动画处理)
@@ -656,6 +656,13 @@ export declare function pxToVw(px: number | string, designSize?: number, unit?: 
 export declare const getStyle: (el: HTMLElement, attr: string, pseudoElt?: string) => string | number;
 
 /**
+ * 判断图片的 src 是否可用，可用则返回图片
+ * @param src 图片
+ * @param setImg 图片加载前执行的回调函数
+ */
+export declare const getImg: (src: string, setImg?: (img: HTMLImageElement) => void) => Promise<false | HTMLImageElement>;
+
+/**
  * 节流
  * @param delay 延迟时间（ms），@default 200
  */
@@ -740,13 +747,6 @@ export declare function bindWinEvent<K extends keyof WindowEventMap & {}>(eventN
  * @returns 是否加载完成
  */
 export declare const judgeImgLoad: (el?: Document) => Promise<boolean>;
-
-/**
- * 判断图片的 src 是否可用，可用则返回图片
- * @param src 图片
- * @param setImg 图片加载前执行的回调函数
- */
-export declare const getImg: (src: string, setImg?: (img: HTMLImageElement) => void) => Promise<false | HTMLImageElement>;
 
 /**
  * 返回一个双击键盘事件
@@ -1037,6 +1037,13 @@ export declare class MaxHeap<T extends HeapItem> {
 
     /** 删除并返回堆顶的值 */
     pop(): T;
+}
+
+export declare class LRUCache<K, V> extends Map<K, V> {
+    maxLen: number;
+    constructor(maxLen: number);
+    get(key: K): V | undefined;
+    set(key: K, value: V): this;
 }
 ```
 

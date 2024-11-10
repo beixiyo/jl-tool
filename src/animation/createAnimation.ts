@@ -13,29 +13,29 @@ import { genTimeFunc } from './timeFunc'
  * @param timeFunc 动画缓动函数，支持内置函数和自定义函数
  */
 export function createAnimation(
-    stVal: number,
-    endVal: number,
-    animateStVal: number,
-    animateEndVal: number,
-    timeFunc?: TimeFunc
+  stVal: number,
+  endVal: number,
+  animateStVal: number,
+  animateEndVal: number,
+  timeFunc?: TimeFunc
 ) {
-    /**
-     * 根据当前值 返回动画值
-     * @param curVal 当前值
-     */
-    return (curVal: number) => {
-        if (curVal < stVal) {
-            return animateStVal
-        }
-        if (curVal > endVal) {
-            return animateEndVal
-        }
-
-        const
-            _timeFunc = genTimeFunc(timeFunc),
-            _progress = (curVal - stVal) / (endVal - stVal),
-            progress = _timeFunc(_progress)
-
-        return animateStVal + (animateEndVal - animateStVal) * progress
+  /**
+   * 根据当前值 返回动画值
+   * @param curVal 当前值
+   */
+  return (curVal: number) => {
+    if (curVal < stVal) {
+      return animateStVal
     }
+    if (curVal > endVal) {
+      return animateEndVal
+    }
+
+    const
+      _timeFunc = genTimeFunc(timeFunc),
+      _progress = (curVal - stVal) / (endVal - stVal),
+      progress = _timeFunc(_progress)
+
+    return animateStVal + (animateEndVal - animateStVal) * progress
+  }
 }

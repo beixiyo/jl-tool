@@ -9,12 +9,12 @@ import { Pixel } from '@/types'
  * @returns 包含画布和上下文的对象
  */
 export function createCvs(width?: number, height?: number, options?: CanvasRenderingContext2DSettings) {
-    const cvs = document.createElement('canvas'),
-        ctx = cvs.getContext('2d', options)
-    width && (cvs.width = width)
-    height && (cvs.height = height)
+  const cvs = document.createElement('canvas'),
+    ctx = cvs.getContext('2d', options)
+  width && (cvs.width = width)
+  height && (cvs.height = height)
 
-    return { cvs, ctx }
+  return { cvs, ctx }
 }
 
 /**
@@ -27,21 +27,21 @@ export function createCvs(width?: number, height?: number, options?: CanvasRende
  * @returns `RGBA`数组
  */
 export function getPixel(x: number, y: number, imgData: ImageData['data'], width: number) {
-    const arr: Pixel = [0, 0, 0, 0]
-    /**
-     * canvas 的像素点是一维数组，需要通过计算获取对应坐标的像素点
-     * 一个像素点占 4 个位置，分别是 `R` `G` `B` `A`
-     * width * 4 * y 是第 `y` 行的起始位置
-     * x * 4 是第 `x` 列的起始位置
-     * 然后加上 `i` 就是 `R` `G` `B` `A` 的位置
-     */
-    const index = (width * 4 * y) + (x * 4)
+  const arr: Pixel = [0, 0, 0, 0]
+  /**
+   * canvas 的像素点是一维数组，需要通过计算获取对应坐标的像素点
+   * 一个像素点占 4 个位置，分别是 `R` `G` `B` `A`
+   * width * 4 * y 是第 `y` 行的起始位置
+   * x * 4 是第 `x` 列的起始位置
+   * 然后加上 `i` 就是 `R` `G` `B` `A` 的位置
+   */
+  const index = (width * 4 * y) + (x * 4)
 
-    for (let i = 0; i < 4; i++) {
-        arr[i] = imgData[index + i]
-    }
+  for (let i = 0; i < 4; i++) {
+    arr[i] = imgData[index + i]
+  }
 
-    return arr
+  return arr
 }
 
 /**
@@ -51,24 +51,24 @@ export function getPixel(x: number, y: number, imgData: ImageData['data'], width
  * @param width 图像区域宽度
  */
 export function parseImgData(imgData: ImageData['data'], width: number, height: number) {
-    const arr: number[][][] = []
+  const arr: number[][][] = []
 
-    for (let x = 0; x < width; x++) {
-        const row: number[][] = []
+  for (let x = 0; x < width; x++) {
+    const row: number[][] = []
 
-        for (let y = 0; y < height; y++) {
-            row.push(getPixel(x, y, imgData, width))
-        }
-
-        arr.push(row)
+    for (let y = 0; y < height; y++) {
+      row.push(getPixel(x, y, imgData, width))
     }
 
-    return arr as Pixel[][]
+    arr.push(row)
+  }
+
+  return arr as Pixel[][]
 }
 
 /** 给 canvas 某个像素点填充颜色的函数 */
 export function fillPixel(ctx: CanvasRenderingContext2D, x: number, y: number, color: string) {
-    ctx.fillStyle = color
-    ctx.fillRect(x, y, 1, 1)
+  ctx.fillStyle = color
+  ctx.fillRect(x, y, 1, 1)
 }
 

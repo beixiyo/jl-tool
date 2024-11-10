@@ -72,25 +72,6 @@ export const judgeImgLoad = (el = document): Promise<boolean> => {
 }
 
 /**
- * 判断图片的 src 是否可用，可用则返回图片
- * @param src 图片
- * @param setImg 图片加载前执行的回调函数
- */
-export const getImg = (
-  src: string,
-  setImg?: (img: HTMLImageElement) => void
-) => {
-  const img = new Image()
-  img.src = src
-  setImg?.(img)
-
-  return new Promise<false | HTMLImageElement>((resolve) => {
-    img.onload = () => resolve(img)
-    img.onerror = () => resolve(false)
-  })
-}
-
-/**
  * 返回一个双击键盘事件
  * @param key 键盘码（KeyboardEvent.key）
  * @param fn 双击后执行函数

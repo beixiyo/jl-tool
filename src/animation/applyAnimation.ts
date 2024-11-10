@@ -4,14 +4,14 @@
  * @returns 返回一个函数，用于取消函数执行
  */
 export const applyAnimation = (fn: () => 'stop' | void) => {
-    let id: number
-    const animate = () => {
-        if (fn() === 'stop') return cancelAnimationFrame(id)
-        id = requestAnimationFrame(animate)
-    }
+  let id: number
+  const animate = () => {
+    if (fn() === 'stop') return cancelAnimationFrame(id)
+    id = requestAnimationFrame(animate)
+  }
 
-    animate()
-    return () => {
-        cancelAnimationFrame(id)
-    }
+  animate()
+  return () => {
+    cancelAnimationFrame(id)
+  }
 }

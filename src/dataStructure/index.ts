@@ -1,1 +1,2 @@
-export { MaxHeap, MinHeap } from './Heap'
+export * from './Heap'
+export * from './LRUCache'

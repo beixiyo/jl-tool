@@ -11,10 +11,10 @@ export type Pixel = [R: number, G: number, B: number, A: number]
 
 /** 基础树形结构 */
 export type TreeItem = {
-    pid: BaseType
-    id: BaseType
+  pid: BaseType
+  id: BaseType
 }
 export type TreeData<T extends TreeItem> =
-    T & {
-        children?: TreeData<T>[]
-    }
+  T & {
+    children?: TreeData<T>[]
+  }
