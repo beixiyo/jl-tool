@@ -236,18 +236,32 @@ export function rafThrottle(
   }
 }
 
-/** 设置 LocalStorage，无需手动转 JSON */
-export function setLocalStorage(key: string, value: any) {
-  return localStorage.setItem(key, JSON.stringify(value))
+/** 
+ * 设置 LocalStorage，默认自动转 JSON
+ * @param autoToJSON 是否自动转 JSON，默认 true
+ */
+export function setLocalStorage(key: string, value: any, autoToJSON = true) {
+  return localStorage.setItem(
+    key,
+    autoToJSON
+      ? JSON.stringify(value)
+      : String(value)
+  )
 }
-/** 获取 LocalStorage，无需手动解析 */
-export function getLocalStorage<T>(key: string): T | null {
+/** 
+ * 获取 LocalStorage，默认自动解析 JSON。
+ * ### 'undefined' 字符串会被转成 null
+ * @param autoParseJSON 是否自动解析 JSON，默认 true
+ */
+export function getLocalStorage<T>(key: string, autoParseJSON = true): T | null {
   const item = localStorage.getItem(key)
   if (item === 'undefined') {
     return null
   }
 
-  return JSON.parse(item) as T
+  return autoParseJSON
+    ? JSON.parse(item) as T
+    : (item as T)
 }
 
 /** 获取选中的文本 */
