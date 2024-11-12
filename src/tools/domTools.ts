@@ -245,7 +245,7 @@ export function setLocalStorage(key: string, value: any, autoToJSON = true) {
     key,
     autoToJSON
       ? JSON.stringify(value)
-      : String(value)
+      : value
   )
 }
 /** 
