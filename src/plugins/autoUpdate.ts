@@ -8,7 +8,8 @@ export function autoUpdate(opts: AutoUpdateOpts = {}) {
   const {
     needUpate = () => true,
     confirmGap = CONFIRM_GAP,
-    refreshGap = REFRESH_GAP
+    refreshGap = REFRESH_GAP,
+    confirmText = '页面有更新，是否刷新？'
   } = opts
 
   if (!needUpate()) return
@@ -20,7 +21,7 @@ export function autoUpdate(opts: AutoUpdateOpts = {}) {
   timer = window.setInterval(async () => {
     const flag = await hasChange()
     if (flag) {
-      const userConfirm = window.confirm('页面有更新，是否刷新？')
+      const userConfirm = window.confirm(confirmText)
       if (userConfirm) {
         window.location.reload()
       }
@@ -100,4 +101,10 @@ export type AutoUpdateOpts = {
   confirmGap?: number
   /** 检查更新间隔毫秒，默认 10 秒 */
   refreshGap?: number
+  /**
+   * 确认刷新文案
+   * @default
+   * 页面有更新，是否刷新？
+   */
+  confirmText?: string
 }
