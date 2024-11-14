@@ -1,6 +1,13 @@
 import { isObj, isStr } from '@/shared/is'
 
 
+let id = 0
+
+/**
+ * 获取自增唯一 ID
+ */
+export const uniqueId = () => id++
+
 /** 获取类型 */
 export const getType = (data: any) => (Object.prototype.toString.call(data) as string).slice(8, -1).toLowerCase()
 

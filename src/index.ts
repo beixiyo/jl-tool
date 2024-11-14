@@ -12,6 +12,7 @@ export * from '@/tools/tools'
 
 export * from '@/tools/Clock'
 export * from '@/tools/FakeProgress'
+export * from '@/tools/mapRange'
 
 export * from '@/channel'
 export * from '@/shared'

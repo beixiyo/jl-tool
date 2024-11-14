@@ -33,6 +33,7 @@ npm i @jl-org/tool
 ## 工具目录
 
 - [各种常用工具](#各种常用工具)
+- [数值映射，支持反向映射](#数值映射，支持反向映射)
 - [网络请求工具，如最大并发、自动重试、自动重连的 ws 等](#网络请求工具)
 <br />
 
@@ -72,6 +73,11 @@ npm i @jl-org/tool
 
 ## 各种常用工具
 ```ts
+/**
+ * 获取自增唯一 ID
+ */
+export declare const uniqueId: () => number;
+
 /** 获取类型 */
 export declare const getType: (data: any) => string;
 
@@ -230,6 +236,59 @@ export declare function filterKeys<T extends object, K extends keyof T>(data: T,
  */
 export declare function excludeKeys<T extends object, K extends keyof T>(data: T, keys: K[]): Omit<T, Extract<keyof T, K>>;
 ```
+
+---
+
+
+## 数值映射，支持反向映射
+```ts
+/**
+ * 将数值从一个范围映射到另一个范围，支持反向映射
+ *
+ * @example
+ * ```ts
+ * // 反向映射，输出 50
+ * mapRange(0, {
+ *   input: [0, 50],
+ *   output: [50, 0]
+ * })
+ *
+ * // 正向映射，输出 190
+ * mapRange(10, {
+ *   input: [0, 100],
+ *   output: [100, 1000]
+ * })
+ * ```
+ *
+ * @param value 要映射的值
+ * @param range 输入和输出范围
+ * @param options 配置选项
+ * @returns 映射后的值
+ */
+export declare function mapRange(value: number, range: Range, options?: MapRangeOptions): number;
+
+/**
+ * 创建一个可重用的映射函数
+ * @param range 输入和输出范围
+ * @param options 配置选项
+ * @returns 映射函数
+ */
+export declare function createMapRange(range: Range, options?: MapRangeOptions): (value: number) => number;
+
+export interface MapRangeOptions {
+    /** 是否限制在目标范围内 */
+    clamp?: boolean;
+    /** 是否保留小数 */
+    precise?: boolean;
+    /** 保留的小数位数 (仅在 precise 为 true 时生效) */
+    decimals?: number;
+}
+export interface Range {
+    input: [number, number];
+    output: [number, number];
+}
+```
+
 
 ---
 
