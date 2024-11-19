@@ -354,6 +354,15 @@ export const HTMLToStr = (HTMLStr: string) => {
   return doc.body.textContent
 }
 
+/**
+ * 正则匹配移动设备 UA
+ * @returns 是否为移动设备
+ */
+export function isMobile() {
+  const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i
+  return mobileRegex.test(navigator.userAgent)
+}
+
 
 interface Print {
   /**

@@ -774,6 +774,12 @@ export declare const setParentOverflow: (el: HTMLElement) => void;
 
 /** 解析出`HTML`的所有字符串 */
 export declare const HTMLToStr: (HTMLStr: string) => string;
+
+/**
+ * 正则匹配移动设备 UA
+ * @returns 是否为移动设备
+ */
+export declare function isMobile(): boolean;
 ```
 
 ## 事件工具
