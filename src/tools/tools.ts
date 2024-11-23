@@ -364,6 +364,21 @@ export function excludeKeys<T extends object, K extends keyof T>(
   return _data as Omit<T, Extract<keyof T, K>>
 }
 
+/**
+ * 等待指定时间
+ * 
+ * @example
+ * ```ts
+ * await wait(2000)
+ * ```
+ * 
+ * @param durationMS 等待时间，默认 1000 毫秒
+ */
+export function wait(durationMS = 1000) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, durationMS)
+  })
+}
 
 
 // 递归树拍平简易写法
