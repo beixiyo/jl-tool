@@ -69,6 +69,13 @@ export function base64ToBlob(base64Str: string, mimeType: string = 'application/
 }
 
 /**
+ * 把 http url 转 blob
+ */
+export function urlToBlob(url: string): Promise<Blob> {
+  return fetch(url).then(res => res.blob())
+}
+
+/**
  * blob 转成 Stream，方便浏览器和 Node 互操作
  */
 export async function blobToStream(blob: Blob): Promise<ReadableStream> {

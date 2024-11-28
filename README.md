@@ -235,6 +235,18 @@ export declare function filterKeys<T extends object, K extends keyof T>(data: T,
  * @param keys 需要提取的属性
  */
 export declare function excludeKeys<T extends object, K extends keyof T>(data: T, keys: K[]): Omit<T, Extract<keyof T, K>>;
+
+/**
+ * 等待指定时间后返回 Promise
+ *
+ * @example
+ * ```ts
+ * await wait(2000)
+ * ```
+ *
+ * @param durationMS 等待时间，默认 1000 毫秒
+ */
+export declare function wait(durationMS?: number): Promise<unknown>;
 ```
 
 ---
@@ -922,6 +934,11 @@ export declare function blobToBase64(blob: Blob): Promise<string>;
  * @param mimeType 文件类型，默认 application/octet-stream
  */
 export declare function base64ToBlob(base64Str: string, mimeType?: string): Blob;
+
+/**
+ * 把 http url 转 blob
+ */
+export declare function urlToBlob(url: string): Promise<Blob>;
 
 /**
  * blob 转成 Stream，方便浏览器和 Node 互操作

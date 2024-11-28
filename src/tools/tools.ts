@@ -365,7 +365,7 @@ export function excludeKeys<T extends object, K extends keyof T>(
 }
 
 /**
- * 等待指定时间
+ * 等待指定时间后返回 Promise
  * 
  * @example
  * ```ts
