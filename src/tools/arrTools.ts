@@ -1,4 +1,4 @@
-import type { BaseKey, TreeData, TreeItem } from '@/types/base'
+import type { BaseKey, BaseType, TreeData, TreeItem } from '@/types/base'
 import { deepClone } from './tools'
 import { isPureNum } from '@/shared/is'
 
@@ -198,8 +198,14 @@ export function groupBy<T extends Record<BaseKey, any>>(
  * ]
  * const treeData = arrToTree(arr)
  * ```
+ * 
+ * @param arr 要转换的数组
+ * @param rootId 根节点的 id，默认 0。不可以传 null 或者 undefined，使用 `===` 比较
  */
-export function arrToTree<T extends TreeItem>(arr: T[]): TreeData<T>[] {
+export function arrToTree<T extends TreeItem>(
+  arr: T[],
+  rootId: BaseType = 0
+): TreeData<T>[] {
   if (arr.length < 2) return arr
   const res = [],
     /** id 为键，存放一个个深度递归的数组 */
@@ -207,6 +213,7 @@ export function arrToTree<T extends TreeItem>(arr: T[]): TreeData<T>[] {
 
   arr.forEach(item => {
     const { pid, id } = item
+
     if (!map[id]) {
       map[id] = { children: [] }
     }
@@ -216,8 +223,9 @@ export function arrToTree<T extends TreeItem>(arr: T[]): TreeData<T>[] {
       children: map[id].children
     }
 
+    /** 子节点 */
     const treeItem = map[id]
-    if (pid === 0) {
+    if (pid === (rootId ?? 0)) {
       /** 这里存的是整个根节点的引用 */
       res.push(treeItem)
     }
