@@ -1,4 +1,4 @@
-import type { BaseKey, BaseType, TreeData, TreeItem } from '@/types/base'
+import type { BaseKey, BaseType, TreeData, ArrToTreeOpts } from '@/types/base'
 import { deepClone } from './tools'
 import { isPureNum } from '@/shared/is'
 
@@ -184,6 +184,7 @@ export function groupBy<T extends Record<BaseKey, any>>(
   }
 }
 
+
 /**
  * 扁平数组转递归树
  * @example
@@ -198,47 +199,53 @@ export function groupBy<T extends Record<BaseKey, any>>(
  * ]
  * const treeData = arrToTree(arr)
  * ```
- * 
- * @param arr 要转换的数组
- * @param rootId 根节点的 id，默认 0。不可以传 null 或者 undefined，使用 `===` 比较
  */
-export function arrToTree<T extends TreeItem>(
+export function arrToTree<T extends Record<string, any>>(
   arr: T[],
-  rootId: BaseType = 0
-): TreeData<T>[] {
-  if (arr.length < 2) return arr
-  const res = [],
-    /** id 为键，存放一个个深度递归的数组 */
-    map = {}
+  options?: ArrToTreeOpts<T>
+): TreeData<T> {
+  const {
+    idField = 'id',
+    pidField = 'pid',
+    rootId = 0
+  } = options || {}
 
-  arr.forEach(item => {
-    const { pid, id } = item
+  if (arr.length < 2) return arr as TreeData<T>
+
+  const res: TreeData<T> = []
+  const map: Record<BaseType, TreeData<T>[number]> = {}
+
+  for (const item of arr) {
+    const id = item[idField]
+    const pid = item[pidField]
 
     if (!map[id]) {
-      map[id] = { children: [] }
+      map[id] = { ...item, children: [] }
     }
-    /** 把每个互相引用关联的节点，平铺开来。下面就能往对应的节点赋值 */
-    map[id] = {
-      ...item,
-      children: map[id].children
+    else {
+      map[id] = {
+        ...item,
+        children: map[id].children
+      }
     }
 
-    /** 子节点 */
     const treeItem = map[id]
-    if (pid === (rootId ?? 0)) {
-      /** 这里存的是整个根节点的引用 */
+
+    if (pid === rootId) {
+      /** 放入跟节点 */
       res.push(treeItem)
     }
     /** 子节点 */
     else {
       /** 没有父节点，则新建 */
       if (!map[pid]) {
-        map[pid] = { children: [] }
+        map[pid] = { children: [] } as any
       }
+
       /** 往对应父节点的引用值添加子节点 */
-      map[pid].children.push(treeItem)
+      map[pid].children!.push(treeItem as any)
     }
-  })
+  }
 
   return res
 }
