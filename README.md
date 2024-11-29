@@ -421,8 +421,11 @@ export declare function groupBy<T extends Record<BaseKey, any>>(data: T[], key: 
  * ]
  * const treeData = arrToTree(arr)
  * ```
+ *
+ * @param arr 要转换的数组
+ * @param rootId 根节点的 id，默认 0。不可以传 null 或者 undefined，使用 `===` 比较
  */
-export declare function arrToTree<T extends TreeItem>(arr: T[]): TreeData<T>[];
+export declare function arrToTree<T extends TreeItem>(arr: T[], rootId?: BaseType): TreeData<T>[];
 
 /**
  * 树形结构搜索
