@@ -54,6 +54,7 @@ export class ATo {
     durationMS: number,
     animationOpts?: AnimationOpts<T, P>
   ) {
+    // @ts-ignore
     this.animateArr.push([target, finalProps, durationMS, animationOpts || {}])
     this.addAnimate(this.animateArr)
     return this
@@ -73,13 +74,14 @@ export class ATo {
     durationMS: number,
     animationOpts?: AnimationOpts<T, P>
   ) {
+    // @ts-ignore
     this.pendingAnimateArr.push([target, finalProps, durationMS, animationOpts || {}])
     return this
   }
 
   /** 停止所有动画 */
   stop() {
-    let _stopAnimate: Function
+    let _stopAnimate: Function | undefined
     while (_stopAnimate = this.animateStopArr.shift()) {
       _stopAnimate()
     }
@@ -90,7 +92,11 @@ export class ATo {
     const animate = animateArr.shift()
     if (!animate) return
 
-    const { onEnd } = animate[3]
+    // 第四个参数为配置项
+    const res = animate[3]
+    if (!res) return
+    
+    const { onEnd } = res
     /** 重写函数，实现动画完成后继续添加 */
     const _onEnd = (target: any, diffProps: any) => {
       onEnd?.(target, diffProps)
@@ -107,6 +113,7 @@ export class ATo {
       params[0] = params[0]()
     }
 
+    // @ts-ignore
     const animateFn = createAnimationByTime.apply(null, params)
     this.animateStopArr.push(animateFn)
   }

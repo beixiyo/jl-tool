@@ -151,23 +151,29 @@ export function groupBy<T extends Record<BaseKey, any>>(
     if (action !== 'arr') {
       toParseFloat(res, index)
     }
+
     switch (action) {
       case 'arr':
         res[index][operateKey].push(curData)
         break
       case '+':
+        // @ts-ignore
         (res[index][operateKey] as number) += num
         break
       case '-':
+        // @ts-ignore
         (res[index][operateKey] as number) -= num
         break
       case '*':
+        // @ts-ignore
         (res[index][operateKey] as number) *= num
         break
       case '/':
+        // @ts-ignore
         (res[index][operateKey] as number) /= num
         break
       case '**':
+        // @ts-ignore
         (res[index][operateKey] as number) **= num
         break
 
@@ -265,12 +271,16 @@ export function searchTreeData<T extends { children?: T[] }>(
 
   const loop = (data: T[]) => {
     const result = <T[]>[]
-    data.forEach(item => {
+
+    for (const item of data) {
       let flag: boolean
+
       if (ignoreCase) {
+        // @ts-ignore
         flag = item[key]?.toLowerCase()?.includes(keyword.toLowerCase())
       }
       else {
+        // @ts-ignore
         flag = item[key]?.includes(keyword)
       }
 
@@ -286,7 +296,7 @@ export function searchTreeData<T extends { children?: T[] }>(
           })
         }
       }
-    })
+    }
     return result
   }
 

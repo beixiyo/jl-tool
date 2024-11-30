@@ -149,6 +149,7 @@ function getDefaultVal(target: any, k: string) {
     /** 有些`CSS`属性默认是 1，但是从样式表拿到是空字串 比如 `opacity` */
     ? 1
     /** parseFloat是为了去处可能存在的`CSS`单位 */
+    // @ts-ignore
     : parseFloat(target[k]) || 0
 }
 
@@ -160,10 +161,10 @@ function getDefaultVal(target: any, k: string) {
 function parseTransform(
   target: CSSStyleDeclaration,
   finalProps: any
-): Record<string, string> {
+): Record<string, number> {
   const transformRegex = /(\w+)\(([^)]+)\)/g
   const cssText = target.transform
-  const transformValues = {}
+  const transformValues: Record<string, number> = {}
 
   cssText.replace(transformRegex, (match, transformName, transformParams) => {
     const paramArr = transformParams
@@ -209,6 +210,7 @@ function getUnit(s: string, propName?: string): string | null {
 
     /** transform 属性对应的默认单位 */
     let _unit = ''
+    // @ts-ignore
     if ((_unit = TRANSFORM_UNIT_MAP[propName]) != undefined) {
       return _unit
     }

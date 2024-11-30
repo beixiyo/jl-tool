@@ -18,7 +18,7 @@ export function getColorInfo(color: string) {
     color = hexToRGB(color)
   }
 
-  let rgbColor: RegExpMatchArray
+  let rgbColor: RegExpMatchArray | null
   if ((rgbColor = color.match(Reg.rgb))) {
     const r = parseInt(rgbColor[1])
     const g = parseInt(rgbColor[2])
@@ -104,7 +104,7 @@ export function hexToRGB(color: string) {
 
 /** RGB 转十六进制 */
 export function rgbToHex(color: string) {
-  let rgbColor: RegExpMatchArray
+  let rgbColor: RegExpMatchArray | null
 
   if ((rgbColor = color.match(Reg.rgb))) {
     const r = parseInt(rgbColor[1])
@@ -164,7 +164,7 @@ export function lightenColor(color: string, strength = 0) {
  * @returns 返回十六进制 类似如下格式的颜色 `#ffffff11`
  */
 export function colorAddOpacity(color: string, opacity = .1) {
-  color = rgbToHex(color)
+  color = rgbToHex(color) || '#000000'
   color = color.slice(0, 7)
 
   const alphaHex = Math.round(opacity * 255).toString(16).padStart(2, '0')

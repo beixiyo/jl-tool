@@ -108,7 +108,7 @@ export function timeGap(date?: TimeType, opts: TimeGapOpts = {}) {
   ]
 
   if (Number.isNaN(time)) return fallback
-  if (time === 0) return detailMap.find(item => item.gap === time).desc
+  if (time === 0) return detailMap.find(item => item.gap === time)!.desc
 
   if (time < 0) {
     isFuture = true
@@ -157,27 +157,36 @@ export function formatDate(
   const formatterFn = _formatNormalize()
   const pad = (str: string, num = 2) => str.toString().padStart(num, '0')
 
-  date ??= typeof (Date.prototype as any).formatDate === 'function'
-    ? this
-    : new Date()
+  let newDate: Date
+  if (!date) {
+    newDate = typeof (Date.prototype as any).formatDate === 'function'
+      // @ts-ignore
+      ? this
+      : new Date()
+  }
+  else {
+    newDate = date
+  }
+
   const dateInfo: DateInfo = {
-    yyyy: String(date.getFullYear()),
-    MM: String(date.getMonth() + 1),
-    dd: String(date.getDate()),
-    HH: String(date.getHours()),
-    mm: String(date.getMinutes()),
-    ss: String(date.getSeconds()),
-    ms: String(date.getMilliseconds()),
+    yyyy: String(newDate.getFullYear()),
+    MM: String(newDate.getMonth() + 1),
+    dd: String(newDate.getDate()),
+    HH: String(newDate.getHours()),
+    mm: String(newDate.getMinutes()),
+    ss: String(newDate.getSeconds()),
+    ms: String(newDate.getMilliseconds()),
   }
 
   if (padZero) {
     for (const key in dateInfo) {
-      const item = dateInfo[key]
+      const k = key as keyof DateInfo
+      const item = dateInfo[k]
       if (key === 'yyyy') {
         dateInfo[key] = pad(item, 4)
         continue
       }
-      dateInfo[key] = pad(item)
+      dateInfo[k] = pad(item)
     }
   }
   return formatterFn(dateInfo)

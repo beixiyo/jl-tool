@@ -61,8 +61,8 @@ export class SpeakToTxt {
     recognition.interimResults = interimResults ?? false
     recognition.lang = lang || 'zh-CN'
 
-    recognition.onstart = onstart
-    recognition.onend = onEnd
+    recognition.onstart = onstart || (() => { })
+    recognition.onend = onEnd || (() => { })
     recognition.onresult = (e) => {
       this.onResult(e.results[0][0].transcript, e)
     }

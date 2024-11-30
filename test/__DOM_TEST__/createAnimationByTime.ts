@@ -1,4 +1,4 @@
-import { ATo, createAnimationByTime } from '@deb'
+import { ATo, createAnimationByTime } from '@/animation'
 import { getColor } from '@deb'
 
 

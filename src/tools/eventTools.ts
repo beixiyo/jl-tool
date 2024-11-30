@@ -100,6 +100,7 @@ export function doubleKeyDown<T, R>(
      * 下次按下按键，只要在间隔时间内就算双击
      */
     if (now - st <= gap) {
+      // @ts-ignore
       return fn.call(this, e) as R
     }
     st = now

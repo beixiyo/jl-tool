@@ -50,16 +50,20 @@ export function setVal<T>({
      * - 样式表和 *finalProps* 都没有单位，则使用 `px` 作为 `CSS` 单位
      */
     if (unit != null) {
-      target[k as any] = value + unit
+      // @ts-ignore
+      target[k] = value + unit
     }
     else if (optUnit != null) {
-      target[k as any] = value + optUnit
+      // @ts-ignore
+      target[k] = value + optUnit
     }
     else if (rawElUnit != null) {
-      target[k as any] = value + rawElUnit
+      // @ts-ignore
+      target[k] = value + rawElUnit
     }
     else {
-      target[k as any] = target instanceof CSSStyleDeclaration
+      // @ts-ignore
+      target[k] = target instanceof CSSStyleDeclaration
         ? value + 'px'
         : value
     }

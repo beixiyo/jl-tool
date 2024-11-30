@@ -230,6 +230,7 @@ export function rafThrottle(
     lock = true
 
     window.requestAnimationFrame(() => {
+      // @ts-ignore
       fn.apply(this, args)
       lock = false
     })
@@ -260,12 +261,13 @@ export function getLocalStorage<T>(key: string, autoParseJSON = true): T | null 
   }
 
   return autoParseJSON
+    // @ts-ignore
     ? JSON.parse(item) as T
     : (item as T)
 }
 
 /** 获取选中的文本 */
-export const getSelectedText = () => window.getSelection().toString()
+export const getSelectedText = () => window.getSelection()?.toString()
 
 /** 文本复制到剪贴板 */
 export const copyToClipboard = (text: string) => navigator.clipboard.writeText(text)
@@ -282,8 +284,8 @@ export const getAllStyle = async () => {
   const styleTxtArr = Array.from(document.querySelectorAll('style'))
     .map((item: HTMLElement) => item.outerHTML)
 
-  const linkPromiseArr = Array.from(document.querySelectorAll('link[rel="stylesheet"]'))
-    .map((item: HTMLLinkElement) => fetch(item.href).then(res => res.text()))
+  const linkPromiseArr = (Array.from(document.querySelectorAll('link[rel="stylesheet"]')) as HTMLLinkElement[])
+    .map((item) => fetch(item.href).then(res => res.text()))
 
   try {
     const linkArr = await Promise.all(linkPromiseArr)

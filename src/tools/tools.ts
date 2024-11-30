@@ -90,6 +90,7 @@ export function deepCompare(o1: any, o2: any, seen = new WeakMap()) {
     /**
      * 键不同或者值不同
      */
+    // @ts-ignore
     if (!keys2.includes(key) || !deepCompare(o1[key], o2[key], seen)) {
       return false
     }
@@ -187,15 +188,18 @@ export function curry() {
     argArr = Array.prototype.slice.call(arguments, 1)
 
   if (arguments.length >= fn.length) {
+    // @ts-ignore
     return fn.apply(this, argArr)
   }
 
   return function curried(...args: any[]) {
     if (args.length >= fn.length) {
+      // @ts-ignore
       return fn.apply(this, args)
     }
 
     return function (...moreArgs: any[]) {
+      // @ts-ignore
       return curried.apply(this, moreArgs.concat(args))
     }
   }
