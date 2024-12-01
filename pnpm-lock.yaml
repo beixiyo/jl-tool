@@ -47,9 +47,6 @@ importers:
       typedoc-plugin-markdown:
         specifier: ^3.17.1
         version: 3.17.1(typedoc@0.25.10(typescript@5.3.3))
-      typescript:
-        specifier: ^5.3.3
-        version: 5.3.3
       vitepress:
         specifier: 1.3.1
         version: 1.3.1(@algolia/client-search@4.24.0)(@types/node@20.11.17)(postcss@8.4.39)(search-insights@2.13.0)(terser@5.24.0)(typescript@5.3.3)
