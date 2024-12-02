@@ -1,10 +1,10 @@
 import {
-    createCvs,
-    getPixel,
-    fillPixel,
-    compressImg,
-    cutImg,
-    parseImgData,
+  createCvs,
+  getPixel,
+  fillPixel,
+  compressImg,
+  cutImg,
+  parseImgData,
 } from '@deb'
 
 import { getImg } from '@deb'
@@ -19,19 +19,19 @@ input.type = 'file'
 document.body.appendChild(input)
 
 input.addEventListener('change', async (e) => {
-    const file = input.files![0]
-    console.log(file)
+  const file = input.files![0]
+  console.log(file)
 
-    const src = await blobToBase64(file)
-    console.log(src)
-    console.log('------------------------------------------------------------')
+  const src = await blobToBase64(file)
+  console.log(src)
+  console.log('------------------------------------------------------------')
 
-    const img = await getImg(src) as HTMLImageElement
-    const blob = await compressImg(img, 'base64', .5, 'image/webp')
-    console.log(blob)
+  const img = await getImg(src) as HTMLImageElement
+  const blob = await compressImg(img, 'base64', .5, 'image/webp')
+  console.log(blob)
 
-    const img2 = await getImg(blob) as HTMLImageElement
-    document.body.appendChild(img2)
+  const img2 = await getImg(blob) as HTMLImageElement
+  document.body.appendChild(img2)
 })
 
 
@@ -40,7 +40,7 @@ input.addEventListener('change', async (e) => {
  * 辅助函数测试
  */
 const WIDTH = 4,
-    HEIGHT = 4
+  HEIGHT = 4
 
 const { ctx, cvs } = createCvs(WIDTH, HEIGHT)
 document.body.appendChild(cvs)
@@ -64,24 +64,24 @@ const img = new Image()
 img.src = 'https://cdn.pixabay.com/photo/2023/04/10/20/41/bird-7914702_640.jpg'
 
 img.onload = async () => {
-    document.body.appendChild(img)
-    const src = await cutImg(img, {
-        height: 100,
-        width: 200,
-    })
+  document.body.appendChild(img)
+  const src = await cutImg(img, {
+    height: 100,
+    width: 200,
+  })
 
-    const newImg = new Image()
-    if (typeof src !== 'string') {
-        const url = URL.createObjectURL(src)
-        newImg.src = url
-        newImg.onload = () => {
-            document.body.appendChild(newImg)
-        }
-        return
-    }
-
-    newImg.src = src
+  const newImg = new Image()
+  if (typeof src !== 'string') {
+    const url = URL.createObjectURL(src)
+    newImg.src = url
     newImg.onload = () => {
-        document.body.appendChild(newImg)
+      document.body.appendChild(newImg)
     }
+    return
+  }
+
+  newImg.src = src
+  newImg.onload = () => {
+    document.body.appendChild(newImg)
+  }
 }

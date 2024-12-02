@@ -3,7 +3,7 @@ import { createCvs } from './tools'
 
 
 /**
- * 截取图片的一部分，返回 base64 | blob
+ * 截取图片指定区域，可设置缩放，返回 base64 | blob
  * @param img 图片
  * @param opts 配置
  * @param resType 需要返回的文件格式，默认 `base64`

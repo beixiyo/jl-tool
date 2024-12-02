@@ -1,4 +1,4 @@
-import { createMapRange, mapRange } from '@/tools/mapRange'
+import { createMapRange, mapRange } from '@/math/mapRange'
 import { expect, test, describe } from 'vitest'
 
 

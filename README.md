@@ -33,7 +33,7 @@ npm i @jl-org/tool
 ## 工具目录
 
 - [各种常用工具](#各种常用工具)
-- [数值映射，支持反向映射](#数值映射，支持反向映射)
+- [数学运算，如数值映射、坐标计算、比例计算](#数学运算)
 - [网络请求工具，如最大并发、自动重试、自动重连的 ws 等](#网络请求工具)
 <br />
 
@@ -43,8 +43,9 @@ npm i @jl-org/tool
 - [时钟，如获取帧间隔、过去时间...](#时钟)
 <br />
 
-- [DOM，如节流、防抖、鼠标坐标转换、CSS单位处理...](#dom)
+- [DOM，如节流、防抖、CSS单位处理...](#dom)
 - [事件工具，如主题变化、双击键盘事件、全屏...](#事件工具)
+- [资源预加载，提高页面加载速度](#资源预加载)
 - [禁止调试](#禁止调试)
 <br />
 
@@ -252,8 +253,15 @@ export declare function wait(durationMS?: number): Promise<unknown>;
 ---
 
 
-## 数值映射，支持反向映射
+## 数学运算
 ```ts
+/**
+ * 根据半径和角度获取 DOM 坐标
+ * @param r 半径
+ * @param deg 角度
+ */
+export declare function calcCoord(r: number, deg: number): readonly [number, number];
+
 /**
  * 将数值从一个范围映射到另一个范围，支持反向映射
  *
@@ -287,18 +295,14 @@ export declare function mapRange(value: number, range: Range, options?: MapRange
  */
 export declare function createMapRange(range: Range, options?: MapRangeOptions): (value: number) => number;
 
-export interface MapRangeOptions {
-    /** 是否限制在目标范围内 */
-    clamp?: boolean;
-    /** 是否保留小数 */
-    precise?: boolean;
-    /** 保留的小数位数 (仅在 precise 为 true 时生效) */
-    decimals?: number;
-}
-export interface Range {
-    input: [number, number];
-    output: [number, number];
-}
+/**
+ * 根据总面积、宽高计算宽高
+ * @param totalArea 期望的总面积，宽 * 高
+ * @param aspectRatio 宽高比元组
+ * @param options 可选最大范围限制、是否需要被指定数值整除
+ * @returns 计算出的 [宽度, 高度]
+ */
+export declare function calcAspectRatio(totalArea: number, aspectRatio: [number, number], options?: AspectRatioOpts): [number, number];
 ```
 
 
@@ -813,6 +817,36 @@ export declare const fullScreen: (dom?: HTMLElement) => void;
 
 ---
 
+# 资源预加载
+```ts
+/**
+ * 图片资源预加载
+ */
+export declare function preloadImgs(srcs: string[], opts?: PreloadOpts): Promise<unknown[]>;
+
+export type PreloadType = 'preload' | 'prefetch';
+export type PreloadOpts = {
+    /**
+     * 超时时间，毫秒
+     * @default 10000
+     */
+    timeout?: number;
+    /**
+     * 预加载类型
+     * @default preload
+     */
+    preloadType?: PreloadType;
+    /**
+     * 并发数量
+     * @default 3
+     */
+    concurrentCount?: number;
+};
+
+```
+
+---
+
 
 ## 禁止调试
 ```ts
@@ -1306,7 +1340,7 @@ export declare const isSame: (a: any, b: any) => boolean;
 ## canvas
 ```ts
 /**
- * 截取图片的一部分，返回 base64 | blob
+ * 截取图片指定区域，可设置缩放，返回 base64 | blob
  * @param img 图片
  * @param opts 配置
  * @param resType 需要返回的文件格式，默认 `base64`
