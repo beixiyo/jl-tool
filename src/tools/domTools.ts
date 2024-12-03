@@ -117,8 +117,8 @@ export const getImg = (
  * 节流
  * @param delay 延迟时间（ms），@default 200
  */
-export function throttle<R, P extends any[]>(
-  fn: (...args: P) => R,
+export function throttle<P extends any[]>(
+  fn: (...args: P) => any,
   delay = 200
 ) {
   let st = 0
@@ -127,7 +127,7 @@ export function throttle<R, P extends any[]>(
     const now = Date.now()
     if (now - st > delay) {
       st = now
-      return fn.apply(this, args) as R
+      return fn.apply(this, args)
     }
   }
 }
@@ -136,8 +136,8 @@ export function throttle<R, P extends any[]>(
  * 防抖
  * @param delay 延迟时间（ms），@default 200
  */
-export function debounce<R, P extends any[]>(
-  fn: (...args: P) => R,
+export function debounce<P extends any[]>(
+  fn: (...args: P) => any,
   delay = 200
 ) {
   let id: number
@@ -145,26 +145,26 @@ export function debounce<R, P extends any[]>(
   return function (this: any, ...args: P) {
     id && clearTimeout(id)
     id = window.setTimeout(() => {
-      return fn.apply(this, args) as R
+      return fn.apply(this, args)
     }, delay)
   }
 }
 
 /**
  * 用 requestAnimationFrame 节流，只有一帧内执行完毕，才会继续执行
+ * @param fn 可以是异步函数
  */
-export function rafThrottle(
-  fn: Function
+export function rafThrottle<P extends any[]>(
+  fn: (...args: P) => any
 ) {
   let lock = false
 
-  return function (...args: any[]) {
+  return function (this: any, ...args: P) {
     if (lock) return
     lock = true
 
-    window.requestAnimationFrame(() => {
-      // @ts-ignore
-      fn.apply(this, args)
+    window.requestAnimationFrame(async () => {
+      await fn.apply(this, args)
       lock = false
     })
   }

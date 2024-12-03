@@ -712,18 +712,19 @@ export declare const getImg: (src: string, setImg?: (img: HTMLImageElement) => v
  * 节流
  * @param delay 延迟时间（ms），@default 200
  */
-export declare function throttle<R, P extends any[]>(fn: (...args: P) => R, delay?: number): (this: any, ...args: P) => R;
+export declare function throttle<P extends any[]>(fn: (...args: P) => any, delay?: number): (this: any, ...args: P) => any;
 
 /**
  * 防抖
  * @param delay 延迟时间（ms），@default 200
  */
-export declare function debounce<R, P extends any[]>(fn: (...args: P) => R, delay?: number): (this: any, ...args: P) => void;
+export declare function debounce<P extends any[]>(fn: (...args: P) => any, delay?: number): (this: any, ...args: P) => void;
 
 /**
  * 用 requestAnimationFrame 节流，只有一帧内执行完毕，才会继续执行
+ * @param fn 可以是异步函数
  */
-export declare function rafThrottle(fn: Function): (...args: any[]) => void;
+export declare function rafThrottle<P extends any[]>(fn: (...args: P) => any): (this: any, ...args: P) => void;
 
 /** 设置 LocalStorage，无需手动序列化 */
 export declare function setLocalStorage(key: string, value: any): void;
