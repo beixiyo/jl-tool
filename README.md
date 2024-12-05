@@ -248,6 +248,13 @@ export declare function excludeKeys<T extends object, K extends keyof T>(data: T
  * @param durationMS 等待时间，默认 1000 毫秒
  */
 export declare function wait(durationMS?: number): Promise<unknown>;
+
+/**
+ * setInterval 替代，用 requestAnimationFrame 实现
+ * @returns 停止函数
+ */
+export declare function timer(fn: (elapsedMS: number) => any, durationMS: number): () => void;
+
 ```
 
 ---
