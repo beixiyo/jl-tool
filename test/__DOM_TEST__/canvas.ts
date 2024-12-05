@@ -2,13 +2,10 @@ import {
   createCvs,
   getPixel,
   fillPixel,
-  compressImg,
-  cutImg,
   parseImgData,
-} from '@deb'
-
-import { getImg } from '@deb'
-import { blobToBase64 } from '@deb'
+} from '@/canvas/tools'
+import { compressImg, cutImg } from '@/canvas/imgHandle'
+import { blobToBase64, getImg } from '@deb'
 
 
 /** --------------------------------------------------------------
@@ -49,25 +46,39 @@ fillPixel(ctx, 0, 0, 'rgba(255, 0, 0, 0.5)')
 fillPixel(ctx, WIDTH - 1, HEIGHT - 1, 'rgba(40, 255, 255, 0.5)')
 
 
-/** ----------------------- Test ------------------------------ */
-const imgData = ctx.getImageData(0, 0, WIDTH, HEIGHT).data
+const imgData = ctx.getImageData(0, 0, WIDTH, HEIGHT)
 
-/** 像素获取测试 */
-console.log(getPixel(0, 0, imgData, WIDTH))
-console.log(getPixel(WIDTH - 1, HEIGHT - 1, imgData, WIDTH))
+/** 
+ * 像素获取测试
+ */
+
+// [255, 0, 0, 128]
+console.log(getPixel(0, 0, imgData))
+// [40, 255, 255, 128]
+console.log(getPixel(WIDTH - 1, HEIGHT - 1, imgData))
+
 console.log(imgData)
-console.log(parseImgData(imgData, WIDTH, HEIGHT))
+console.log(parseImgData(imgData));
 
 
 /** ------------------------- 裁剪图片测试 ----------------------------- */
-const img = new Image()
-img.src = 'https://cdn.pixabay.com/photo/2023/04/10/20/41/bird-7914702_640.jpg'
 
-img.onload = async () => {
+(async () => {
+  const img = await getImg(
+    'https://cdn.pixabay.com/photo/2023/04/10/20/41/bird-7914702_640.jpg',
+    img => {
+      img.crossOrigin = 'anonymous'
+    }
+  ) as HTMLImageElement
+
   document.body.appendChild(img)
   const src = await cutImg(img, {
     height: 100,
     width: 200,
+    x: 100,
+    y: 120,
+    scaleX: 1.2,
+    scaleY: 1.2,
   })
 
   const newImg = new Image()
@@ -84,4 +95,4 @@ img.onload = async () => {
   newImg.onload = () => {
     document.body.appendChild(newImg)
   }
-}
+})()

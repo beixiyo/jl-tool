@@ -3,7 +3,7 @@ import { createCvs } from './tools'
 
 
 /**
- * 截取图片指定区域，可设置缩放，返回 base64 | blob
+ * 裁剪图片指定区域，可设置缩放，返回 base64 | blob
  * @param img 图片
  * @param opts 配置
  * @param resType 需要返回的文件格式，默认 `base64`
@@ -88,7 +88,6 @@ export function getCvsImg<T extends TransferType = 'base64'>(
       throw new Error(`未知的返回类型：${data}`)
   }
 }
-
 
 
 export type HandleImgReturn<T extends TransferType> =

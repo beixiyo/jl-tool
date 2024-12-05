@@ -67,7 +67,7 @@ npm i @jl-org/tool
 - [*is* 判断](#is-判断)
 <br />
 
-- [canvas，可以压缩图片，截取部分图片...](#canvas)
+- [canvas，可以压缩图片，裁剪缩放图片...](#canvas)
 - [*Web* 小插件，如：客户端同步服务器更新](#web-小插件)
 - [常用常量，如角度、正则表达式...](#常量)
 
@@ -1388,23 +1388,21 @@ export declare function createCvs(width?: number, height?: number, options?: Can
 };
 
 /**
- * 取出`canvas`用一维数组描述的颜色中 某个坐标的`RGBA`数组
- * 注意坐标从 0 开始
+ * 取出 `canvas` 用一维数组描述的颜色中，某个坐标的`RGBA`数组
+ * ### 注意坐标从 0 开始
  * @param x 宽度中的第几列
  * @param y 高度中的第几行
- * @param imgData ctx.getImageData 方法获取的 ImageData 对象的 data 属性
- * @param width 图像区域宽度
+ * @param imgData ctx.getImageData 方法获取的 ImageData
  * @returns `RGBA`数组
  */
-export declare function getPixel(x: number, y: number, imgData: ImageData['data'], width: number): Pixel;
+export declare function getPixel(x: number, y: number, imgData: ImageData): Pixel;
 
 /**
  * 美化 ctx.getImageData.data 属性
  * 每一行为一个大数组，每个像素点为一个小数组
- * @param imgData ctx.getImageData 方法获取的 ImageData 对象的 data 属性
- * @param width 图像区域宽度
+ * @param imgData ctx.getImageData 方法获取的 ImageData
  */
-export declare function parseImgData(imgData: ImageData['data'], width: number, height: number): number[][][];
+export declare function parseImgData(imgData: ImageData): Pixel[][];
 
 /** 给 canvas 某个像素点填充颜色的函数 */
 export declare function fillPixel(ctx: CanvasRenderingContext2D, x: number, y: number, color: string): void;

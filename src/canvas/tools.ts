@@ -18,15 +18,15 @@ export function createCvs(width?: number, height?: number, options?: CanvasRende
 }
 
 /**
- * 取出`canvas`用一维数组描述的颜色中 某个坐标的`RGBA`数组  
- * 注意坐标从 0 开始
+ * 取出 `canvas` 用一维数组描述的颜色中，某个坐标的`RGBA`数组  
+ * ### 注意坐标从 0 开始
  * @param x 宽度中的第几列
  * @param y 高度中的第几行
- * @param imgData ctx.getImageData 方法获取的 ImageData 对象的 data 属性
- * @param width 图像区域宽度
+ * @param imgData ctx.getImageData 方法获取的 ImageData
  * @returns `RGBA`数组
  */
-export function getPixel(x: number, y: number, imgData: ImageData['data'], width: number) {
+export function getPixel(x: number, y: number, imgData: ImageData) {
+  const { data, width } = imgData
   const arr: Pixel = [0, 0, 0, 0]
   /**
    * canvas 的像素点是一维数组，需要通过计算获取对应坐标的像素点
@@ -38,7 +38,7 @@ export function getPixel(x: number, y: number, imgData: ImageData['data'], width
   const index = (width * 4 * y) + (x * 4)
 
   for (let i = 0; i < 4; i++) {
-    arr[i] = imgData[index + i]
+    arr[i] = data[index + i]
   }
 
   return arr
@@ -47,17 +47,17 @@ export function getPixel(x: number, y: number, imgData: ImageData['data'], width
 /**
  * 美化 ctx.getImageData.data 属性  
  * 每一行为一个大数组，每个像素点为一个小数组
- * @param imgData ctx.getImageData 方法获取的 ImageData 对象的 data 属性
- * @param width 图像区域宽度
+ * @param imgData ctx.getImageData 方法获取的 ImageData
  */
-export function parseImgData(imgData: ImageData['data'], width: number, height: number) {
-  const arr: number[][][] = []
+export function parseImgData(imgData: ImageData) {
+  const { width, height } = imgData
+  const arr: Pixel[][] = []
 
   for (let x = 0; x < width; x++) {
-    const row: number[][] = []
+    const row: Pixel[] = []
 
     for (let y = 0; y < height; y++) {
-      row.push(getPixel(x, y, imgData, width))
+      row.push(getPixel(x, y, imgData))
     }
 
     arr.push(row)
