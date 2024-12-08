@@ -37,6 +37,13 @@ describe('数组工具测试', () => {
     expect(binarySearch(pageItemArr, 50, (item) => item.data)).toEqual(49)
     expect(binarySearch(pageItemArr, 500, (item) => item.data)).toEqual(-1)
   })
+
+  test('二分查找重复元素找到第一个索引', () => {
+    expect(binarySearch(
+      [0, 1, 2, 2, 2, 3, 4, 8, 10, 32],
+      2
+    )).toEqual(2)
+  })
 })
 
 

@@ -297,6 +297,7 @@ export function searchTreeData<T extends { children?: T[] }>(
         }
       }
     }
+
     return result
   }
 
@@ -335,12 +336,14 @@ export function binarySearch<T>(
   getValFn: (item: T) => number = (item: T) => item as number
 ) {
   let left = 0,
-    right = arr.length - 1
+    right = arr.length - 1,
+    candidate = -1
 
   while (left <= right) {
-    const mid = Math.floor((left + right) / 2)
+    const mid = (left + right) >>> 1
     if (getValFn(arr[mid]) === value) {
-      return mid
+      candidate = mid
+      right = mid - 1
     }
     else if ((getValFn(arr[mid]) as any) < value) {
       left = mid + 1
@@ -350,7 +353,7 @@ export function binarySearch<T>(
     }
   }
 
-  return -1
+  return candidate
 }
 
 /**
