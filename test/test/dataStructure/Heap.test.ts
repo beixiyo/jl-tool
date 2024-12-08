@@ -24,7 +24,7 @@ describe('最小堆测试', () => {
     lastNum = minNum
 
   console.log('最小堆')
-  while (val = mh.pop()) {
+  while (val = mh.pop()!) {
     console.log({ 本次取值: val.sortIndex, 上次取值: lastNum })
     if (val.sortIndex < lastNum) {
       throw new Error('最小堆取值错误')
@@ -58,7 +58,7 @@ describe('最大堆测试', () => {
     lastNum = maxNum
 
   console.log('最大堆')
-  while (val = mh.pop()) {
+  while (val = mh.pop()!) {
     console.log({ 本次取值: val.sortIndex, 上次取值: lastNum })
     if (val.sortIndex > lastNum) {
       throw new Error('最大堆取值错误')

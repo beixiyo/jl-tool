@@ -1,33 +1,32 @@
-import { scheduleTask } from '@deb'
+import { scheduleTask } from '@/tools/scheduleTask'
 
 
 const
-    reactBtn = document.createElement('button'),
-    taskArr = Array.from({ length: 200000 }).map((_, i) => genTask(i + 1)),
-    onEnd = () => console.log('end')
+  reactBtn = document.createElement('button'),
+  stopBtn = document.createElement('button'),
+  taskArr = Array.from({ length: 20000 }).map((_, i) => genTask(i + 1)),
+  onEnd = () => console.log('end')
 
-reactBtn.textContent = 'React任务调度器方式执行'
-document.body.appendChild(reactBtn)
+reactBtn.textContent = 'React任务调度器方式插入 20000 个元素'
+stopBtn.textContent = '停止调度'
+document.body.append(reactBtn, stopBtn)
 
 
-let stop = false
+let isStop = false
 reactBtn.onclick = () => {
-    scheduleTask(taskArr, onEnd, () => {
-        return stop
-    })
+  scheduleTask(taskArr, onEnd, () => isStop)
+}
 
-    /** 停止调度测试 */
-    setTimeout(() => {
-        stop = true
-    }, 500);
+stopBtn.onclick = () => {
+  isStop = true
 }
 
 
 function genTask(item: number) {
-    return () => {
-        const el = document.createElement('div')
-        el.textContent = item + ''
-        document.body.appendChild(el)
-    }
+  return () => {
+    const el = document.createElement('div')
+    el.textContent = item + ''
+    document.body.appendChild(el)
+  }
 }
 

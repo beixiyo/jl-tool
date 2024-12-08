@@ -1,5 +1,5 @@
 import { ATo, createAnimationByTime } from '@/animation'
-import { getColor } from '@deb'
+import { getColor } from '@/tools/colorTools'
 
 
 const div1 = genDiv('0', '0'),

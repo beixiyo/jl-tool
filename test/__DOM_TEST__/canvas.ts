@@ -5,7 +5,8 @@ import {
   parseImgData,
 } from '@/canvas/tools'
 import { compressImg, cutImg } from '@/canvas/imgHandle'
-import { blobToBase64, getImg } from '@deb'
+import { blobToBase64 } from '@/tools/fileTools'
+import { getImg } from '@/tools/domTools'
 
 
 /** --------------------------------------------------------------

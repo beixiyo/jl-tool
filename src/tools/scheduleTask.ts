@@ -7,7 +7,11 @@ const TICK = 1000 / 60
  * @param onEnd 任务完成的回调
  * @param needStop 是否停止任务
  */
-export const scheduleTask = (taskArr: Function[], onEnd?: Function, needStop?: () => boolean) => {
+export const scheduleTask = (
+  taskArr: Function[],
+  onEnd?: Function,
+  needStop?: () => boolean
+) => {
   let i = 0
   const { start, hasIdleRunTask } = genFunc()
   const { port1, port2 } = new MessageChannel()
@@ -32,6 +36,7 @@ export const scheduleTask = (taskArr: Function[], onEnd?: Function, needStop?: (
         port1.postMessage(null)
       }
     }
+
     function hasIdleRunTask(hasIdle: HasIdle) {
       const st = performance.now()
       while (hasIdle(st)) {

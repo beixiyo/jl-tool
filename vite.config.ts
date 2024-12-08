@@ -16,8 +16,10 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('../src', import.meta.url)),
-      '@deb': fileURLToPath(new URL('../dist/index.js', import.meta.url))
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+      '@deb': fileURLToPath(new URL('./dist/index.js', import.meta.url))
     },
-  }
+  },
+  // index.html 入口文件
+  root: fileURLToPath(new URL('./test', import.meta.url)),
 })

@@ -1,6 +1,6 @@
 // import './createAnimationByTime'
 // import './preload'
 // import  './webApi'
-// import './scheduleTask'
-import './canvas'
+import './scheduleTask'
+// import './canvas'
 // import './debounce'

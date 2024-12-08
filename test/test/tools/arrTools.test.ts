@@ -437,15 +437,15 @@ const input3 = [
 const findValue = (target: number) => (node: typeof input3[0]) => node.value === target
 
 test('广度遍历测试', () => {
-  expect(bfsFind(input3, findValue(1)).value).toBe(1)
-  expect(bfsFind(input3, findValue(4)).value).toBe(4)
-  expect(bfsFind(input3, findValue(7)).value).toBe(7)
+  expect(bfsFind(input3, findValue(1))?.value).toBe(1)
+  expect(bfsFind(input3, findValue(4))?.value).toBe(4)
+  expect(bfsFind(input3, findValue(7))?.value).toBe(7)
   expect(bfsFind(input3, findValue(100))).toBe(null)
 })
 
 test('深度遍历测试', () => {
-  expect(dfsFind(input3, findValue(1)).value).toBe(1)
-  expect(dfsFind(input3, findValue(4)).value).toBe(4)
-  expect(dfsFind(input3, findValue(7)).value).toBe(7)
+  expect(dfsFind(input3, findValue(1))?.value).toBe(1)
+  expect(dfsFind(input3, findValue(4))?.value).toBe(4)
+  expect(dfsFind(input3, findValue(7))?.value).toBe(7)
   expect(dfsFind(input3, findValue(100))).toBe(null)
 })
