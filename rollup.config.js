@@ -8,32 +8,36 @@ import { fileURLToPath } from 'node:url'
 
 
 export default defineConfig({
-    input: 'src/index.ts',
-    output: [
-        outputFormat('dist/index.cjs', 'cjs'),
-        outputFormat('dist/index.js', 'es'),
-        outputFormat('dist/index.browser.js', 'iife', '_jl'),
-    ],
-    plugins: [
-        nodeResolve(),  // 开启`node_modules`查找模块功能
-        terser(),
-        typescript(),
-        clear({
-            targets: ['dist'],
-            watch: true,
-        }),
+  input: 'src/index.ts',
+  output: [
+    outputFormat('dist/index.cjs', 'cjs'),
+    outputFormat('dist/index.js', 'es'),
+    outputFormat('dist/index.browser.js', 'iife', '_jl'),
+  ],
+  plugins: [
+    nodeResolve(),  // 开启`node_modules`查找模块功能
+    terser(),
+    typescript({
+      compilerOptions: {
+        rootDir: './src'
+      }
+    }),
+    clear({
+      targets: ['dist'],
+      watch: true,
+    }),
 
-        alias({
-            entries: [
-                {
-                    find: '@',
-                    replacement: fileURLToPath(
-                        new URL('src', import.meta.url)
-                    )
-                },
-            ]
-        }),
-    ],
+    alias({
+      entries: [
+        {
+          find: '@',
+          replacement: fileURLToPath(
+            new URL('src', import.meta.url)
+          )
+        },
+      ]
+    }),
+  ],
 })
 
 
@@ -44,7 +48,7 @@ export default defineConfig({
  * @returns 格式化打包对象
  */
 function outputFormat(file, format, name) {
-    return {
-        file, format, name
-    }
+  return {
+    file, format, name
+  }
 }
