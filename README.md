@@ -34,7 +34,7 @@ npm i @jl-org/tool
 
 - [各种常用工具](#各种常用工具)
 - [数学运算，如数值映射、坐标计算、比例计算](#数学运算)
-- [网络请求工具，如最大并发、自动重试、自动重连的 ws 等](#网络请求工具)
+- [网络请求工具，如最大并发、自动重试、自动重连的 Websocket 等](#网络请求工具)
 <br />
 
 - [数组处理，如扁平数组转树、树搜索...](#数组处理)
@@ -333,45 +333,26 @@ export declare function retryReq<T>(task: () => Promise<T>, maxCount?: number): 
 export declare function concurrentTask<T>(tasks: (() => Promise<T>)[], maxCount?: number): Promise<T[]>;
 
 /**
- * 根据网络状态自动重连的 WebSocket
+ * 根据网络状态自动重连的，自动发送心跳数据的 WebSocket
  */
-export declare class WS extends EventBus {
-
-    /** 最大重连数，默认 5 */
-    maxReconnectAttempts: number;
-    /** 重连间隔，默认 10000 ms（10s） */
-    reconnectInterval: number;
-    /** 发送心跳数据间隔，默认 30000 ms（30s） */
-    heartbeatInterval: number;
-
+export declare class WS {
+    constructor(opts: WSOpts);
     /**
-     * 自定义 id 名称，标识是自己发送的消息，不会通过 onmessage 接收自己的消息
-     *
-     * 如果设置为空字符、null、undefined，则不会发送额外的 id
-     *
-     * 默认 '__WS_ID__'，如果你未进行任何设置，则会发送如下消息到服务端
-     * @example
-     * {
-     *      __WS_ID__: '唯一id',
-     *      message: '消息内容'
-     * }
+     * socket.readyState === WebSocket.OPEN
      */
-    customId: string | null | undefined;
-
+    get isConnected(): boolean;
     /**
-     * @param url 地址，如 ws://127.0.0.1:8080
-     * @example
-     * const ws = new WS('ws://127.0.0.1:8080')
-     * ws.connect()
-     * ws.onmessage(() => { ... })
+     * socket.readyState === WebSocket.CONNECTING
      */
-    constructor(url: string, protocols?: string | string[]);
-
-    onopen<T>(callBack: SocketCb<T>): void;
-    onmessage<T>(callBack: SocketCb<T>): void;
-    onclose<T>(callBack: SocketCb<T>): void;
-    onerror<T>(callBack: SocketCb<T>): void;
-
+    get isConnecting(): boolean;
+    /**
+     * socket.readyState === WebSocket.CLOSING
+     */
+    get isClose(): boolean;
+    /**
+     * 网络状态是否离线，!window.navigator.onLine
+     */
+    get isOffline(): boolean;
     send(message: Parameters<WebSocket['send']>[0]): void;
     connect(): void;
     close(): void;
@@ -733,10 +714,19 @@ export declare function debounce<P extends any[]>(fn: (...args: P) => any, delay
  */
 export declare function rafThrottle<P extends any[]>(fn: (...args: P) => any): (this: any, ...args: P) => void;
 
-/** 设置 LocalStorage，无需手动序列化 */
-export declare function setLocalStorage(key: string, value: any): void;
-/** 获取 LocalStorage，无需手动反序列化 */
-export declare function getLocalStorage<T>(key: string): T;
+/**
+ * 设置 LocalStorage，默认自动转 JSON
+ * @param autoToJSON 是否自动 JSON.stringify
+ * @param storage 存储对象，默认 localStorage
+ */
+export declare function setLocalStorage(key: string, value: any, autoToJSON?: boolean, storage?: Storage): void;
+/**
+ * 获取 LocalStorage，默认自动解析 JSON
+ * ### 'undefined' 字符串会被转成 null
+ * @param autoParseJSON 是否自动 JSON.parse，默认 true
+ * @param storage 存储对象，默认 localStorage
+ */
+export declare function getLocalStorage<T>(key: string, autoParseJSON?: boolean, storage?: Storage): T | null;
 
 /** 获取选中的文本 */
 export declare const getSelectedText: () => string;

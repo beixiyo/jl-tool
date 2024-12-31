@@ -172,10 +172,15 @@ export function rafThrottle<P extends any[]>(
 
 /** 
  * 设置 LocalStorage，默认自动转 JSON
- * @param autoToJSON 是否自动转 JSON，默认 true
+ * @param autoToJSON 是否自动 JSON.stringify
+ * @param storage 存储对象，默认 localStorage
  */
-export function setLocalStorage(key: string, value: any, autoToJSON = true) {
-  return localStorage.setItem(
+export function setLocalStorage(
+  key: string, value: any,
+  autoToJSON = true,
+  storage: Storage = localStorage
+) {
+  return storage.setItem(
     key,
     autoToJSON
       ? JSON.stringify(value)
@@ -183,12 +188,17 @@ export function setLocalStorage(key: string, value: any, autoToJSON = true) {
   )
 }
 /** 
- * 获取 LocalStorage，默认自动解析 JSON。
+ * 获取 LocalStorage，默认自动解析 JSON
  * ### 'undefined' 字符串会被转成 null
- * @param autoParseJSON 是否自动解析 JSON，默认 true
+ * @param autoParseJSON 是否自动 JSON.parse，默认 true
+ * @param storage 存储对象，默认 localStorage
  */
-export function getLocalStorage<T>(key: string, autoParseJSON = true): T | null {
-  const item = localStorage.getItem(key)
+export function getLocalStorage<T>(
+  key: string,
+  autoParseJSON = true,
+  storage: Storage = localStorage
+): T | null {
+  const item = storage.getItem(key)
   if (item === 'undefined') {
     return null
   }
