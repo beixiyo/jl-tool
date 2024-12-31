@@ -11,7 +11,11 @@ export const downloadByData = (data: Blob, fileName = '') => {
   a.href = URL.createObjectURL(data)
   a.setAttribute('download', fileName)
   a.click()
-  URL.revokeObjectURL(a.href)
+
+  // 解决移动端无法下载问题
+  setTimeout(() => {
+    URL.revokeObjectURL(a.href)
+  }, 1000)
 }
 
 /**

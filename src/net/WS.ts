@@ -4,62 +4,60 @@ import { EventBus } from '../channel/EventBus'
 /**
  * 根据网络状态自动重连的 WebSocket
  */
-export class WS extends EventBus {
+export class WS extends EventBus<'open' | 'message' | 'close' | 'error'> {
 
   private url = ''
   private protocols?: string | string[]
-  private socket?: WebSocket
+  socket: WebSocket | null = null
 
-  /** 已经重连次数 */
-  private reconnectAttempts = 0
-  /** 最大重连数，默认 5 */
-  maxReconnectAttempts = 5
-
-  /** 重连间隔，默认 10000 ms（10s） */
-  reconnectInterval = 10000
-  /** 发送心跳数据间隔，默认 30000 ms（30s） */
-  heartbeatInterval = 30000
-
-  /** 计时器 id */
-  private heartbeatTimer?: number
-  /** 彻底终止 WS */
-  private isStop = false
-
-  /** 标识是自己发的消息 */
-  private myId = Date.now().toString()
-  /**
-   * 自定义 id 名称，标识是自己发送的消息，不会通过 onmessage 接收自己的消息
-   * 
-   * 如果设置为空字符、null、undefined，则不会发送额外的 id
-   * 
-   * 默认 '__WS_ID__'，如果你未进行任何设置，则会发送如下消息到服务端
-   * @example
-   * ```ts
-   * {
-   *      __WS_ID__: Date.now().toString(),
-   *      message: '消息内容'
-   * }
-   * ```
+  /** 
+   * 发送心跳数据间隔，单位 ms
+   * @default 5000
    */
-  customId: string | null | undefined = '__WS_ID__'
+  heartbeatInterval = 5000
+  /**
+   * 生成心跳数据函数
+   * @default () => ({ type: 'Ping', data: null })
+   */
+  genHeartbeatMsg = () => ({ type: 'Ping', data: null })
+
+  /** 心跳计时器 id */
+  private heartbeatTimer?: number
+  /** 离开页面计时器 id */
+  private leaveTimer?: number
+  /**
+   * 页面不可见时，多久后断开连接，单位 ms
+   * @default 10000
+   */
+  leaveTime = 10000
 
   /** 删除事件 */
   private rmNetEvent?: VoidFunction
-  private static SPACE = '    '
 
   /**
-   * @param url 地址，如 ws://127.0.0.1:8080
-   * @example
-   * ```ts
-   * const ws = new WS('ws://127.0.0.1:8080')
-   * ws.connect()
-   * ws.onmessage(() => { ... })
-   * ```
+   * 和原生 WebSocket 参数一致
+   * 自带心跳发送，断网重连
    */
   constructor(url: string, protocols?: string | string[]) {
     super()
     this.url = url
     this.protocols = protocols
+  }
+
+  get isConnected() {
+    return this.socket?.readyState === WebSocket.OPEN
+  }
+
+  get isConnecting() {
+    return this.socket?.readyState === WebSocket.CONNECTING
+  }
+
+  get isOffline() {
+    return !navigator.onLine
+  }
+
+  get isClose() {
+    return this.socket?.readyState === WebSocket.CLOSED
   }
 
   // 事件 ==================================================
@@ -78,14 +76,6 @@ export class WS extends EventBus {
 
   send(message: Parameters<WebSocket['send']>[0]) {
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-      if (this.customId) {
-        this.socket.send(JSON.stringify({
-          [this.customId]: this.myId,
-          message
-        }))
-        return
-      }
-
       this.socket.send(message)
       return
     }
@@ -97,9 +87,6 @@ export class WS extends EventBus {
     this.rmNetEvent?.()
     this.rmNetEvent = this.bindNetEvent()
 
-    if (this.reconnectAttempts === 0) {
-      this.logInfo('初始化连接中...')
-    }
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
       return
     }
@@ -113,9 +100,8 @@ export class WS extends EventBus {
 
   close() {
     if (this.socket) {
-      this.isStop = true
       this.socket.close()
-      this.socket = undefined
+      this.socket = null
 
       this.off('open')
       this.off('message')
@@ -128,12 +114,9 @@ export class WS extends EventBus {
 
   // 私有方法 ==================================================
 
-  /** WebSocket 连接成功 */
   private handleOpen() {
     if (!this.socket) return
     this.socket.onopen = event => {
-      this.isStop = false
-      this.reconnectAttempts = 0
       this.startHeartbeat()
 
       this.logInfo('连接成功 [onopen]...')
@@ -148,13 +131,8 @@ export class WS extends EventBus {
       try {
         data = JSON.parse(data)
       }
-      catch { }
-
-      /**
-        * 是自己发的消息，不广播给自己
-        */
-      if (this.customId && data?.[this.customId] === this.myId) {
-        return
+      catch {
+        console.error('[WebSocket] 解析消息失败', event)
       }
 
       this.emit('message', event)
@@ -165,12 +143,6 @@ export class WS extends EventBus {
   private handleClose() {
     if (!this.socket) return
     this.socket.onclose = event => {
-      if (this.reconnectAttempts === 0) {
-        this.logInfo('连接断开 [onclose]')
-      }
-      if (!this.isStop) {
-        this.reconnect()
-      }
       this.emit('close', event)
     }
   }
@@ -178,24 +150,32 @@ export class WS extends EventBus {
   private handleError() {
     if (!this.socket) return
     this.socket.onerror = event => {
-      if (this.reconnectAttempts === 0) {
-        this.logInfo('连接异常 [onerror]...')
-      }
       this.stopHeartbeat()
       this.emit('error', event)
     }
   }
 
   private logInfo(msg: string, type: 'log' | 'warn' = 'log') {
-    console[type](`WS ${msg}${WS.SPACE}${this.url}`)
+    console[type](`WS ${msg} ${this.url}`)
+  }
+
+  /**
+   * 页面不可见时，关闭连接。恢复时，重新连接
+   */
+  private onVisibilityChange = () => {
+    if (document.visibilityState === 'visible' && this.isClose) {
+      this.connect()
+    }
+    else if (document.visibilityState === 'hidden') {
+      clearTimeout(this.leaveTimer)
+      this.leaveTimer = window.setTimeout(() => {
+        this.socket?.close()
+      }, this.leaveTime)
+    }
   }
 
   /** 网络状态变更处理逻辑 */
   private bindNetEvent() {
-    if (typeof window === 'undefined' || typeof window.addEventListener === 'undefined') {
-      return () => { }
-    }
-
     const onOnline = () => {
       this.logInfo('网络恢复，尝试重连...')
       this.connect()
@@ -207,43 +187,36 @@ export class WS extends EventBus {
 
     window.addEventListener('online', onOnline)
     window.addEventListener('offline', onOffline)
+    window.addEventListener('visibilitychange', this.onVisibilityChange)
+
+    // @ts-ignore
+    if (window.navigator.connection) {
+      // @ts-ignore
+      window.navigator.connection.addEventListener('change', onOnline)
+    }
+
 
     return () => {
       window.removeEventListener('online', onOnline)
       window.removeEventListener('offline', onOffline)
+      window.removeEventListener('visibilitychange', this.onVisibilityChange)
+      // @ts-ignore
+      window.navigator.connection.removeEventListener('change', onOnline)
     }
-  }
-
-  /** 断网重连逻辑 */
-  private reconnect() {
-    if (this.reconnectAttempts < this.maxReconnectAttempts) {
-      this.reconnectAttempts++
-      this.logInfo(`尝试重连... (${this.reconnectAttempts}/${this.maxReconnectAttempts})`)
-
-      setTimeout(this.connect.bind(this), this.reconnectInterval)
-      return
-    }
-
-    this.stopHeartbeat()
-    this.logInfo(`超过重连次数，终止重连: ${this.url}`, 'warn')
   }
 
   /** 开始心跳检测，定时发送心跳消息 */
   private startHeartbeat() {
-    if (this.isStop) return
+    if (!this.socket) return
     if (this.heartbeatTimer) {
       this.stopHeartbeat()
     }
 
     this.heartbeatTimer = window.setInterval(
       () => {
-        if (this.socket) {
-          this.socket.send(JSON.stringify({ type: 'heartBeat', data: {} }))
-          this.logInfo('发送送心跳中...')
-          return
-        }
-
-        console.error('[WebSocket] 未连接')
+        this.socket?.send(JSON.stringify(this.genHeartbeatMsg()))
+        this.logInfo('发送送心跳中...')
+        return
       },
       this.heartbeatInterval
     )
