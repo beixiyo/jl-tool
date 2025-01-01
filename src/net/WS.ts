@@ -6,7 +6,7 @@ import type { Optional } from '@jl-org/ts-tool'
  */
 export class WS {
 
-  private opts: Optional<Required<WSOpts>, 'protocols'>
+  private opts: Optional<Required<WSOpts>, 'protocols' | 'onVisible' | 'onHidden'>
   socket: WebSocket | null = null
 
   /** 心跳计时器 id */
@@ -67,15 +67,18 @@ export class WS {
     console.warn('未连接，请先调用 connect')
   }
 
-  connect() {
+  connect(): WebSocket {
     if (this.isConnected) {
-      return
+      return this.socket!
     }
 
     this.rmNetEvent?.()
     this.socket = new WebSocket(this.opts.url, this.opts.protocols)
     this.rmNetEvent = this.bindNetEvent()
+    window.removeEventListener('visibilitychange', this.onVisibilityChange)
     window.addEventListener('visibilitychange', this.onVisibilityChange)
+
+    return this.socket
   }
 
   close() {
@@ -84,7 +87,7 @@ export class WS {
       this.socket.close()
       this.socket = null
     }
-    
+
     clearInterval(this.heartbeatTimer)
     window.removeEventListener('visibilitychange', this.onVisibilityChange)
   }
@@ -99,13 +102,16 @@ export class WS {
 
     if (document.visibilityState === 'visible' && this.isClose) {
       console.log('页面可见，尝试重连...')
-      this.connect()
+      const socket = this.connect()
+      this.opts.onVisible?.(socket)
     }
     else if (document.visibilityState === 'hidden') {
       clearInterval(this.heartbeatTimer)
       this.leaveTimer = window.setTimeout(() => {
         console.log('离开页面过久，关闭连接')
         this.socket?.close()
+        this.opts.onHidden?.()
+
       }, this.opts.leaveTime)
     }
   }
@@ -183,4 +189,13 @@ export type WSOpts = {
    * @default 10000
    */
   leaveTime?: number
+
+  /**
+   * 页面可见时的回调
+   */
+  onVisible?: (socket: WebSocket) => void
+  /**
+   * 页面不可见时的回调
+   */
+  onHidden?: () => void
 }
