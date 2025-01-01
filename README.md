@@ -767,12 +767,6 @@ export declare const getAllStyle: () => Promise<string>;
  */
 export declare const print: Print;
 
-/**
- * 检查并设置父元素的`overflow: hidden`
- * @param el 当前元素
- */
-export declare const setParentOverflow: (el: HTMLElement) => void;
-
 /** 解析出`HTML`的所有字符串 */
 export declare const HTMLToStr: (HTMLStr: string) => string;
 

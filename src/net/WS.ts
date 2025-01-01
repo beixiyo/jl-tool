@@ -23,6 +23,7 @@ export class WS {
       heartbeatInterval: 5000,
       genHeartbeatMsg: () => ({ type: 'Ping', data: null }),
       leaveTime: 10000,
+      stopOnHidden: true,
     }
     this.opts = {
       ...defaultOpts,
@@ -76,7 +77,7 @@ export class WS {
     this.socket = new WebSocket(this.opts.url, this.opts.protocols)
     this.rmNetEvent = this.bindNetEvent()
     window.removeEventListener('visibilitychange', this.onVisibilityChange)
-    window.addEventListener('visibilitychange', this.onVisibilityChange)
+    this.opts.stopOnHidden && window.addEventListener('visibilitychange', this.onVisibilityChange)
 
     return this.socket
   }
@@ -106,8 +107,8 @@ export class WS {
       this.opts.onVisible?.(socket)
     }
     else if (document.visibilityState === 'hidden') {
-      clearInterval(this.heartbeatTimer)
       this.leaveTimer = window.setTimeout(() => {
+        clearInterval(this.heartbeatTimer)
         console.log('离开页面过久，关闭连接')
         this.socket?.close()
         this.opts.onHidden?.()
@@ -158,7 +159,6 @@ export class WS {
 
     const ping = () => {
       this.send(JSON.stringify(this.opts.genHeartbeatMsg()))
-      console.log('发送心跳中...')
     }
 
     ping()
@@ -190,6 +190,11 @@ export type WSOpts = {
    */
   leaveTime?: number
 
+  /**
+   * 是否在页面不可见时停止心跳检测、关闭连接
+   * @default true
+   */
+  stopOnHidden?: boolean
   /**
    * 页面可见时的回调
    */

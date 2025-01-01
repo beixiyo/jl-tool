@@ -279,19 +279,6 @@ export const print: Print = (
   })
 }
 
-/**
- * 检查并设置父元素的 `overflow: hidden`
- * @param el 当前元素
- */
-export const setParentOverflow = (el: HTMLElement) => {
-  const parent = el.parentNode as HTMLElement,
-    overflow = window.getComputedStyle(parent).overflow
-
-  if (overflow !== 'hidden') {
-    parent.style.overflow = 'hidden'
-  }
-}
-
 /** 解析出`HTML`的所有字符串 */
 export const HTMLToStr = (HTMLStr: string) => {
   const p = new DOMParser()
