@@ -28,8 +28,6 @@ export class WS {
       ...defaultOpts,
       ...opts,
     }
-
-    window.addEventListener('visibilitychange', this.onVisibilityChange)
   }
 
   /**
@@ -77,6 +75,7 @@ export class WS {
     this.rmNetEvent?.()
     this.socket = new WebSocket(this.opts.url, this.opts.protocols)
     this.rmNetEvent = this.bindNetEvent()
+    window.addEventListener('visibilitychange', this.onVisibilityChange)
   }
 
   close() {
@@ -85,7 +84,9 @@ export class WS {
       this.socket.close()
       this.socket = null
     }
+    
     clearInterval(this.heartbeatTimer)
+    window.removeEventListener('visibilitychange', this.onVisibilityChange)
   }
 
   // 私有方法 ==================================================

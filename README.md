@@ -585,18 +585,21 @@ export declare function timeGap(date?: TimeType, opts?: TimeGapOpts): string;
 
 /**
  * 格式化时间，你也可以放在 Date.prototype 上，然后 new Date().formatDate()
- * @param formatter 格式化函数或者字符串
- * @param date 日期，默认当前时间
- * @param padZero 是否补零，默认 true
+ *
  * @example
+ * ```ts
  * console.log(formatDate('yyyy-MM-dd 00:00'))
  * console.log(formatDate('yyyy-MM-dd', new Date(66600), false))
  * console.log(formatDate('yyyy-MM-dd HH:mm:ss:ms'))
  * console.log(formatDate((dateInfo) => {
  *     return `今年是${dateInfo.yyyy}年`
  * }))
+ * ```
+ *
+ * @param formatter 格式化函数或者字符串，默认 `yyyy-MM-dd HH:mm:ss`。可选值: yyyy, MM, dd, HH, mm, ss, ms
+ * @param date 日期，默认当前时间
  */
-export declare function formatDate(formatter?: DateFormat, date?: Date, padZero?: boolean): string;
+export declare function formatDate(formatter?: DateFormat, date?: Date, opts?: FormatDateOpts): string;
 
 export type TimeGapOpts = {
     /** 兜底替代字符串，默认 -- */
@@ -605,6 +608,19 @@ export type TimeGapOpts = {
     beforeFn?: (dateStr: string) => string;
     /** 以后日期格式化 */
     afterFn?: (dateStr: string) => string;
+};
+
+export type FormatDateOpts = {
+    /**
+     * 需要和 timeZone 配合使用，指定时区的日期格式化
+     * @example 'zh-CN'
+     */
+    locales?: Intl.LocalesArgument;
+    /**
+     * 指定时区，默认本地时区
+     * @example 'Asia/Shanghai'
+     */
+    timeZone?: string;
 };
 ```
 

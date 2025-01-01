@@ -145,15 +145,15 @@ export function timeGap(date?: TimeType, opts: TimeGapOpts = {}) {
  * }))
  * ```
  * 
- * @param formatter 格式化函数或者字符串，默认 `yyyy-MM-dd HH:mm:ss`
+ * @param formatter 格式化函数或者字符串，默认 `yyyy-MM-dd HH:mm:ss`。可选值: yyyy, MM, dd, HH, mm, ss, ms
  * @param date 日期，默认当前时间
- * @param padZero 是否补零，默认 true
  */
 export function formatDate(
   formatter: DateFormat = 'yyyy-MM-dd HH:mm:ss',
   date?: Date,
-  padZero = true
+  opts: FormatDateOpts = {}
 ) {
+  const { locales, timeZone } = opts
   const formatterFn = _formatNormalize()
   const pad = (str: string, num = 2) => str.toString().padStart(num, '0')
 
@@ -168,29 +168,15 @@ export function formatDate(
     newDate = date
   }
 
-  const dateInfo: DateInfo = {
-    yyyy: String(newDate.getFullYear()),
-    MM: String(newDate.getMonth() + 1),
-    dd: String(newDate.getDate()),
-    HH: String(newDate.getHours()),
-    mm: String(newDate.getMinutes()),
-    ss: String(newDate.getSeconds()),
-    ms: String(newDate.getMilliseconds()),
-  }
+  const dateInfo = !locales || !timeZone
+    ? _getDateInfo()
+    : _getLocaleDateInfo(locales, timeZone)
 
-  if (padZero) {
-    for (const key in dateInfo) {
-      const k = key as keyof DateInfo
-      const item = dateInfo[k]
-      if (key === 'yyyy') {
-        dateInfo[key] = pad(item, 4)
-        continue
-      }
-      dateInfo[k] = pad(item)
-    }
-  }
   return formatterFn(dateInfo)
 
+  /***************************************************
+   *                    Function
+   ***************************************************/
 
   function _formatNormalize() {
     if (isFn(formatter)) return formatter
@@ -207,8 +193,86 @@ export function formatDate(
         .replace('ms', ms)
     }
   }
+
+  /**
+   * 获取当前时区的日期信息
+   */
+  function _getDateInfo() {
+    const dateInfo: DateInfo = {
+      yyyy: String(newDate.getFullYear()),
+      MM: String(newDate.getMonth() + 1),
+      dd: String(newDate.getDate()),
+      HH: String(newDate.getHours()),
+      mm: String(newDate.getMinutes()),
+      ss: String(newDate.getSeconds()),
+      ms: String(newDate.getMilliseconds()),
+    }
+
+    // 补零
+    for (const key in dateInfo) {
+      const k = key as keyof DateInfo
+      const item = dateInfo[k]
+      dateInfo[k] = pad(item, key.length)
+    }
+
+    return dateInfo
+  }
+
+  /**
+   * 获取指定时区的日期信息
+   */
+  function _getLocaleDateInfo(locales: Intl.LocalesArgument, timeZone: string) {
+    if (typeof Intl === 'undefined') {
+      throw new Error('Intl is not supported in this environment')
+    }
+
+    // @ts-ignore
+    const formatter = new Intl.DateTimeFormat(locales, {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      fractionalSecondDigits: 3, // 如果需要显示毫秒数
+      hour12: false,
+      timeZone
+    })
+
+    // 格式化日期为部分
+    const formattedParts = formatter.formatToParts(newDate)
+
+    // 将格式化后的部分组装成对象
+    const dateInfo = {} as DateInfo
+    for (const part of formattedParts) {
+      switch (part.type) {
+        case 'year': dateInfo.yyyy = part.value; break
+        case 'month': dateInfo.MM = part.value; break
+        case 'day': dateInfo.dd = part.value; break
+        case 'hour': dateInfo.HH = part.value; break
+        case 'minute': dateInfo.mm = part.value; break
+        case 'second': dateInfo.ss = part.value; break
+        case 'fractionalSecond': dateInfo.ms = part.value.padStart(3, '0'); break
+      }
+    }
+
+    return dateInfo
+  }
 }
 
+
+export type FormatDateOpts = {
+  /**
+   * 需要和 timeZone 配合使用，指定时区的日期格式化
+   * @example 'zh-CN'
+   */
+  locales?: Intl.LocalesArgument
+  /**
+   * 指定时区，默认本地时区
+   * @example 'Asia/Shanghai'
+   */
+  timeZone?: string
+}
 
 export type DateFormat =
   | ((dateInfo: DateInfo) => string)
