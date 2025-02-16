@@ -1388,14 +1388,24 @@ export declare function createCvs(width?: number, height?: number, options?: Can
 };
 
 /**
+ * 获取 canvas ImageData 的像素点的索引
+ */
+export declare function getImgDataIndex(x: number, y: number, width: number): number;
+
+/**
  * 取出 `canvas` 用一维数组描述的颜色中，某个坐标的`RGBA`数组
  * ### 注意坐标从 0 开始
  * @param x 宽度中的第几列
  * @param y 高度中的第几行
  * @param imgData ctx.getImageData 方法获取的 ImageData
- * @returns `RGBA`数组
+ * @returns `RGBA` 元组
  */
 export declare function getPixel(x: number, y: number, imgData: ImageData): Pixel;
+
+/**
+ * 处理 ImageData 的每一个像素点
+ */
+export declare function eachPixel(imgData: ImageData, callback: (pixel: Pixel, x: number, y: number, index: number) => void): void;
 
 /**
  * 美化 ctx.getImageData.data 属性
@@ -1404,8 +1414,29 @@ export declare function getPixel(x: number, y: number, imgData: ImageData): Pixe
  */
 export declare function parseImgData(imgData: ImageData): Pixel[][];
 
-/** 给 canvas 某个像素点填充颜色的函数 */
+/**
+ * 给 canvas 某个像素点填充颜色
+ */
 export declare function fillPixel(ctx: CanvasRenderingContext2D, x: number, y: number, color: string): void;
+
+/**
+ * 放大 ImageData 到指定倍数
+ * @returns 返回一个新的 ImageData
+ */
+export declare function scaleImgData(imgData: ImageData, scale: number): ImageData;
+
+/**
+ * 传入图片地址，返回 ImageData
+ */
+export declare function getImgData(src: string, setImg?: (img: HTMLImageElement) => string): Promise<{
+    ctx: CanvasRenderingContext2D;
+    cvs: HTMLCanvasElement;
+    imgData: ImageData;
+    width: number;
+    height: number;
+    naturalWidth: number;
+    naturalHeight: number;
+}>;
 ```
 
 ---
