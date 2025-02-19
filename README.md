@@ -1360,7 +1360,7 @@ export declare function cutImg<T extends TransferType = 'base64'>(img: HTMLImage
  * @param img 图片
  * @param resType 需要返回的文件格式，默认 `base64`
  * @param quality 压缩质量，默认 0.5
- * @param mimeType 图片类型，默认 `image/webp`。`image/jpeg | image/webp` 才能压缩
+ * @param mimeType 图片的 MIME 格式，默认 `image/webp`。`image/jpeg | image/webp` 才能压缩
  * @returns base64 | blob
  */
 export declare function compressImg<T extends TransferType = 'base64'>(img: HTMLImageElement, resType?: T, quality?: number, mimeType?: 'image/jpeg' | 'image/webp'): HandleImgReturn<T>;
@@ -1369,7 +1369,7 @@ export declare function compressImg<T extends TransferType = 'base64'>(img: HTML
  * 把 canvas 上的图像转成 base64 | blob
  * @param cvs canvas
  * @param resType 需要返回的文件格式，默认 `base64`
- * @param mimeType 图片的 MIME 格式
+ * @param mimeType 图片的 MIME 格式。`image/jpeg | image/webp` 才能压缩
  * @param quality 压缩质量
  */
 export declare function getCvsImg<T extends TransferType = 'base64'>(cvs: HTMLCanvasElement, resType?: T, mimeType?: string, quality?: number): HandleImgReturn<T>;
