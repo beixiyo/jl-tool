@@ -1,6 +1,6 @@
 import { timer } from '@/tools/timer'
 
-/** 
+/**
  * 检查页面更新
  */
 export function autoUpdate(opts: AutoUpdateOpts = {}) {
@@ -25,6 +25,7 @@ export function autoUpdate(opts: AutoUpdateOpts = {}) {
     if (flag) {
       const userConfirm = window.confirm(confirmText)
       if (userConfirm) {
+        stop()
         window.location.reload()
       }
       // 若用户点击不更新 则一定时间后 再重新轮询
@@ -63,7 +64,7 @@ export function autoUpdate(opts: AutoUpdateOpts = {}) {
     return { scriptList, styleList }
   }
 
-  /** 
+  /**
    * 检查页面是否更新
    */
   async function hasChange() {
@@ -97,17 +98,17 @@ export function autoUpdate(opts: AutoUpdateOpts = {}) {
 
 
 export type AutoUpdateOpts = {
-  /** 
+  /**
    * 你可以根据环境变量决定是否自动检查更新
    * @example process.env.NODE_ENV !== 'production'
    */
   needUpate?: () => boolean
-  /** 
+  /**
    * 再次询问是否更新的间隔毫秒，默认 5 分钟
    * @default 1000 * 60 * 5
    */
   confirmGap?: number
-  /** 
+  /**
    * 检查更新间隔毫秒，默认 10 秒
    * @default 1000 * 10
    */
