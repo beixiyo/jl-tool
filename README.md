@@ -534,6 +534,15 @@ export declare function lightenColor(color: string, strength?: number): string;
  * @returns 返回十六进制 类似如下格式的颜色 `#ffffff11`
  */
 export declare function colorAddOpacity(color: string, opacity?: number): string;
+
+/**
+ * 混和颜色
+ * @param color1 颜色 1
+ * @param color2 颜色 2
+ * @param weight 颜色 1 权重
+ * @returns 'rgba(r, g, b, a)'
+ */
+export declare function mixColor(color1: string, color2: string, weight?: number): string;
 ```
 
 ---

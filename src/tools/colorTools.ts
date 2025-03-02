@@ -8,7 +8,7 @@ import { numFixed } from './tools'
  * ```ts
  * getColorInfo('rgba(0, 0, 0, 1)')
  * getColorInfo('rgb(0, 0, 0)')
- * 
+ *
  * getColorInfo('#fff')
  * getColorInfo('#fff1')
  * ```
@@ -56,9 +56,9 @@ export function getColorArr(size: number) {
 }
 
 /**
-### 把十六进制颜色转成 原始长度的颜色
-  - #000 => #000000
-  - #000f => #000000ff
+ * 把十六进制颜色转成 原始长度的颜色
+ * - #000 => #000000
+ * - #000f => #000000ff
  */
 export function hexColorToRaw(color: string) {
   if (!color.startsWith('#')) {
@@ -169,6 +169,25 @@ export function colorAddOpacity(color: string, opacity = .1) {
 
   const alphaHex = Math.round(opacity * 255).toString(16).padStart(2, '0')
   return color + alphaHex
+}
+
+/**
+ * 混和颜色
+ * @param color1 颜色 1
+ * @param color2 颜色 2
+ * @param weight 颜色 1 权重
+ * @returns 'rgba(r, g, b, a)'
+ */
+export function mixColor(color1: string, color2: string, weight = 0.5) {
+  const c1 = getColorInfo(color1)
+  const c2 = getColorInfo(color2)
+
+  const r = Math.round(c1.r * weight + c2.r * (1 - weight))
+  const g = Math.round(c1.g * weight + c2.g * (1 - weight))
+  const b = Math.round(c1.b * weight + c2.b * (1 - weight))
+  const a = Math.round(c1.a * weight + c2.a * (1 - weight))
+
+  return `rgba(${r}, ${g}, ${b}, ${a})`
 }
 
 function genDefaultColor() {

@@ -1,4 +1,4 @@
-import { colorAddOpacity, getColor, getColorArr, getColorInfo, hexColorToRaw, hexToRGB, lightenColor } from '@/tools/colorTools'
+import { colorAddOpacity, getColor, getColorArr, getColorInfo, hexColorToRaw, hexToRGB, lightenColor, mixColor } from '@/tools/colorTools'
 import { expect, test } from 'vitest'
 
 
@@ -66,4 +66,9 @@ test('提取颜色', () => {
   expect(getColorInfo('#fff0'))
     .toEqual({ r: 255, g: 255, b: 255, a: 0 })
 
+})
+
+test('混合颜色', () => {
+  expect(mixColor('rgb(0, 0, 0)', 'rgb(255, 255, 255)', 0.5))
+    .toEqual('rgba(128, 128, 128, 1)')
 })
