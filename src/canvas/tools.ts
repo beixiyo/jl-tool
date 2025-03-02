@@ -164,3 +164,28 @@ export async function getImgData(
     naturalHeight: img.naturalHeight,
   }
 }
+
+/**
+ * 获取图片需要缩放多少倍，才能填充满画布
+ * @param imgSize 图片尺寸
+ * @param canvasSize 画板尺寸
+ */
+export function getScale(
+  imgSize: Size,
+  canvasSize: Size,
+) {
+  const scaleX = canvasSize.width / imgSize.width
+  const scaleY = canvasSize.height / imgSize.height
+  const minScale = Math.min(scaleX, scaleY)
+
+  return {
+    scaleX,
+    scaleY,
+    minScale,
+  }
+}
+
+type Size = {
+  width: number
+  height: number
+}

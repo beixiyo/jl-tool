@@ -1446,6 +1446,17 @@ export declare function getImgData(src: string, setImg?: (img: HTMLImageElement)
     naturalWidth: number;
     naturalHeight: number;
 }>;
+
+/**
+ * 获取图片需要缩放多少倍，才能填充满画布
+ * @param imgSize 图片尺寸
+ * @param canvasSize 画板尺寸
+ */
+export declare function getScale(imgSize: Size, canvasSize: Size): {
+    scaleX: number;
+    scaleY: number;
+    minScale: number;
+};
 ```
 
 ---
