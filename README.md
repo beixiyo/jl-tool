@@ -776,8 +776,15 @@ export declare const getAllStyle: () => Promise<string>;
  */
 export declare const print: Print;
 
-/** 解析出`HTML`的所有字符串 */
+/** 解析出 `HTML` 的所有字符串 */
 export declare const HTMLToStr: (HTMLStr: string) => string;
+
+/**
+ * 根据文本内容查找元素对象
+ * @param text - 要查找的文本内容
+ * @returns 返回所有匹配的元素数组
+ */
+export declare function findElementsByText(text: string, options?: FindByTextOptions): Element[];
 
 /**
  * 正则匹配移动设备 UA

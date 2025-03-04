@@ -170,7 +170,7 @@ export function rafThrottle<P extends any[]>(
   }
 }
 
-/** 
+/**
  * 设置 LocalStorage，默认自动转 JSON
  * @param autoToJSON 是否自动 JSON.stringify
  * @param storage 存储对象，默认 localStorage
@@ -187,7 +187,7 @@ export function setLocalStorage(
       : value
   )
 }
-/** 
+/**
  * 获取 LocalStorage，默认自动解析 JSON
  * ### 'undefined' 字符串会被转成 null
  * @param autoParseJSON 是否自动 JSON.parse，默认 true
@@ -279,11 +279,68 @@ export const print: Print = (
   })
 }
 
-/** 解析出`HTML`的所有字符串 */
+/** 解析出 `HTML` 的所有字符串 */
 export const HTMLToStr = (HTMLStr: string) => {
   const p = new DOMParser()
   const doc = p.parseFromString(HTMLStr, 'text/html')
   return doc.body.textContent
+}
+
+/**
+ * 根据文本内容查找元素对象
+ * @param text - 要查找的文本内容
+ * @returns 返回所有匹配的元素数组
+ */
+export function findElementsByText(
+  text: string,
+  options: FindByTextOptions = {}
+): Element[] {
+  const {
+    multiple = false,
+    caseSensitive = false,
+    parentEl = document.body
+  } = options
+
+  // 空文本直接返回
+  if (text.trim().length === 0) return []
+
+  // 创建文本匹配器
+  const targetText = caseSensitive ? text : text.toLowerCase()
+  const results: Element[] = []
+
+  // 递归遍历 DOM 树
+  const walker = document.createTreeWalker(
+    parentEl,
+    NodeFilter.SHOW_ELEMENT,
+    {
+      acceptNode(node) {
+        // 跳过不可见元素
+        if ((node as Element).clientHeight === 0 &&
+          (node as Element).clientWidth === 0) {
+          return NodeFilter.FILTER_REJECT
+        }
+        return NodeFilter.FILTER_ACCEPT
+      }
+    }
+  )
+
+  // 遍历所有可见元素
+  while (walker.nextNode()) {
+    const element = walker.currentNode as Element
+
+    // 获取处理后的文本内容
+    const elementText = caseSensitive
+      ? element.textContent?.trim()
+      : element.textContent?.toLowerCase().trim()
+
+    // 精确匹配逻辑
+    if (elementText === targetText) {
+      results.push(element)
+      if (!multiple) break // 找到第一个匹配项时提前退出
+    }
+  }
+
+  return results
 }
 
 /**
@@ -311,4 +368,22 @@ interface Print {
    * @param href 打开的链接 默认使用`location.href`
    */
   (elStr: string, styleStr: string | undefined, href?: string): void
+}
+
+interface FindByTextOptions {
+  /**
+   * 是否查找多个匹配项
+   * @default false
+   */
+  multiple?: boolean
+  /**
+   * 是否区分大小写
+   * @default false
+   */
+  caseSensitive?: boolean
+  /**
+   * 父级元素
+   * @default document.body
+   */
+  parentEl?: Element
 }
