@@ -9,6 +9,8 @@ describe('语义化时间测试', () => {
     expect(timeGap()).toBe('刚刚')
   })
   test('多久前', () => {
+    expect(timeGap(Date.now() + 100)).toBe('刚刚')
+
     expect(timeGap(Date.now() - 1001)).toBe('1秒前')
     expect(timeGap(Date.now() - 1000 * 60.1)).toBe('1分钟前')
     expect(timeGap(Date.now() - 1000 * 60.1 * 60)).toBe('1小时前')
