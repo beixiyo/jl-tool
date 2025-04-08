@@ -1,5 +1,5 @@
 import { isNode } from '@/shared'
-import { isPureNum } from '@/shared/is'
+import { isPureNum, isStr } from '@/shared/is'
 import { judgeImgLoad } from './eventTools'
 
 
@@ -100,14 +100,21 @@ export const getStyle = (el: HTMLElement, attr: string, pseudoElt?: string) => {
  * @param setImg 图片加载前执行的回调函数
  */
 export const getImg = (
-  src: string,
+  src: string | HTMLImageElement,
   setImg?: (img: HTMLImageElement) => void
 ) => {
-  const img = new Image()
-  img.src = src
+  let img = src as HTMLImageElement
+  if (isStr(src)) {
+    img = new Image()
+    img.src = src
+  }
   setImg?.(img)
 
   return new Promise<false | HTMLImageElement>((resolve) => {
+    if (img.complete && img.naturalWidth !== 0) {
+      resolve(img)
+    }
+
     img.onload = () => resolve(img)
     img.onerror = () => resolve(false)
   })

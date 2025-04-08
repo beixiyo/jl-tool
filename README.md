@@ -728,7 +728,7 @@ export declare const getStyle: (el: HTMLElement, attr: string, pseudoElt?: strin
  * @param src 图片
  * @param setImg 图片加载前执行的回调函数
  */
-export declare const getImg: (src: string, setImg?: (img: HTMLImageElement) => void) => Promise<false | HTMLImageElement>;
+export declare const getImg: (src: string | HTMLImageElement, setImg?: ((img: HTMLImageElement) => void) | undefined) => Promise<false | HTMLImageElement>;
 
 /**
  * 节流
