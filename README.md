@@ -33,7 +33,7 @@ npm i @jl-org/tool
 ## 工具目录
 
 - [各种常用工具](#各种常用工具)
-- [数学运算，如数值映射、坐标计算、比例计算](#数学运算)
+- [数学运算，如数值映射、坐标计算、比例计算 ...](#数学运算)
 - [网络请求工具，如最大并发、自动重试、自动重连的 Websocket 等](#网络请求工具)
 <br />
 
@@ -310,6 +310,15 @@ export declare function createMapRange(range: Range, options?: MapRangeOptions):
  * @returns 计算出的 [宽度, 高度]
  */
 export declare function calcAspectRatio(totalArea: number, aspectRatio: [number, number], options?: AspectRatioOpts): [number, number];
+
+/**
+ * 将数值限制在指定范围内
+ * @param value 要限制的值
+ * @param min 最小值
+ * @param max 最大值
+ * @returns 限制后的值
+ */
+export declare function clamp(value: number, min: number, max: number): number;
 ```
 
 
