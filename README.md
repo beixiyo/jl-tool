@@ -68,7 +68,7 @@ npm i @jl-org/tool
 <br />
 
 - [canvas，可以压缩图片，裁剪缩放图片...](#canvas)
-- [*Web* 小插件，如：客户端同步服务器更新](#web-小插件)
+- [*Web* 小插件，如：浏览器同步服务器更新](#web-小插件)
 - [常用常量，如角度、正则表达式...](#常量)
 
 
@@ -1482,6 +1482,34 @@ export declare function getScale(imgSize: Size, canvasSize: Size): {
 ```ts
 /** 检查页面更新 */
 export declare function autoUpdate(opts?: Opts): void;
+
+export type AutoUpdateOpts = {
+    /**
+     * 你可以根据环境变量决定是否自动检查更新
+     * @example process.env.NODE_ENV !== 'production'
+     */
+    needUpdate?: () => boolean;
+    /**
+     * 自定义是否更新页面函数
+     */
+    hasChange?: () => Promise<boolean>;
+    /**
+     * 再次询问是否更新的间隔毫秒，默认 5 分钟
+     * @default 1000 * 60 * 5
+     */
+    confirmGap?: number;
+    /**
+     * 检查更新间隔毫秒，默认 15 秒
+     * @default 1000 * 15
+     */
+    refreshGap?: number;
+    /**
+     * 确认刷新文案
+     * @default
+     * 页面有更新，是否刷新？
+     */
+    confirmText?: string;
+};
 ```
 
 ---

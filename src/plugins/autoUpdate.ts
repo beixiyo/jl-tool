@@ -1,36 +1,31 @@
-import { timer } from '@/tools/timer'
-
 /**
- * 检查页面更新
+ * 前端自动检测页面更新
  */
 export function autoUpdate(opts: AutoUpdateOpts = {}) {
-  const CONFIRM_GAP = 1000 * 60 * 5,
-    REFRESH_GAP = 1000 * 10
-
   const {
-    needUpate = () => true,
-    confirmGap = CONFIRM_GAP,
-    refreshGap = REFRESH_GAP,
+    needUpdate = () => true,
+    confirmGap = 1000 * 60 * 5,
+    refreshGap = 1000 * 15,
     confirmText = '页面有更新，是否刷新？'
   } = opts
 
-  if (!needUpate()) return
+  if (!needUpdate()) return
 
-  let stop: Function,
+  let timer: number,
     scriptArr: string[] = [],
     styleArr: string[] = []
 
-  stop = timer(async () => {
+  timer = window.setInterval(async () => {
     const flag = await hasChange()
     if (flag) {
       const userConfirm = window.confirm(confirmText)
       if (userConfirm) {
-        stop()
+        window.clearInterval(timer)
         window.location.reload()
       }
       // 若用户点击不更新 则一定时间后 再重新轮询
       else {
-        stop()
+        window.clearInterval(timer)
         setTimeout(() => autoUpdate(opts), confirmGap)
       }
     }
@@ -68,6 +63,10 @@ export function autoUpdate(opts: AutoUpdateOpts = {}) {
    * 检查页面是否更新
    */
   async function hasChange() {
+    if (opts.hasChange) {
+      return opts.hasChange()
+    }
+
     const html = await fetch(`/?timestamp=${Date.now()}`).then(res => res.text())
 
     const { scriptList, styleList } = getSrcArr(html)
@@ -102,15 +101,19 @@ export type AutoUpdateOpts = {
    * 你可以根据环境变量决定是否自动检查更新
    * @example process.env.NODE_ENV !== 'production'
    */
-  needUpate?: () => boolean
+  needUpdate?: () => boolean
+  /**
+   * 自定义是否更新页面函数
+   */
+  hasChange?: () => Promise<boolean>
   /**
    * 再次询问是否更新的间隔毫秒，默认 5 分钟
    * @default 1000 * 60 * 5
    */
   confirmGap?: number
   /**
-   * 检查更新间隔毫秒，默认 10 秒
-   * @default 1000 * 10
+   * 检查更新间隔毫秒，默认 15 秒
+   * @default 1000 * 15
    */
   refreshGap?: number
   /**
