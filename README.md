@@ -1569,27 +1569,56 @@ export declare const DEG_270: number;
 export declare const DEG_360: number;
 
 
-
-/** 各种正则表达式 */
+/**
+ * 各种正则表达式
+ */
 export declare const Reg: {
-    /** 手机号正则 */
-    phone: RegExp;
-    /** rgb 颜色正则 */
-    rgb: RegExp;
-    /** 身份证正则 */
-    cardId: RegExp;
-    /** 中文正则 */
-    chinese: RegExp;
+    /**
+     * 手机号正则
+     * ### /^1(3\d|4[5-9]|5[0-35-9]|6[567]|7[0-8]|8\d|9[0-35-9])\d{8}$/
+     */
+    readonly phone: RegExp;
+    /**
+     * rgb 颜色正则
+     * ### /rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d\.]+))?\s*\)/
+     */
+    readonly rgb: RegExp;
+    /**
+     * 身份证正则
+     * ### /^[1-9]\d{5}(18|19|20)\d{2}((0[1-9])|(1[0-2]))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/
+     */
+    readonly cardId: RegExp;
+    /**
+     * 中文正则
+     * ### /[\u4e00-\u9fa5]/
+     */
+    readonly chinese: RegExp;
     /**
      * 数字转千分位正则
+     * ### /\B(?=(?:\d{3})+$)/g
      * @example
      * "123456789".replace(Reg.numToLocaleString, ",")
      */
-    numToLocaleString: RegExp;
-    /** 密码校验正则：必须包含数字、大小写字母、特殊字符，6-12 位 */
-    pwd: RegExp;
+    readonly numToLocaleString: RegExp;
+    /**
+     * 密码校验正则：必须包含数字、大小写字母、特殊字符，6-12 位
+     * ### /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W).{6,12}$/
+     */
+    readonly pwd: RegExp;
+    /**
+     * url 正则
+     * ### /https?:\/\/(?:www\.)?[-\w@:%.+~#=]{1,256}\.[a-z0-9()]{1,6}\b[-\w()@:%+.~#?&/=]* /gi
+     * - 协议（http:// 或 https://）
+     * - 可选的 www . 前缀
+     * - 域名部分（包含字母、数字、@、%、.、_、+、~、#、=）
+     * - 顶级域名（最多 6 个字符）
+     * - 路径部分（包含各种合法字符）
+     */
+    readonly url: RegExp;
 };
 
 /** 一整天的毫秒 */
 export declare const ONE_DAY: number;
+/** 检查是否是 Node 环境 */
+export declare const isNode: boolean;
 ```
