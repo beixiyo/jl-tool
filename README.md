@@ -33,6 +33,7 @@ npm i @jl-org/tool
 ## 工具目录
 
 - [各种常用工具](#各种常用工具)
+- [流式解析JSON，适用于SSE等](#流式解析JSON)
 - [数学运算，如数值映射、坐标计算、比例计算 ...](#数学运算)
 - [网络请求工具，如最大并发、自动重试、自动重连的 Websocket 等](#网络请求工具)
 <br />
@@ -256,6 +257,35 @@ export declare function wait(durationMS?: number): Promise<unknown>;
 export declare function timer(fn: (elapsedMS: number) => any, durationMS: number): () => void;
 
 ```
+
+---
+
+## 流式解析JSON
+```ts
+/**
+ * 流式 JSON 解析器
+ * 用于处理可能不完整的 JSON 数据流
+ */
+export declare class StreamJsonParser {
+    /**
+     * 添加新的数据块到解析缓冲区
+     * @param chunk 新接收的数据块
+     * @returns 如果数据可以被解析，返回解析后的对象；否则返回 null
+     */
+    append(chunk: string): any | null;
+
+    /**
+     * 获取当前缓冲区内容
+     * @returns 当前缓冲区的字符串
+     */
+    getBuffer(): string;
+    /**
+     * 清空缓冲区
+     */
+    clear(): void;
+}
+```
+
 
 ---
 
