@@ -8,20 +8,24 @@ export class StreamJsonParser {
   /**
    * 添加新的数据块到解析缓冲区
    * @param chunk 新接收的数据块
+   * @param enableTryToRepair 是否尝试修复不完整的 JSON
    * @returns 如果数据可以被解析，返回解析后的对象；否则返回 null
    */
-  append(chunk: string): any | null {
+  append(chunk: string, enableTryToRepair = true): any | null {
     this.buffer += chunk
 
     try {
       /** 尝试直接解析 */
       const result = JSON.parse(this.buffer)
       /** 解析成功，清空缓冲区 */
-      this.buffer = ''
+      this.clear()
       return result
     }
     catch (error) {
       /** 解析失败，尝试修复和部分解析 */
+      if (!enableTryToRepair) {
+        return null
+      }
       return this.tryToRepairAndParse()
     }
   }
