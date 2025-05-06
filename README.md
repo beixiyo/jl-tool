@@ -1,31 +1,7 @@
-# 介绍
-
-*TypeScript* 编写的工具函数
-
-支持 `ESM` | `CommonJS` | `iife`
-
-**iife** 模式下，全局导出一个 `_jl` 对象
-
----
-
-
 ## 安装
 ```bash
 npm i @jl-org/tool
 ```
-
----
-
-
-## 文档地址
-
-- https://beixiyo.github.io/
-
-其实不如看 *VSCode* 的代码提示方便  
-
-**鼠标悬浮在变量上即可查看，几乎所有地方我都写了文档注释**
-
-所有类型，**你都能在文档注释看到说明**
 
 ---
 
@@ -993,6 +969,13 @@ export declare const downloadByData: (data: Blob, fileName?: string) => void;
 export declare const downloadByUrl: (url: string, fileName?: string, matchProto?: boolean) => Promise<void>;
 
 /**
+ * 下载文本文件
+ * @param txt 文本内容
+ * @param filename 文件名
+ */
+export declare function donwloadTxt(txt: string, filename: string): void;
+
+/**
  * Blob 转 Base64
  */
 export declare function blobToBase64(blob: Blob): Promise<string>;
@@ -1015,11 +998,12 @@ export declare function urlToBlob(url: string): Promise<Blob>;
 export declare function blobToStream(blob: Blob): Promise<ReadableStream>;
 
 /**
- * 二进制转字符串
- * @param data 数据
- * @param encode 编码格式，默认 utf-8
+ * 二进制数据 ArrayBuffer 转字符串
+ * @param buffer 要转换的数据
+ * @param encode 目标字符串的编码格式，默认 'utf-8'
+ * @returns 返回解码后的字符串
  */
-export declare function dataToStr(data: Blob | ArrayBuffer, encode?: string): Promise<string>;
+export declare function dataToStr(buffer: AllowSharedBufferSource, encode?: string, options?: TextDecodeOptions): string;
 ```
 
 ---
@@ -1623,3 +1607,10 @@ export declare const ONE_DAY: number;
 /** 检查是否是 Node 环境 */
 export declare const isNode: boolean;
 ```
+
+---
+
+
+## 文档地址
+
+- https://beixiyo.github.io/ （已暂停同步更新）

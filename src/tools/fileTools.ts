@@ -35,8 +35,23 @@ export const downloadByUrl = async (url: string, fileName = '', matchProto = fal
   a.click()
 }
 
+/**
+ * 下载文本文件
+ * @param txt 文本内容
+ * @param filename 文件名
+ */
+export function donwloadTxt(txt: string, filename: string) {
+  const blob = new Blob([txt], { type: 'text/plain' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  a.click()
+  URL.revokeObjectURL(url)
+}
 
-/** 
+
+/**
  * Blob 转 Base64
  */
 export function blobToBase64(blob: Blob) {
@@ -101,16 +116,40 @@ export async function blobToStream(blob: Blob): Promise<ReadableStream> {
   })
 }
 
-/** 
- * 二进制转字符串
- * @param data 数据
- * @param encode 编码格式，默认 utf-8
- */
-export async function dataToStr(data: Blob | ArrayBuffer, encode = 'utf-8') {
-  if (data instanceof ArrayBuffer) {
-    return new TextDecoder(encode).decode(data)
+const textDecoderMap: Record<string, TextDecoder> = {}
+
+function getTextDecoder(encode = 'utf-8') {
+  // 尝试从缓存获取
+  let textDecoder = textDecoderMap[encode]
+
+  // 如果缓存中没有，则创建新的并存入缓存
+  if (!textDecoder) {
+    try {
+      textDecoder = new TextDecoder(encode)
+      textDecoderMap[encode] = textDecoder // 仅在新建时存入缓存
+    }
+    catch (error) {
+      console.error(`创建 TextDecoder 时出错，编码 "${encode}" 可能不受支持:`, error)
+      throw new Error(`不支持的编码或创建解码器失败: ${encode}`)
+    }
   }
 
-  const _data = await data.arrayBuffer()
-  return new TextDecoder(encode).decode(_data)
+  return textDecoder
+}
+
+/**
+ * 二进制数据 ArrayBuffer 转字符串
+ * @param buffer 要转换的数据
+ * @param encode 目标字符串的编码格式，默认 'utf-8'
+ * @returns 返回解码后的字符串
+ */
+export function dataToStr(buffer: AllowSharedBufferSource, encode = 'utf-8', options?: TextDecodeOptions): string {
+  try {
+    const textDecoder = getTextDecoder(encode) // 获取解码器，这里可能抛出错误
+    return textDecoder.decode(buffer, options)
+  }
+  catch (error) {
+    console.error(`dataToStr 执行失败 (编码: ${encode}):`, error)
+    throw error // 或者 throw new Error(`数据解码失败: ${error.message}`)
+  }
 }
