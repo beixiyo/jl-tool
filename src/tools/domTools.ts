@@ -120,21 +120,50 @@ export const getImg = (
   })
 }
 
+
 /**
  * 节流
- * @param delay 延迟时间（ms），@default 200
+ * @param delay 延迟时间（ms）
  */
 export function throttle<P extends any[]>(
   fn: (...args: P) => any,
-  delay = 200
+  delay = 80,
+  options: ThrottleOpts = {},
 ) {
   let st = 0
+  let timer: number | null = null
+  const { makeSureNotToMissTask = true } = options
+
+  /**
+   * 确保不会因为节流而丢失最后一个任务
+   */
+  function runMissTask(fn: Function) {
+    if (!makeSureNotToMissTask)
+      return
+
+    clear()
+    timer = window.setTimeout(() => {
+      fn()
+    }, delay)
+  }
+
+  function clear() {
+    if (timer) {
+      clearTimeout(timer)
+      timer = null
+    }
+  }
 
   return function (this: any, ...args: P) {
+    clear()
     const now = Date.now()
+
     if (now - st > delay) {
       st = now
       return fn.apply(this, args)
+    }
+    else {
+      runMissTask(() => fn.apply(this, args))
     }
   }
 }
@@ -393,4 +422,12 @@ interface FindByTextOptions {
    * @default document.body
    */
   parentEl?: Element
+}
+
+type ThrottleOpts = {
+  /**
+   * 确保不会因为节流而丢失最后一个任务
+   * @default true
+   */
+  makeSureNotToMissTask?: boolean
 }
