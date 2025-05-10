@@ -19,6 +19,34 @@ export const celsiusToFahrenheit = (celsius: number) => celsius * 9 / 5 + 32
 /** 华氏度转摄氏度 */
 export const fahrenheitToCelsius = (fahrenheit: number) => (fahrenheit - 32) * 5 / 9
 
+
+/**
+ * 返回一个函数，该函数最多被调用 `n` 次。当无法调用时，默认返回上一次的结果
+ */
+export function once<Args extends any[], R>(
+  fn: (...args: Args) => R,
+  options?: OnceOpts
+): (...args: Args) => R | undefined {
+  const {
+    maxCount = 1,
+    returnLastResult = true
+  } = options || {}
+
+  let count = 0
+  let lastResult: R | undefined
+
+  return function (this: any, ...args: Args) {
+    if (count++ >= maxCount) {
+      return returnLastResult
+        ? lastResult
+        : undefined
+    }
+
+    lastResult = fn.apply(this, args)
+    return lastResult
+  }
+}
+
 /**
  * 获取随机范围数值，不包含最大值
  * @param min 最小值
@@ -55,7 +83,7 @@ export function deepClone<T>(data: T, map = new WeakMap): T {
 }
 
 /**
- * 深度比较对象 `Map | Set` 无法使用  
+ * 深度比较对象 `Map | Set` 无法使用
  * 支持循环引用比较
  */
 export function deepCompare(o1: any, o2: any, seen = new WeakMap()) {
@@ -121,9 +149,9 @@ export function cutStr(str: string, len: number, placeholder = '...') {
 
 /**
  * - 把对象的空值转为指定字符串，默认 `--`，返回一个对象
- * - 空值包含 **空字符串、空格、null、undefined** 
+ * - 空值包含 **空字符串、空格、null、undefined**
  * - 默认不包含数值 0，可通过配置修改
- * 
+ *
  * @param data 需要转换的对象
  */
 export function padEmptyObj<T extends object>(data: T, config?: {
@@ -164,13 +192,13 @@ export function padEmptyObj<T extends object>(data: T, config?: {
 
 /**
  * 蛇形转驼峰 也可以指定转换其他的
- * 
+ *
  * @example
  * ```ts
  * toCamel('test_a') => 'testA'
  * toCamel('test/a', '/') => 'testA'
  * ```
- * 
+ *
  * @param key 需要转换的字符串
  * @param replaceStr 默认是 `_`，也就是蛇形转驼峰
  */
@@ -211,7 +239,7 @@ export function curry() {
  * @param precision 精度长度，默认 `2`
  * @param placeholder 补齐内容，默认 `0`
  * @returns 数字字符串
- * 
+ *
  * @example
  * ```ts
  * padNum(1) => '1.00'
@@ -267,7 +295,7 @@ export function genIcon(name: string, prefix = 'iconfont', suffix = 'icon', conn
 /**
  * - 提取值在 extractArr 中的元素，返回一个对象
  * - 例如提取对象中所有空字符串
- * 
+ *
  * @example
  * ```ts
  * filterVals(data, [''])
@@ -293,7 +321,7 @@ export function filterVals<T>(data: T, extractArr: any[]) {
  * - 排除值在 excludeArr 中的元素，返回一个对象
  * - 例如排除对象中所有空字符串
  *
- * @example 
+ * @example
  * ```ts
  * excludeVals(data, [''])
  * ```
@@ -370,12 +398,12 @@ export function excludeKeys<T extends object, K extends keyof T>(
 
 /**
  * 等待指定时间后返回 Promise
- * 
+ *
  * @example
  * ```ts
  * await wait(2000)
  * ```
- * 
+ *
  * @param durationMS 等待时间，默认 1000 毫秒
  */
 export function wait(durationMS = 1000) {
@@ -384,6 +412,16 @@ export function wait(durationMS = 1000) {
   })
 }
 
+
+export type OnceOpts = {
+  /** 最大调用次数，默认 1 */
+  maxCount?: number
+  /**
+   * 无法调用时，是否返回上一次的结果，默认 true
+   * @default true
+   */
+  returnLastResult?: boolean
+}
 
 // 递归树拍平简易写法
 // export function dataToTree(data: TreeData[]) {

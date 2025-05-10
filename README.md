@@ -69,6 +69,11 @@ export declare const celsiusToFahrenheit: (celsius: number) => number;
 export declare const fahrenheitToCelsius: (fahrenheit: number) => number;
 
 /**
+ * 返回一个函数，该函数最多被调用 `n` 次。当无法调用时，默认返回上一次的结果
+ */
+export declare function once<Args extends any[], R>(fn: (...args: Args) => R, options?: OnceOpts): (...args: Args) => R | undefined;
+
+/**
  * 获取随机范围数值，不包含最大值
  * @param min 最小值
  * @param max 最大值
@@ -778,8 +783,12 @@ export declare const copyToClipboard: (text: string) => Promise<void>;
 /** 是否为深色模式 */
 export declare const isDarkMode: () => boolean;
 
-/** 是否滑倒页面底部 */
-export declare const isToBottom: () => boolean;
+/**
+ * 是否滑倒页面底部
+ * @param el 要判断的元素，默认是 `document.documentElement`
+ * @param threshold 距离底部多少像素时触发，默认是 5
+ */
+export declare const isToBottom: (el?: HTMLElement, threshold?: number) => boolean;
 
 /** 获取所有样式表 */
 export declare const getAllStyle: () => Promise<string>;

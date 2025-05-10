@@ -254,8 +254,25 @@ export const copyToClipboard = (text: string) => navigator.clipboard.writeText(t
 /** 是否为深色模式 */
 export const isDarkMode = () => window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
 
-/** 是否滑倒页面底部 */
-export const isToBottom = () => getWinHeight() + window.scrollY >= document.documentElement.scrollHeight
+/**
+ * 是否滑倒页面底部
+ * @param el 要判断的元素，默认是 `document.documentElement`
+ * @param threshold 距离底部多少像素时触发，默认是 5
+ */
+export const isToBottom = (
+  el: HTMLElement = document.documentElement || document.body,
+  threshold = 5
+): boolean => {
+  if ([document.documentElement, document.body].includes(el)) {
+    const scrollY = window.scrollY ?? window.pageYOffset ?? document.documentElement.scrollTop
+    return getWinHeight() + scrollY + threshold >= document.documentElement.scrollHeight
+  }
+
+  const { scrollTop, scrollHeight, clientHeight } = el
+  const distanceFromBottom = scrollHeight - scrollTop - clientHeight
+
+  return distanceFromBottom <= threshold
+}
 
 
 /** 获取所有样式表 */
