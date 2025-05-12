@@ -1397,22 +1397,33 @@ export declare const isSame: (a: any, b: any) => boolean;
 ## canvas
 ```ts
 /**
- * 截取图片指定区域，可设置缩放，返回 base64 | blob
- * @param img 图片
+ * 裁剪图片指定区域，可设置缩放，返回 base64 | blob
+ * @param imgOrUrl 图片
  * @param opts 配置
  * @param resType 需要返回的文件格式，默认 `base64`
  */
-export declare function cutImg<T extends TransferType = 'base64'>(img: HTMLImageElement, opts?: CutImgOpts, resType?: T): HandleImgReturn<T>;
+export declare function cutImg<T extends TransferType = 'base64'>(imgOrUrl: HTMLImageElement | string, opts?: CutImgOpts, resType?: T): Promise<HandleImgReturn<T>>;
+
+/**
+ * 缩放图片到指定大小，保持原始比例
+ * @param imgOrUrl 图片或图片地址
+ * @param width 目标宽度
+ * @param height 目标高度
+ * @param resType 需要返回的文件格式，默认 `base64`
+ * @param opts 导出配置
+ * @returns 返回 base64 | blob 格式的图片
+ */
+export declare function resizeImg<T extends TransferType = 'base64'>(imgOrUrl: HTMLImageElement | string, width: number, height: number, resType?: T, opts?: ExportImgOpts): Promise<HandleImgReturn<T>>;
 
 /**
  * 压缩图片
- * @param img 图片
+ * @param imgOrUrl 图片
  * @param resType 需要返回的文件格式，默认 `base64`
  * @param quality 压缩质量，默认 0.5
  * @param mimeType 图片的 MIME 格式，默认 `image/webp`。`image/jpeg | image/webp` 才能压缩
  * @returns base64 | blob
  */
-export declare function compressImg<T extends TransferType = 'base64'>(img: HTMLImageElement, resType?: T, quality?: number, mimeType?: 'image/jpeg' | 'image/webp'): HandleImgReturn<T>;
+export declare function compressImg<T extends TransferType = 'base64'>(imgOrUrl: HTMLImageElement | string, resType?: T, quality?: number, mimeType?: 'image/jpeg' | 'image/webp'): Promise<HandleImgReturn<T>>;
 
 /**
  * 把 canvas 上的图像转成 base64 | blob
@@ -1421,7 +1432,18 @@ export declare function compressImg<T extends TransferType = 'base64'>(img: HTML
  * @param mimeType 图片的 MIME 格式。`image/jpeg | image/webp` 才能压缩
  * @param quality 压缩质量
  */
-export declare function getCvsImg<T extends TransferType = 'base64'>(cvs: HTMLCanvasElement, resType?: T, mimeType?: string, quality?: number): HandleImgReturn<T>;
+export declare function getCvsImg<T extends TransferType = 'base64'>(cvs: HTMLCanvasElement, resType?: T, mimeType?: string, quality?: number): Promise<HandleImgReturn<T>>;
+
+/**
+ * 获取图片信息
+ */
+export declare function getImgInfo(imgOrUrl: string | HTMLImageElement): Promise<{
+    naturalHeight: number;
+    naturalWidth: number;
+    width: number;
+    height: number;
+    el: HTMLImageElement;
+}>;
 
 
 /**
@@ -1475,9 +1497,9 @@ export declare function fillPixel(ctx: CanvasRenderingContext2D, x: number, y: n
 export declare function scaleImgData(imgData: ImageData, scale: number): ImageData;
 
 /**
- * 传入图片地址，返回 ImageData
+ * 传入图片地址，返回 ImageData 和 图片详细信息
  */
-export declare function getImgData(src: string, setImg?: (img: HTMLImageElement) => string): Promise<{
+export declare function getImgData(imgOrUrl: HTMLImageElement | string, setImg?: (img: HTMLImageElement) => string): Promise<{
     ctx: CanvasRenderingContext2D;
     cvs: HTMLCanvasElement;
     imgData: ImageData;

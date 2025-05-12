@@ -139,13 +139,13 @@ export function scaleImgData(imgData: ImageData, scale: number) {
 }
 
 /**
- * 传入图片地址，返回 ImageData
+ * 传入图片地址，返回 ImageData 和 图片详细信息
  */
 export async function getImgData(
-  src: string,
+  imgOrUrl: HTMLImageElement | string,
   setImg = (img: HTMLImageElement) => img.crossOrigin = 'anonymous'
 ) {
-  const img = await getImg(src, setImg)
+  const img = await getImg(imgOrUrl, setImg)
   if (!img) {
     throw new Error('图片加载失败')
   }

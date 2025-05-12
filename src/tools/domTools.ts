@@ -96,17 +96,17 @@ export const getStyle = (el: HTMLElement, attr: string, pseudoElt?: string) => {
 
 /**
  * 判断图片的 src 是否可用，可用则返回图片
- * @param src 图片
+ * @param imgOrUrl 图片或者图片的地址
  * @param setImg 图片加载前执行的回调函数
  */
 export const getImg = (
-  src: string | HTMLImageElement,
+  imgOrUrl: string | HTMLImageElement,
   setImg?: (img: HTMLImageElement) => void
 ) => {
-  let img = src as HTMLImageElement
-  if (isStr(src)) {
+  let img = imgOrUrl as HTMLImageElement
+  if (isStr(imgOrUrl)) {
     img = new Image()
-    img.src = src
+    img.src = imgOrUrl
   }
   setImg?.(img)
 

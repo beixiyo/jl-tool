@@ -21,7 +21,8 @@ export const fahrenheitToCelsius = (fahrenheit: number) => (fahrenheit - 32) * 5
 
 
 /**
- * 返回一个函数，该函数最多被调用 `n` 次。当无法调用时，默认返回上一次的结果
+ * 返回一个函数，该函数最多被调用 `n` 次。
+ * 当无法调用时，默认返回上一次的结果。
  */
 export function once<Args extends any[], R>(
   fn: (...args: Args) => R,
@@ -37,9 +38,13 @@ export function once<Args extends any[], R>(
 
   return function (this: any, ...args: Args) {
     if (count++ >= maxCount) {
-      return returnLastResult
-        ? lastResult
-        : undefined
+      if (returnLastResult) {
+        return lastResult
+      }
+      else {
+        lastResult = undefined
+        return undefined
+      }
     }
 
     lastResult = fn.apply(this, args)

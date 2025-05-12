@@ -1,21 +1,27 @@
 import { TransferType } from '@/types'
 import { createCvs } from './tools'
+import { getImg } from '@/tools/domTools'
 
 
 /**
  * 裁剪图片指定区域，可设置缩放，返回 base64 | blob
- * @param img 图片
+ * @param imgOrUrl 图片
  * @param opts 配置
  * @param resType 需要返回的文件格式，默认 `base64`
  */
-export function cutImg<T extends TransferType = 'base64'>(
-  img: HTMLImageElement,
+export async function cutImg<T extends TransferType = 'base64'>(
+  imgOrUrl: HTMLImageElement | string,
   opts: CutImgOpts = {},
   resType: T = 'base64' as T,
 ): Promise<HandleImgReturn<T>> {
+  const image = await getImg(imgOrUrl)
+
+  if (!image) return Promise.reject(new Error('image load error'))
+  const { naturalWidth, naturalHeight } = image
+
   const {
-    width = img.width,
-    height = img.height,
+    width = naturalWidth,
+    height = naturalHeight,
     x = 0,
     y = 0,
     scaleX = 1,
@@ -31,27 +37,70 @@ export function cutImg<T extends TransferType = 'base64'>(
 
   // 在绘制之前设置缩放
   ctx.scale(scaleX, scaleY)
-  ctx.drawImage(img, x, y, width, height, 0, 0, width, height)
+  ctx.drawImage(image, x, y, width, height, 0, 0, width, height)
 
   return getCvsImg<T>(cvs, resType, mimeType, quality)
 }
 
 /**
+ * 缩放图片到指定大小，保持原始比例
+ * @param imgOrUrl 图片或图片地址
+ * @param width 目标宽度
+ * @param height 目标高度
+ * @param resType 需要返回的文件格式，默认 `base64`
+ * @param opts 导出配置
+ * @returns 返回 base64 | blob 格式的图片
+ */
+export async function resizeImg<T extends TransferType = 'base64'>(
+  imgOrUrl: HTMLImageElement | string,
+  width: number,
+  height: number,
+  resType: T = 'base64' as T,
+  opts: ExportImgOpts = {}
+) {
+  const { cvs, ctx } = createCvs(width, height)
+  const image = await getImg(imgOrUrl)
+
+  if (!image) return Promise.reject(new Error('image load error'))
+
+  const { naturalWidth, naturalHeight } = image
+  const scale = Math.min(width / naturalWidth, height / naturalHeight)
+
+  const scaledWidth = Math.round(naturalWidth * scale)
+  const scaledHeight = Math.round(naturalHeight * scale)
+
+  ctx.drawImage(
+    image,
+    (width - scaledWidth) / 2,
+    (height - scaledHeight) / 2,
+    scaledWidth,
+    scaledHeight
+  )
+
+  return getCvsImg(cvs, resType, opts.mimeType, opts.quality)
+}
+
+/**
  * 压缩图片
- * @param img 图片
+ * @param imgOrUrl 图片
  * @param resType 需要返回的文件格式，默认 `base64`
  * @param quality 压缩质量，默认 0.5
  * @param mimeType 图片的 MIME 格式，默认 `image/webp`。`image/jpeg | image/webp` 才能压缩
  * @returns base64 | blob
  */
-export function compressImg<T extends TransferType = 'base64'>(
-  img: HTMLImageElement,
+export async function compressImg<T extends TransferType = 'base64'>(
+  imgOrUrl: HTMLImageElement | string,
   resType: T = 'base64' as T,
   quality = .5,
   mimeType: 'image/jpeg' | 'image/webp' = 'image/webp'
 ): Promise<HandleImgReturn<T>> {
-  const { cvs, ctx } = createCvs(img.width, img.height)
-  ctx.drawImage(img, 0, 0)
+  const image = await getImg(imgOrUrl)
+
+  if (!image) return Promise.reject(new Error('image load error'))
+  const { naturalWidth, naturalHeight } = image
+
+  const { cvs, ctx } = createCvs(naturalWidth, naturalHeight)
+  ctx.drawImage(image, 0, 0)
 
   return getCvsImg<T>(cvs, resType, mimeType, quality)
 }
@@ -89,6 +138,21 @@ export function getCvsImg<T extends TransferType = 'base64'>(
   }
 }
 
+/**
+ * 获取图片信息
+ */
+export async function getImgInfo(imgOrUrl: string | HTMLImageElement) {
+  const image = await getImg(imgOrUrl)
+  if (!image) return Promise.reject(new Error('image load error'))
+
+  return {
+    naturalHeight: image.naturalHeight,
+    naturalWidth: image.naturalWidth,
+    width: image.width,
+    height: image.height,
+    el: image,
+  }
+}
 
 export type HandleImgReturn<T extends TransferType> =
   T extends 'blob'
@@ -102,8 +166,13 @@ export type CutImgOpts = {
   height?: number
   scaleX?: number
   scaleY?: number
+} & ExportImgOpts
 
-  /** 图片的 MIME 格式 */
+export type ExportImgOpts = {
+  /**
+   * 图片的 MIME 格式
+   * `image/jpeg | image/webp` 才能压缩
+   */
   mimeType?: string
   /** 图像质量，取值范围 0 ~ 1 */
   quality?: number
