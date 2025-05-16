@@ -57,3 +57,5 @@ export const ONE_DAY = 1000 * 60 * 60 * 24
 
 /** 检查是否是 Node 环境 */
 export const isNode = typeof window === 'undefined'
+/** 检查是否是 浏览器 环境 */
+export const isBrowser = typeof window !== 'undefined'

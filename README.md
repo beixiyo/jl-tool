@@ -21,6 +21,7 @@ npm i @jl-org/tool
 <br />
 
 - [DOM，如节流、防抖、CSS单位处理...](#dom)
+- [获取、处理主题色变化](#主题色)
 - [事件工具，如主题变化、双击键盘事件、全屏...](#事件工具)
 - [资源预加载，提高页面加载速度](#资源预加载)
 - [禁止调试](#禁止调试)
@@ -780,9 +781,6 @@ export declare const getSelectedText: () => string;
 /** 文本复制到剪贴板 */
 export declare const copyToClipboard: (text: string) => Promise<void>;
 
-/** 是否为深色模式 */
-export declare const isDarkMode: () => boolean;
-
 /**
  * 是否滑倒页面底部
  * @param el 要判断的元素，默认是 `document.documentElement`
@@ -818,21 +816,33 @@ export declare function findElementsByText(text: string, options?: FindByTextOpt
 export declare function isMobile(): boolean;
 ```
 
-## 事件工具
+
+## 主题色
 ```ts
+/**
+ * 获取当前主题
+ */
+export declare function getCurTheme(defaultTheme?: Theme): Theme;
+
+/**
+ * 是否为深色模式
+ */
+export declare const isDarkMode: () => boolean;
+
 /**
  * 监听用户主题变化
  * @param onLight 用户切换到浅色模式时触发
  * @param onDark 用户切换到深色模式时触发
  * @returns 解绑事件函数
  */
-export declare function onChangeTheme(onLight: VoidFunction, onDark: VoidFunction): () => void;
+export declare function onChangeTheme(onLight: VoidFunction, onDark: VoidFunction): VoidFunction;
 
-/**
- * 获取当前主题
- */
-export declare function getCurTheme(): "dark" | "light";
+export type Theme = 'light' | 'dark';
+```
 
+
+## 事件工具
+```ts
 /**
  * 绑定 window 事件，返回解绑事件
  * @param eventName window.addEventListener 事件名称

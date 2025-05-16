@@ -251,9 +251,6 @@ export const getSelectedText = () => window.getSelection()?.toString()
 /** 文本复制到剪贴板 */
 export const copyToClipboard = (text: string) => navigator.clipboard.writeText(text)
 
-/** 是否为深色模式 */
-export const isDarkMode = () => window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
-
 /**
  * 是否滑倒页面底部
  * @param el 要判断的元素，默认是 `document.documentElement`

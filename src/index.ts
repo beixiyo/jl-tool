@@ -29,6 +29,7 @@ export * from '@/tools/preload'
 export * from '@/tools/scheduleTask'
 export * from '@/tools/StreamJsonParser'
 
+export * from '@/tools/theme'
 export * from '@/tools/timer'
 export * from '@/tools/tools'
 

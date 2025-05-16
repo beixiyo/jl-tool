@@ -1,35 +1,4 @@
 /**
- * 监听用户主题变化
- * @param onLight 用户切换到浅色模式时触发
- * @param onDark 用户切换到深色模式时触发
- * @returns 解绑事件函数
- */
-export function onChangeTheme(onLight: VoidFunction, onDark: VoidFunction) {
-  const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-  const handleThemeChange = (e: MediaQueryListEvent) => {
-    e.matches
-      ? onDark()
-      : onLight()
-  }
-
-  darkModeMediaQuery.addEventListener('change', handleThemeChange)
-
-  return () => {
-    darkModeMediaQuery.removeEventListener('change', handleThemeChange)
-  }
-}
-
-/**
- * 获取当前主题
- */
-export function getCurTheme() {
-  const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-  return darkModeMediaQuery.matches
-    ? 'dark'
-    : 'light'
-}
-
-/**
  * 绑定 window 事件，返回解绑事件
  * @param eventName window.addEventListener 事件名称
  * @param listener window.addEventListener 事件回调
@@ -107,7 +76,7 @@ export function doubleKeyDown<T, R>(
   }
 }
 
-/** 
+/**
  * 适配主流浏览器的全屏。若已全屏，则退出全屏
  * @param dom 要全屏的元素
  */
