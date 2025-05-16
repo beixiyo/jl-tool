@@ -25,7 +25,7 @@ export const isDarkMode = (): boolean => getCurTheme() === 'dark'
  * @param onDark 用户切换到深色模式时触发
  * @returns 解绑事件函数
  */
-export function onChangeTheme(onLight: VoidFunction, onDark: VoidFunction): VoidFunction {
+export function onChangeTheme(onLight?: VoidFunction, onDark?: VoidFunction): VoidFunction {
   if (isNode || !window.matchMedia) { // SSR 保护
     return () => { } // 无操作的清理函数
   }
@@ -33,8 +33,8 @@ export function onChangeTheme(onLight: VoidFunction, onDark: VoidFunction): Void
   const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
   const handleThemeChange = (e: MediaQueryListEvent) => {
     e.matches
-      ? onDark()
-      : onLight()
+      ? onDark?.()
+      : onLight?.()
   }
 
   darkModeMediaQuery.addEventListener('change', handleThemeChange)

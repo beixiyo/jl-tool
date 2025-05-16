@@ -835,7 +835,7 @@ export declare const isDarkMode: () => boolean;
  * @param onDark 用户切换到深色模式时触发
  * @returns 解绑事件函数
  */
-export declare function onChangeTheme(onLight: VoidFunction, onDark: VoidFunction): VoidFunction;
+export declare function onChangeTheme(onLight?: VoidFunction, onDark?: VoidFunction): VoidFunction;
 
 export type Theme = 'light' | 'dark';
 ```
