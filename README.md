@@ -55,7 +55,7 @@ npm i @jl-org/tool
 /**
  * 获取自增唯一 ID
  */
-export declare const uniqueId: () => number;
+export declare const uniqueId: () => string;
 
 /** 获取类型 */
 export declare const getType: (data: any) => string;
