@@ -24,6 +24,7 @@ export * from '@/tools/domTools'
 export * from '@/tools/eventTools'
 export * from '@/tools/FakeProgress'
 export * from '@/tools/fileTools'
+export * from '@/tools/fileType'
 
 export * from '@/tools/preload'
 export * from '@/tools/scheduleTask'
@@ -32,6 +33,7 @@ export * from '@/tools/StreamJsonParser'
 export * from '@/tools/theme'
 export * from '@/tools/timer'
 export * from '@/tools/tools'
+export * from '@/tools/urlTools'
 
 /***************************************************
  *                    Tools

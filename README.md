@@ -27,7 +27,9 @@ npm i @jl-org/tool
 - [禁止调试](#禁止调试)
 <br />
 
-- [文件处理，如 Base64 和 Blob 互转、下载文件...](#文件处理)
+- [获取URL参数、主机、端口、大小...](#URL处理)
+- [文件处理，如 Base64 和 Blob 互转、下载文件、大小检测...](#文件处理)
+- [检测是文本还是图片](#文件类型检测)
 <br />
 
 - [分时渲染函数，再多函数也不卡顿](#分时渲染函数)
@@ -969,6 +971,62 @@ export type DebugOpts = {
 
 ---
 
+## URL处理
+```ts
+/**
+ * 检测链接是否合法
+ */
+export declare function isValidUrl(url: string): boolean;
+
+/**
+ * 获取 content-length
+ */
+export declare function getUrlContentLen(url: string): Promise<number>;
+
+/**
+ * 解析URL的查询参数为对象
+ * @param url URL字符串
+ * @returns 查询参数对象
+ */
+export declare function getUrlQuery(url: string): Record<string, string>;
+
+/**
+ * 解析URL的路径部分为数组
+ * @param url URL字符串
+ * @returns 路径部分数组
+ */
+export declare function getUrlPaths(url: string): string[];
+
+/**
+ * 获取URL的主机名
+ * @param url URL字符串
+ * @returns 主机名
+ */
+export declare function getHostname(url: string): string;
+
+/**
+ * 获取URL的协议
+ * @param url URL字符串
+ * @returns 协议 (不带冒号)
+ */
+export declare function getProtocol(url: string): string;
+
+/**
+ * 获取URL的端口
+ * @param url URL字符串
+ * @returns 端口 (如果没有明确指定则返回空字符串)
+ */
+export declare function getPort(url: string): string;
+
+/**
+ * 创建URL对象（跨环境兼容）
+ */
+export declare function createURL(url: string, base?: string): URL;
+```
+
+
+---
+
 
 ## 文件处理
 ```ts
@@ -1017,6 +1075,14 @@ export declare function urlToBlob(url: string): Promise<Blob>;
 export declare function blobToStream(blob: Blob): Promise<ReadableStream>;
 
 /**
+ * 检查文件大小是否超过限制
+ * @param files 文件数据 或 URL，可以是单个文件或数组
+ * @param maxSize 最大大小（字节），默认 100MB，即 1024 * 1024 * 100
+ * @returns 返回文件总大小
+ */
+export declare function checkFileSize(files: (Blob | ArrayBuffer | string)[] | (Blob | ArrayBuffer | string), maxSize?: number): Promise<number>;
+
+/**
  * 二进制数据 ArrayBuffer 转字符串
  * @param buffer 要转换的数据
  * @param encode 目标字符串的编码格式，默认 'utf-8'
@@ -1024,6 +1090,46 @@ export declare function blobToStream(blob: Blob): Promise<ReadableStream>;
  */
 export declare function dataToStr(buffer: AllowSharedBufferSource, encode?: string, options?: TextDecodeOptions): string;
 ```
+
+---
+
+## 文件类型检测
+```ts
+/**
+ * 检测文件类型，目前仅仅支持图片、压缩包和文本文件
+ */
+export declare function detectFileType(input: InputType): Promise<FileTypeResult>;
+
+/**
+ * 将各种输入类型统一转换为Uint8Array
+ */
+export declare function normalizeToUint8Array(input: InputType): Promise<Uint8Array>;
+
+/**
+ * 检测图片类型
+ */
+export declare function detectImgType(uint8Array: Uint8Array): ImageType | null;
+
+/**
+ * 检测压缩包类型
+ */
+export declare function detectCompressionType(uint8Array: Uint8Array): CompressedType | null;
+
+/**
+ * 数据是否是文本
+ */
+export declare function isLikelyText(data: Uint8Array | string): boolean;
+
+export type FileTypeResult = {
+    isText: boolean;
+    isImage: boolean;
+    mimeType: ImageType | CompressedType | 'text/plain' | null;
+    isCompressed: boolean;
+};
+
+export type InputType = Blob | Uint8Array | ArrayBuffer | string | DataView;
+```
+
 
 ---
 

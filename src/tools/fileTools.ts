@@ -1,4 +1,5 @@
 import { matchProtocol } from './domTools'
+import { getUrlContentLen, isValidUrl } from './urlTools'
 
 /**
  * 用 `Blob` 下载
@@ -115,6 +116,55 @@ export async function blobToStream(blob: Blob): Promise<ReadableStream> {
     }
   })
 }
+
+/**
+ * 检查文件大小是否超过限制
+ * @param files 文件数据 或 URL，可以是单个文件或数组
+ * @param maxSize 最大大小（字节），默认 100MB，即 1024 * 1024 * 100
+ * @returns 返回文件总大小
+ */
+export async function checkFileSize(
+  files: (Blob | ArrayBuffer | string)[] | (Blob | ArrayBuffer | string),
+  maxSize = 1024 * 1024 * 100,
+) {
+  const fileArray = Array.isArray(files)
+    ? files
+    : [files]
+  let totalSize = 0
+
+  for (const file of fileArray) {
+    let size: number
+
+    if (file instanceof Blob) {
+      size = file.size
+    }
+    else if (file instanceof ArrayBuffer) {
+      size = file.byteLength
+    }
+    else if (typeof file === 'string') {
+      const isUrl = isValidUrl(file)
+      if (isUrl) {
+        size = await getUrlContentLen(file)
+      }
+      else {
+        size = file.length
+      }
+    }
+    else {
+      throw new TypeError('不支持的文件类型')
+    }
+
+    totalSize += size
+
+    /** 每次累加后立即检查是否超出限制 */
+    if (totalSize > maxSize) {
+      throw new Error(`文件总大小超过限制：${(totalSize / 1024 / 1024).toFixed(2)}MB，最大允许${(maxSize / 1024 / 1024).toFixed(2)}MB`)
+    }
+  }
+
+  return totalSize
+}
+
 
 const textDecoderMap: Record<string, TextDecoder> = {}
 
