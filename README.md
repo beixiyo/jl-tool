@@ -29,7 +29,8 @@ npm i @jl-org/tool
 
 - [获取URL参数、主机、端口、大小...](#URL处理)
 - [文件处理，如 Base64 和 Blob 互转、下载文件、大小检测...](#文件处理)
-- [检测是文本还是图片](#文件类型检测)
+- [检测文件类型，支持图片、文本、压缩包](#文件类型检测)
+- [文件分块处理](#文件分块处理)
 <br />
 
 - [分时渲染函数，再多函数也不卡顿](#分时渲染函数)
@@ -1083,6 +1084,25 @@ export declare function blobToStream(blob: Blob): Promise<ReadableStream>;
 export declare function checkFileSize(files: (Blob | ArrayBuffer | string)[] | (Blob | ArrayBuffer | string), maxSize?: number): Promise<number>;
 
 /**
+ * 从文件路径/URL中提取文件名和后缀
+ * @param path 文件路径或URL
+ * @param decode 是否解码文件名和后缀，默认 false
+ *
+ * @example
+ * - getFilenameAndExt('C:\Documents\file.doc') => {"name":"file","ext":"doc"}
+ * - getFilenameAndExt('https://site.com/app.js#version=1.0') => {"name":"app","ext":"js"}
+ * - getFilenameAndExt('README') => {"name":"README","ext":""}
+ * - getFilenameAndExt('/home/user/.env') => {"name":"","ext":"env"}
+ * - getFilenameAndExt('.gitignore') => {"name":"","ext":"gitignore"}
+ * - getFilenameAndExt('my file@home.json') => {"name":"my file@home","ext":"json"}
+ * - getFilenameAndExt('https://site.com/测试%20文件.测试', true) => {"name":"测试 文件","ext":"测试"}
+ */
+export declare function getFilenameAndExt(path: string, decode?: boolean): {
+    name: string;
+    ext: string;
+};
+
+/**
  * 二进制数据 ArrayBuffer 转字符串
  * @param buffer 要转换的数据
  * @param encode 目标字符串的编码格式，默认 'utf-8'
@@ -1130,6 +1150,35 @@ export type FileTypeResult = {
 export type InputType = Blob | Uint8Array | ArrayBuffer | string | DataView;
 ```
 
+---
+
+
+## 文件分块处理
+```ts
+/**
+ * 文件分块
+ * @example
+ * const chunker = new FileChunker(file, this.chunkSize)
+ * const blob = chunker.next()
+ * const done = chunker.done
+ * const progress = chunker.progress
+ */
+export declare class FileChunker {
+    constructor(file: File | Blob, chunkSize: number);
+    /**
+     * 获取下一块分片
+     */
+    next(): Blob;
+    /**
+     * 是否完成
+     */
+    get done(): boolean;
+    /**
+     * 进度
+     */
+    get progress(): number;
+}
+```
 
 ---
 

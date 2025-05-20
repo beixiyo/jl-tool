@@ -3,6 +3,7 @@ export * from '@/canvas'
 export * from '@/channel'
 
 export * from '@/dataStructure'
+export * from '@/fileTool'
 export * from '@/math'
 export * from '@/net'
 
@@ -23,8 +24,6 @@ export * from '@/tools/domTools'
 
 export * from '@/tools/eventTools'
 export * from '@/tools/FakeProgress'
-export * from '@/tools/fileTools'
-export * from '@/tools/fileType'
 
 export * from '@/tools/preload'
 export * from '@/tools/scheduleTask'

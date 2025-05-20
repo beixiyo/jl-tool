@@ -1,5 +1,5 @@
-import { matchProtocol } from './domTools'
-import { getUrlContentLen, isValidUrl } from './urlTools'
+import { matchProtocol } from '../tools/domTools'
+import { getUrlContentLen, isValidUrl } from '../tools/urlTools'
 
 /**
  * 用 `Blob` 下载
@@ -163,6 +163,60 @@ export async function checkFileSize(
   }
 
   return totalSize
+}
+
+
+/**
+ * 从文件路径/URL中提取文件名和后缀
+ * @param path 文件路径或URL
+ * @param decode 是否解码文件名和后缀，默认 false
+ *
+ * @example
+ * - getFilenameAndExt('C:\Documents\file.doc') => {"name":"file","ext":"doc"}
+ * - getFilenameAndExt('https://site.com/app.js#version=1.0') => {"name":"app","ext":"js"}
+ * - getFilenameAndExt('README') => {"name":"README","ext":""}
+ * - getFilenameAndExt('/home/user/.env') => {"name":"","ext":"env"}
+ * - getFilenameAndExt('.gitignore') => {"name":"","ext":"gitignore"}
+ * - getFilenameAndExt('my file@home.json') => {"name":"my file@home","ext":"json"}
+ * - getFilenameAndExt('https://site.com/测试%20文件.测试', true) => {"name":"测试 文件","ext":"测试"}
+ */
+export function getFilenameAndExt(
+  path: string,
+  decode = false
+): { name: string, ext: string } {
+  const normalizedPath = path.replace(/\\/g, '/')
+
+  const decodeRes = (name: string, ext: string) => decode
+    ? {
+      name: decodeURIComponent(name),
+      ext: decodeURIComponent(ext),
+    }
+    : {
+      name: name,
+      ext: ext,
+    }
+
+  /** 处理URL情况（如 https://example.com/file.txt） */
+  let filename: string
+  try {
+    const url = new URL(normalizedPath)
+    filename = url.pathname.split('/').pop() || ''
+  }
+  catch {
+    /** 非URL，当作普通路径处理（如 /path/to/file.txt） */
+    filename = normalizedPath.split('/').pop() || '' // 兼容Windows和Linux路径分隔符
+  }
+
+  /** 分离文件名和后缀 */
+  const lastDotIndex = filename.lastIndexOf('.')
+  if (lastDotIndex === -1) {
+    return decodeRes(filename, '')
+  }
+
+  return decodeRes(
+    filename.slice(0, lastDotIndex),
+    filename.slice(lastDotIndex + 1).toLowerCase(),
+  )
 }
 
 

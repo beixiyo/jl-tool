@@ -5,7 +5,7 @@ import {
   parseImgData,
 } from '@/canvas/tools'
 import { compressImg, cutImg } from '@/canvas/imgHandle'
-import { blobToBase64 } from '@/tools/fileTools'
+import { blobToBase64 } from '@/fileTool/tools'
 import { getImg } from '@/tools/domTools'
 
 
@@ -49,7 +49,7 @@ fillPixel(ctx, WIDTH - 1, HEIGHT - 1, 'rgba(40, 255, 255, 0.5)')
 
 const imgData = ctx.getImageData(0, 0, WIDTH, HEIGHT)
 
-/** 
+/**
  * 像素获取测试
  */
 

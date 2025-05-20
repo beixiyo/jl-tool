@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { detectFileType } from '@/tools/fileType'
+import { detectFileType } from '@/fileTool/fileType'
 
 
 describe('detectFileType', () => {

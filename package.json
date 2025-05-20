@@ -1,6 +1,6 @@
 {
   "name": "@jl-org/tool",
-  "version": "1.9.4",
+  "version": "1.9.5",
   "description": "TypeScript 编写的工具函数",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
@@ -29,12 +29,7 @@
     "docs:preview": "vitepress preview ./docs",
     "------test------": "",
     "test": "vitest",
-    "test:dev": "vite",
-    "------publish------": "",
-    "use-npm-reg": "nrm use npm",
-    "use-cn-reg": "nrm use tencent",
-    "npm-publish": "npm publish --access public",
-    "release": "run-s build:only use-npm-reg npm-publish use-cn-reg"
+    "test:dev": "vite"
   },
   "devDependencies": {
     "@jl-org/ts-tool": "^0.0.8",
