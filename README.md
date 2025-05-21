@@ -1036,22 +1036,14 @@ export declare function createURL(url: string, base?: string): URL;
  * @param data 数据
  * @param fileName 文件名
  */
-export declare const downloadByData: (data: Blob, fileName?: string) => void;
+export declare function downloadByData(data: Blob | ArrayBuffer | string, fileName?: string, opts?: DownloadOptions): Promise<void>;
 
 /**
  * 用 url 下载
  * @param url 链接
  * @param fileName 文件名
- * @param matchProto 是否匹配协议，比如把 http 匹配为当前站的协议。默认 false
  */
-export declare const downloadByUrl: (url: string, fileName?: string, matchProto?: boolean) => Promise<void>;
-
-/**
- * 下载文本文件
- * @param txt 文本内容
- * @param filename 文件名
- */
-export declare function donwloadTxt(txt: string, filename: string): void;
+export declare function downloadByUrl(url: string, fileName?: string, options?: Omit<DownloadOptions, 'mimeType'>): Promise<void>;
 
 /**
  * Blob 转 Base64
@@ -1066,14 +1058,10 @@ export declare function blobToBase64(blob: Blob): Promise<string>;
 export declare function base64ToBlob(base64Str: string, mimeType?: string): Blob;
 
 /**
- * 把 http url 转 blob
+ * HTTP(S) URL 转 Blob
+ * @param url 资源链接
  */
 export declare function urlToBlob(url: string): Promise<Blob>;
-
-/**
- * blob 转成 Stream，方便浏览器和 Node 互操作
- */
-export declare function blobToStream(blob: Blob): Promise<ReadableStream>;
 
 /**
  * 检查文件大小是否超过限制
@@ -1109,6 +1097,23 @@ export declare function getFilenameAndExt(path: string, decode?: boolean): {
  * @returns 返回解码后的字符串
  */
 export declare function dataToStr(buffer: AllowSharedBufferSource, encode?: string, options?: TextDecodeOptions): string;
+
+interface DownloadOptions {
+    /**
+     * 是否匹配协议，比如把 http 匹配为当前站的协议
+     * @default false
+     */
+    matchProto?: boolean;
+    /**
+     * 是否自动清除通过 `URL.createObjectURL` 创建的链接 (仅对 blob: URL 有效)
+     */
+    needClearObjectURL?: boolean;
+    /**
+     * 文件类型，仅对 blob: URL 有效
+     * @default 'text/plain'
+     */
+    mimeType?: string;
+}
 ```
 
 ---

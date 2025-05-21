@@ -6,63 +6,80 @@ import { getUrlContentLen, isValidUrl } from '../tools/urlTools'
  * @param data 数据
  * @param fileName 文件名
  */
-export const downloadByData = (data: Blob, fileName = '') => {
-  const a = document.createElement("a")
+export function downloadByData(
+  data: Blob | ArrayBuffer | string,
+  fileName = 'download',
+  opts?: DownloadOptions
+) {
+  let blob: Blob
+  if (data instanceof Blob) {
+    blob = data
+  }
+  else if (data instanceof ArrayBuffer) {
+    blob = new Blob([data])
+  }
+  else if (typeof data === 'string') {
+    blob = new Blob([data], { type: opts?.mimeType ?? 'text/plain' })
+  }
+  else {
+    throw new TypeError('不支持的数据类型，仅支持 Blob, ArrayBuffer, 或 string')
+  }
 
-  a.href = URL.createObjectURL(data)
-  a.setAttribute('download', fileName)
-  a.click()
-
-  // 解决移动端无法下载问题
-  setTimeout(() => {
-    URL.revokeObjectURL(a.href)
-  }, 1000)
+  return downloadByUrl(URL.createObjectURL(blob), fileName, {
+    needClearObjectURL: true,
+    ...opts,
+  })
 }
 
 /**
  * 用 url 下载
  * @param url 链接
  * @param fileName 文件名
- * @param matchProto 是否匹配协议，比如把 http 匹配为当前站的协议。默认 false
  */
-export const downloadByUrl = async (url: string, fileName = '', matchProto = false) => {
+export async function downloadByUrl(
+  url: string,
+  fileName = 'download',
+  options?: Omit<DownloadOptions, 'mimeType'>
+) {
+  const {
+    matchProto = false,
+    needClearObjectURL = false
+  } = options || {}
+
   if (matchProto) {
     url = matchProtocol(url)
   }
-  const a = document.createElement('a')
 
+  const a = document.createElement('a')
   a.href = url
   a.setAttribute('download', fileName)
-  a.click()
-}
 
-/**
- * 下载文本文件
- * @param txt 文本内容
- * @param filename 文件名
- */
-export function donwloadTxt(txt: string, filename: string) {
-  const blob = new Blob([txt], { type: 'text/plain' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = filename
+  document.body.appendChild(a)
   a.click()
-  URL.revokeObjectURL(url)
-}
+  document.body.removeChild(a)
 
+  if (needClearObjectURL) {
+    /** 解决移动端无法下载问题 */
+    setTimeout(() => {
+      URL.revokeObjectURL(url)
+    }, 500)
+  }
+}
 
 /**
  * Blob 转 Base64
  */
 export function blobToBase64(blob: Blob) {
-  const fr = new FileReader()
-  fr.readAsDataURL(blob)
+  return new Promise<string>((resolve, reject) => {
+    const fr = new FileReader()
 
-  return new Promise<string>((resolve) => {
     fr.onload = function () {
       resolve(this.result as string)
     }
+    fr.onerror = function (error) {
+      reject(error)
+    }
+    fr.readAsDataURL(blob)
   })
 }
 
@@ -71,50 +88,46 @@ export function blobToBase64(blob: Blob) {
  * @param base64Str base64
  * @param mimeType 文件类型，默认 application/octet-stream
  */
-export function base64ToBlob(base64Str: string, mimeType: string = 'application/octet-stream'): Blob {
-  const base64Data = base64Str.replace(/^data:([A-Za-z-+/]+);base64,/, '')
+export function base64ToBlob(
+  base64Str: string,
+  mimeType: string = 'application/octet-stream',
+): Blob {
+  /** 移除可能存在的 Data URL scheme */
+  const base64Data = base64Str.includes(',')
+    ? base64Str.split(',')[1]
+    : base64Str
 
-  // 将Base64解码为二进制数据
-  const byteCharacters = atob(base64Data)
+  /** 将Base64解码为二进制数据 */
+  let byteCharacters
+  try {
+    byteCharacters = atob(base64Data) // atob 可能会因非 Base64 字符失败
+  }
+  catch (e) {
+    console.error('Failed to decode base64 string:', e)
+    throw new Error('Invalid base64 string for atob.')
+  }
 
-  // 计算二进制数据的长度
+  /** 计算二进制数据的长度 */
   const byteArrays = new Uint8Array(byteCharacters.length)
 
-  // 将字符转换为字节并放入 Uint8Array
-  for (let offset = 0; offset < byteCharacters.length; offset++) {
-    byteArrays[offset] = byteCharacters.charCodeAt(offset)
+  /** 将字符转换为字节并放入 Uint8Array */
+  for (let i = 0; i < byteCharacters.length; i++) {
+    byteArrays[i] = byteCharacters.charCodeAt(i)
   }
 
   return new Blob([byteArrays], { type: mimeType })
 }
 
 /**
- * 把 http url 转 blob
+ * HTTP(S) URL 转 Blob
+ * @param url 资源链接
  */
-export function urlToBlob(url: string): Promise<Blob> {
-  return fetch(url).then(res => res.blob())
-}
-
-/**
- * blob 转成 Stream，方便浏览器和 Node 互操作
- */
-export async function blobToStream(blob: Blob): Promise<ReadableStream> {
-  return new ReadableStream({
-    async start(controller) {
-      const reader = blob.stream().getReader()
-      let { done, value } = await reader.read()
-
-      while (!done) {
-        controller.enqueue(value)
-
-        const { done: _d, value: _v } = await reader.read()
-        done = _d
-        value = _v
-      }
-
-      controller.close()
-    }
-  })
+export async function urlToBlob(url: string): Promise<Blob> {
+  const response = await fetch(url)
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status} for URL: ${url}`)
+  }
+  return response.blob()
 }
 
 /**
@@ -165,7 +178,6 @@ export async function checkFileSize(
   return totalSize
 }
 
-
 /**
  * 从文件路径/URL中提取文件名和后缀
  * @param path 文件路径或URL
@@ -182,7 +194,7 @@ export async function checkFileSize(
  */
 export function getFilenameAndExt(
   path: string,
-  decode = false
+  decode = false,
 ): { name: string, ext: string } {
   const normalizedPath = path.replace(/\\/g, '/')
 
@@ -192,8 +204,8 @@ export function getFilenameAndExt(
       ext: decodeURIComponent(ext),
     }
     : {
-      name: name,
-      ext: ext,
+      name,
+      ext,
     }
 
   /** 处理URL情况（如 https://example.com/file.txt） */
@@ -219,14 +231,13 @@ export function getFilenameAndExt(
   )
 }
 
-
 const textDecoderMap: Record<string, TextDecoder> = {}
 
 function getTextDecoder(encode = 'utf-8') {
-  // 尝试从缓存获取
+  /** 尝试从缓存获取 */
   let textDecoder = textDecoderMap[encode]
 
-  // 如果缓存中没有，则创建新的并存入缓存
+  /** 如果缓存中没有，则创建新的并存入缓存 */
   if (!textDecoder) {
     try {
       textDecoder = new TextDecoder(encode)
@@ -247,13 +258,34 @@ function getTextDecoder(encode = 'utf-8') {
  * @param encode 目标字符串的编码格式，默认 'utf-8'
  * @returns 返回解码后的字符串
  */
-export function dataToStr(buffer: AllowSharedBufferSource, encode = 'utf-8', options?: TextDecodeOptions): string {
+export function dataToStr(
+  buffer: AllowSharedBufferSource,
+  encode = 'utf-8',
+  options?: TextDecodeOptions
+): string {
   try {
     const textDecoder = getTextDecoder(encode) // 获取解码器，这里可能抛出错误
     return textDecoder.decode(buffer, options)
   }
   catch (error) {
     console.error(`dataToStr 执行失败 (编码: ${encode}):`, error)
-    throw error // 或者 throw new Error(`数据解码失败: ${error.message}`)
+    throw error
   }
+}
+
+interface DownloadOptions {
+  /**
+   * 是否匹配协议，比如把 http 匹配为当前站的协议
+   * @default false
+   */
+  matchProto?: boolean
+  /**
+   * 是否自动清除通过 `URL.createObjectURL` 创建的链接 (仅对 blob: URL 有效)
+   */
+  needClearObjectURL?: boolean
+  /**
+   * 文件类型，仅对 blob: URL 有效
+   * @default 'text/plain'
+   */
+  mimeType?: string
 }
