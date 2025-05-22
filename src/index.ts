@@ -33,6 +33,7 @@ export * from '@/tools/theme'
 export * from '@/tools/timer'
 export * from '@/tools/tools'
 export * from '@/tools/urlTools'
+export * from '@/tools/workerTools'
 
 /***************************************************
  *                    Tools
