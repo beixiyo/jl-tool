@@ -69,8 +69,14 @@ export function getRandomNum(min: number, max: number, enableFloat = false) {
   return r * (max - min) + min
 }
 
-/** 深拷贝 */
+/**
+ * 深拷贝，支持循环引用，默认调用 `structuredClone`，如果不支持则使用递归
+ */
 export function deepClone<T>(data: T, map = new WeakMap): T {
+  if (typeof structuredClone !== 'undefined') {
+    return structuredClone(data)
+  }
+
   if (!isObj(data)) return data
   if (data instanceof Date) return new Date(data) as T
   if (data instanceof RegExp) return new RegExp(data) as T

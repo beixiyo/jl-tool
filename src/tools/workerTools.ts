@@ -52,7 +52,6 @@ import { numFixed } from './tools'
  *       return
  *     }
  *
- *     // Worker 在完成其分配的所有块后，会发送一个 ChunkFile[] 数组
  *     if (Array.isArray(messageFromWorker)) {
  *       resolveBatch(messageFromWorker)
  *     }
@@ -271,13 +270,13 @@ export interface DispatchWorkOptions<
 
   /**
    * (可选) 整体进度回调函数。
-   * 当 `handleWorkerMessage` 通过 `reportItemProcessed` 报告单个任务项已处理时调用。
+   * 当 `onMessage` 通过 `reportItemProcessed` 报告单个任务项已处理时调用。
    * @param progress 进度值，范围从 0 到 1。
    */
   onProgress?: (progress: number) => void
   /**
    * (可选) 当 Worker 报告单个任务项的处理进度时调用的回调函数。
-   * 由 `handleWorkerMessage` 调用 `reportItemProcessed` 时触发。
+   * 由 `onMessage` 调用 `reportItemProcessed` 时触发。
    * @param data 该任务项的进度数据 (从 `reportItemProcessed` 传递)。
    * @param index 该任务项的全局索引 (0 到 `totalItems` - 1)。
    */
