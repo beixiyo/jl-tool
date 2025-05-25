@@ -1,14 +1,13 @@
-import { timeGap, formatDate, getQuarter, padDate, getValidDate, isLtYear } from '@/tools/dateTools'
-import { describe, expect, test, it } from 'vitest'
-
+import { describe, expect, it } from 'vitest'
+import { formatDate, getQuarter, getValidDate, isLtYear, padDate, timeGap } from '@/tools/dateTools'
 
 const timeStr = '2020-10-02 10:02:55'
 
 describe('语义化时间测试', () => {
-  test('刚刚', () => {
+  it('刚刚', () => {
     expect(timeGap()).toBe('刚刚')
   })
-  test('多久前', () => {
+  it('多久前', () => {
     expect(timeGap(Date.now() + 100)).toBe('刚刚')
 
     expect(timeGap(Date.now() - 1001)).toBe('1秒前')
@@ -19,10 +18,8 @@ describe('语义化时间测试', () => {
   })
 })
 
-
 describe('formatDate', () => {
-
-  test('格式化时间测试', () => {
+  it('格式化时间测试', () => {
     expect(formatDate('yyyy-MM-dd', new Date(timeStr)))
       .toBe(timeStr.slice(0, 10))
 
@@ -30,12 +27,12 @@ describe('formatDate', () => {
       .toBe(timeStr)
 
     expect(formatDate('yyyy-MM-dd 00:00', new Date(timeStr)))
-      .toBe(timeStr.slice(0, 10) + ' 00:00')
+      .toBe(`${timeStr.slice(0, 10)} 00:00`)
 
     expect(formatDate('yyyy-MM-dd 23:59:59', new Date(timeStr)))
-      .toBe(timeStr.slice(0, 10) + ' 23:59:59')
+      .toBe(`${timeStr.slice(0, 10)} 23:59:59`)
 
-    expect(formatDate((dateInfo) => `今年是${dateInfo.yyyy}年`))
+    expect(formatDate(dateInfo => `今年是${dateInfo.yyyy}年`))
       .toBe(`今年是${new Date().getFullYear()}年`)
   })
 
@@ -71,7 +68,7 @@ describe('formatDate', () => {
 
   it('使用自定义格式化函数', () => {
     const date = new Date(2023, 9, 15)
-    const result = formatDate((dateInfo) => `今年是${dateInfo.yyyy}年`, date)
+    const result = formatDate(dateInfo => `今年是${dateInfo.yyyy}年`, date)
     expect(result).toBe('今年是2023年')
   })
 
@@ -94,9 +91,9 @@ describe('formatDate', () => {
   })
 
   it('处理不支持 Intl 的环境', () => {
-    const originalIntl = global.Intl
+    const originalIntl = globalThis.Intl
     // @ts-ignore
-    global.Intl = undefined
+    globalThis.Intl = undefined
 
     const date = new Date(2023, 9, 15, 12, 30, 45)
     expect(() => formatDate(
@@ -105,33 +102,31 @@ describe('formatDate', () => {
       {
         locales: 'en-US',
         timeZone: 'UTC',
-      }
+      },
     ))
       .toThrowError(new Error('Intl is not supported in this environment'))
 
-    global.Intl = originalIntl // 恢复 Intl
+    globalThis.Intl = originalIntl // 恢复 Intl
   })
 })
 
-
 describe('其他时间测试', () => {
-  test('获取季度', () => {
+  it('获取季度', () => {
     expect(getQuarter(new Date(timeStr))).toBe(4)
   })
 
   const dateStr = '2010-10-02'
-  test('日期填补测试', () => {
-    expect(padDate(dateStr)).toBe(dateStr + ' 00:00:00')
-    expect(padDate(dateStr, '23:59:59')).toBe(dateStr + ' 23:59:59')
+  it('日期填补测试', () => {
+    expect(padDate(dateStr)).toBe(`${dateStr} 00:00:00`)
+    expect(padDate(dateStr, '23:59:59')).toBe(`${dateStr} 23:59:59`)
   })
 
-  test('异常测试', () => {
+  it('异常测试', () => {
     expect(() => getValidDate('xixi')).toThrowError('日期格式错误')
   })
 
-  test('是否小于去年一月一日', () => {
+  it('是否小于去年一月一日', () => {
     expect(isLtYear(new Date(dateStr))).toBeTruthy()
     expect(isLtYear(new Date())).toBeFalsy()
   })
-
 })

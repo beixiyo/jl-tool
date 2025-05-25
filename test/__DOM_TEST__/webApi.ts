@@ -1,20 +1,18 @@
-import { Recorder, Speaker, openCamera, screenCAP, SpeakToTxt } from '@/webApi'
+import { openCamera, Recorder, screenCAP, Speaker, SpeakToTxt } from '@/webApi'
 
-
-const speakBtn = createBtn('文字转语音', 'speak-btn'),
-  recordBtn = createBtn('录音', 'record-btn'),
-  stopRecordBtn = createBtn('停止录音', 'stopRecordBtn'),
-  playRecordBtn = createBtn('播放录音', 'playRecordBtn'),
-  speakTxtBtn = createBtn('语音转文字', 'speakTxtBtn')
+const speakBtn = createBtn('文字转语音', 'speak-btn')
+const recordBtn = createBtn('录音', 'record-btn')
+const stopRecordBtn = createBtn('停止录音', 'stopRecordBtn')
+const playRecordBtn = createBtn('播放录音', 'playRecordBtn')
+const speakTxtBtn = createBtn('语音转文字', 'speakTxtBtn')
 
 document.body.append(
   speakBtn,
   recordBtn,
   stopRecordBtn,
   playRecordBtn,
-  speakTxtBtn
+  speakTxtBtn,
 );
-
 
 /** 语音转文字 */
 (() => {
@@ -23,7 +21,6 @@ document.body.append(
   })
   speakTxtBtn.onclick = () => speakToTxt.start()
 })();
-
 
 /** 文字转语音 */
 (() => {
@@ -34,7 +31,6 @@ document.body.append(
   speaker.setRate(2.8)
   speakBtn.onclick = () => speaker.play()
 })();
-
 
 /** 录音测试 */
 (async () => {
@@ -48,8 +44,7 @@ document.body.append(
   playRecordBtn.onclick = () => recorder.play()
 })();
 
-
-/**摄像头测试 */
+/** 摄像头测试 */
 (() => {
   const video = document.createElement('video')
   const playVideoBtn = createBtn('播放摄像头', 'playVideoBtn')
@@ -66,7 +61,6 @@ document.body.append(
   }
 })();
 
-
 /** 录屏测试 */
 (() => {
   const screenCapBtn = createBtn('录屏', 'screenCaptBtn')
@@ -74,12 +68,9 @@ document.body.append(
   screenCapBtn.onclick = () => screenCAP('test')
 })()
 
-
-
-
 function createBtn(content: string, className: string) {
   const btn = document.createElement('button')
-  btn.innerText = content
+  btn.textContent = content
   btn.className = className
 
   return btn

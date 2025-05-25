@@ -1,15 +1,14 @@
 import type { BaseKey } from '../types'
 
-
-/** 
+/**
  * 消息订阅与派发，订阅和派发指定消息
  */
 export class EventBus<T extends BaseKey = BaseKey> {
-
   private readonly eventMap = new Map<BaseKey, Set<{
     once?: boolean
     fn: Function
   }>>()
+
   private readonly beforeTriggerMap = new Map<BaseKey, any[]>()
 
   opts: Required<EventBusOpts>
@@ -58,7 +57,8 @@ export class EventBus<T extends BaseKey = BaseKey> {
       return
     }
 
-    if (!fnSet) return
+    if (!fnSet)
+      return
 
     fnSet.forEach(({ fn, once }) => {
       fn(...args)
@@ -72,7 +72,7 @@ export class EventBus<T extends BaseKey = BaseKey> {
    * @param func 要取关的函数，为空取关该事件的所有函数
    */
   off(eventName?: T, func?: Function) {
-    // 不传重置所有
+    /** 不传重置所有 */
     if (!eventName) {
       this.eventMap.clear()
       this.beforeTriggerMap.clear()
@@ -80,7 +80,7 @@ export class EventBus<T extends BaseKey = BaseKey> {
     }
 
     const fnSet = this.eventMap.get(eventName)
-    /** 
+    /**
      * fn 为空取关该事件的所有函数
      */
     if (fnSet && !func) {
@@ -107,7 +107,7 @@ export class EventBus<T extends BaseKey = BaseKey> {
       .get(eventName)!
       .add(EventBus.genItem(fn, once))
 
-    /** 
+    /**
      * 如果有之前遗漏事件，则统一派发事件
      */
     const args = this.beforeTriggerMap.get(eventName)
@@ -126,7 +126,6 @@ function mergeOpts(opts: EventBusOpts = {}) {
   const defaultOpts: Required<EventBusOpts> = { triggerBefore: false }
   return Object.assign(defaultOpts, opts)
 }
-
 
 export type EventBusOpts = {
   /**

@@ -1,5 +1,5 @@
-export * from './ATo'
-export * from './timeFunc'
 export * from './applyAnimation'
+export * from './ATo'
 export * from './createAnimation'
 export * from './createAnimationByTime'
+export * from './timeFunc'

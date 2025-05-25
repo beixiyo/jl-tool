@@ -1,22 +1,21 @@
 import { concurrentTask } from '@/net'
 
-
 /**
  * 图片资源预加载
  */
 export function preloadImgs(
   srcs: string[],
-  opts: PreloadOpts = {}
+  opts: PreloadOpts = {},
 ) {
   const {
     timeout = 10000,
     preloadType = 'preload',
-    concurrentCount = 3
+    concurrentCount = 3,
   } = opts
 
   return concurrentTask(
     srcs.map(src => () => loadLink(src)),
-    concurrentCount
+    concurrentCount,
   )
 
   function loadLink(src: string) {
@@ -34,7 +33,6 @@ export function preloadImgs(
     })
   }
 }
-
 
 export type PreloadType = 'preload' | 'prefetch'
 export type PreloadOpts = {

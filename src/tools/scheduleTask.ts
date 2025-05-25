@@ -7,11 +7,7 @@ const TICK = 1000 / 60
  * @param onEnd 任务完成的回调
  * @param needStop 是否停止任务
  */
-export const scheduleTask = (
-  taskArr: Function[],
-  onEnd?: Function,
-  needStop?: () => boolean
-) => {
+export function scheduleTask(taskArr: Function[], onEnd?: Function, needStop?: () => boolean) {
   let i = 0
   const { start, hasIdleRunTask } = genFunc()
   const { port1, port2 } = new MessageChannel()
@@ -21,7 +17,6 @@ export const scheduleTask = (
     start()
   }
   start()
-
 
   function genFunc() {
     const isEnd = needStop
@@ -40,7 +35,8 @@ export const scheduleTask = (
     function hasIdleRunTask(hasIdle: HasIdle) {
       const st = performance.now()
       while (hasIdle(st)) {
-        if (isEnd()) return
+        if (isEnd())
+          return
 
         try {
           taskArr[i++]()
@@ -55,16 +51,14 @@ export const scheduleTask = (
       /** 开始调度 */
       start,
       /** 空闲时执行 */
-      hasIdleRunTask
+      hasIdleRunTask,
     }
   }
 
-  /** 放入宏任务执行 并回调***执行时间和开始时间的差值*** */
+  /** 放入宏任务执行 并回调***执行时间和开始时间的差值 */
   function runMacroTasks(hasIdleRunTask: (hasIdle: HasIdle) => void) {
-    hasIdleRunTask((st) => performance.now() - st < TICK)
+    hasIdleRunTask(st => performance.now() - st < TICK)
   }
 }
-
-
 
 type HasIdle = (st: number) => boolean

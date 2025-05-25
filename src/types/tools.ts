@@ -1,5 +1,5 @@
-import { createAnimationByTime } from '@/animation'
-import { BaseType } from '@/types'
+import type { createAnimationByTime } from '@/animation'
+import type { BaseType } from '@/types'
 
 export type PropMap<T> = {
   [K in keyof T]: {
@@ -37,6 +37,6 @@ export type FinalProp = {
   height?: BaseType
   opacity?: BaseType
 }
-  & Record<string, any>
+& Record<string, any>
 
 export type AnimiateParams = Parameters<typeof createAnimationByTime>

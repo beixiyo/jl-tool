@@ -6,14 +6,15 @@ export function autoUpdate(opts: AutoUpdateOpts = {}) {
     needUpdate = () => true,
     confirmGap = 1000 * 60 * 5,
     refreshGap = 1000 * 15,
-    confirmText = '页面有更新，是否刷新？'
+    confirmText = '页面有更新，是否刷新？',
   } = opts
 
-  if (!needUpdate()) return
+  if (!needUpdate())
+    return
 
-  let timer: number,
-    scriptArr: string[] = [],
-    styleArr: string[] = []
+  let timer: number
+  let scriptArr: string[] = []
+  let styleArr: string[] = []
 
   timer = window.setInterval(async () => {
     const flag = await hasChange()
@@ -23,7 +24,7 @@ export function autoUpdate(opts: AutoUpdateOpts = {}) {
         window.clearInterval(timer)
         window.location.reload()
       }
-      // 若用户点击不更新 则一定时间后 再重新轮询
+      /** 若用户点击不更新 则一定时间后 再重新轮询 */
       else {
         window.clearInterval(timer)
         setTimeout(() => autoUpdate(opts), confirmGap)
@@ -36,12 +37,12 @@ export function autoUpdate(opts: AutoUpdateOpts = {}) {
    ***************************************************/
 
   function getSrcArr(str: string) {
-    const styleReg = /<link\s+(?=[^>]*rel=["']stylesheet["'])(?=[^>]*href=["'](?<src>[^"']+)["'])[^>]*?>/mig
-    const scriptReg = /<script.*src=["'](?<src>.*?)["']>.*<\/script>/mig
-    const linkScriptReg = /<link\s+(?=[^>]*rel=["']modulepreload["'])(?=[^>]*href=["'](?<src>[^"']+)["'])[^>]*?>/mig
+    const styleReg = /<link\s+(?=[^>]*rel=["']stylesheet["'])(?=[^>]*href=["'](?<src>[^"']+)["'])[^>]*>/gi
+    const scriptReg = /<script.*src=["'](?<src>.*?)["']>.*<\/script>/gi
+    const linkScriptReg = /<link\s+(?=[^>]*rel=["']modulepreload["'])(?=[^>]*href=["'](?<src>[^"']+)["'])[^>]*>/gi
 
-    const scriptList: string[] = [],
-      styleList: string[] = []
+    const scriptList: string[] = []
+    const styleList: string[] = []
     let match: RegExpExecArray | null
 
     while ((match = scriptReg.exec(str))) {
@@ -83,18 +84,19 @@ export function autoUpdate(opts: AutoUpdateOpts = {}) {
       return true
 
     for (let i = 0; i < scriptArr.length; i++) {
-      if (scriptArr[i] !== scriptList[i]) return true
+      if (scriptArr[i] !== scriptList[i])
+        return true
     }
 
     for (let i = 0; i < styleArr.length; i++) {
       const item = styleArr[i]
-      if (item !== styleList[i]) return true
+      if (item !== styleList[i])
+        return true
     }
 
     return false
   }
 }
-
 
 export type AutoUpdateOpts = {
   /**

@@ -1,7 +1,6 @@
-import type { BaseKey, BaseType, TreeData, ArrToTreeOpts } from '@/types/base'
-import { deepClone } from './tools'
+import type { ArrToTreeOpts, BaseKey, BaseType, TreeData } from '@/types/base'
 import { isPureNum } from '@/shared/is'
-
+import { deepClone } from './tools'
 
 /**
  * 计算分页的当前数据
@@ -25,12 +24,12 @@ export function getSum<T>(arr: T[], handler?: (item: T) => number): number {
         : item
 
       if (typeof val !== 'number') {
-        throw new Error('数组中的值或处理过的值必须是数字')
+        throw new TypeError('数组中的值或处理过的值必须是数字')
       }
 
       return init + val
     },
-    0
+    0,
   )
 }
 
@@ -38,14 +37,14 @@ export function getSum<T>(arr: T[], handler?: (item: T) => number): number {
  * - 给定一个数组，根据 key 进行分组
  * - 分组内容默认放入数组中，你也可以指定为 `'+' | '-' | '*' | '/' | '**'` 进行相应的操作
  * - 你也可以把整个对象进行分组（设置 `operateKey` 为 `null`），他会把整个对象放入数组。而不是进行 加减乘除 等操作
- * 
+ *
  * @example
  * ```ts
  * const input = [{ type: 'chinese', score: 10 }, { type: 'chinese', score: 100 }]
  * groupBy(input, 'type', 'score') => [{ type: 'chinese', score: [10, 100] }]
  * groupBy(input, 'type', null) => [ { type: 'chinese', children: [{ ... }] }, ... ]
  * ```
- * 
+ *
  * @param data 要分组的数组
  * @param key 要进行分组的 **键**
  * @param operateKey 要操作的 **键**，填 `null` 则对整个对象进行分组，并且会把 `action` 设置为 `arr`
@@ -59,25 +58,25 @@ export function groupBy<T extends Record<BaseKey, any>>(
   operateKey: null | (keyof T),
   action: 'arr' | '+' | '-' | '*' | '/' | '**' = 'arr',
   enableParseFloat = false,
-  enableDeepClone = false
+  enableDeepClone = false,
 ) {
   let i = 0
-  const res: any[] = [],
-    /**
-     * 存储键对应的索引
-     * @example 
-     * {
-     *     'chinese': 0,
-     *     'math': 1
-     * }
-     */
-    keyMap: any = {}
+  const res: any[] = []
+  /**
+   * 存储键对应的索引
+   * @example
+   * {
+   *     'chinese': 0,
+   *     'math': 1
+   * }
+   */
+  const keyMap: any = {}
 
   if (operateKey === null) {
     action = 'arr'
   }
 
-  data.forEach(item => {
+  data.forEach((item) => {
     const mapKey = item[key]
     /** 尚未存入数组的情况 */
     if (keyMap[mapKey] === undefined) {
@@ -98,19 +97,19 @@ export function groupBy<T extends Record<BaseKey, any>>(
     if (operateKey === null) {
       res[i] = {
         type: mapKey,
-        children: [_item]
+        children: [_item],
       }
     }
     else if (action === 'arr') {
       res[i] = {
         ..._item,
-        [operateKey]: [_item[operateKey]]
+        [operateKey]: [_item[operateKey]],
       }
     }
     else {
       res[i] = {
         ..._item,
-        [operateKey]: _item[operateKey]
+        [operateKey]: _item[operateKey],
       }
     }
     i++
@@ -141,7 +140,7 @@ export function groupBy<T extends Record<BaseKey, any>>(
 
     if (action !== 'arr') {
       if (enableParseFloat) {
-        num = parseFloat(curData)
+        num = Number.parseFloat(curData)
       }
       else {
         num = Number(curData)
@@ -185,11 +184,11 @@ export function groupBy<T extends Record<BaseKey, any>>(
 
   /** 根据配置决定是否解析 */
   function toParseFloat(arr: any[], index: number) {
-    if (!enableParseFloat) return
-    arr[index][operateKey] = parseFloat(arr[index][operateKey])
+    if (!enableParseFloat)
+      return
+    arr[index][operateKey] = Number.parseFloat(arr[index][operateKey])
   }
 }
-
 
 /**
  * 扁平数组转递归树
@@ -208,15 +207,16 @@ export function groupBy<T extends Record<BaseKey, any>>(
  */
 export function arrToTree<T extends Record<string, any>>(
   arr: T[],
-  options?: ArrToTreeOpts<T>
+  options?: ArrToTreeOpts<T>,
 ): TreeData<T> {
   const {
     idField = 'id',
     pidField = 'pid',
-    rootId = 0
+    rootId = 0,
   } = options || {}
 
-  if (arr.length < 2) return arr as TreeData<T>
+  if (arr.length < 2)
+    return arr as TreeData<T>
 
   const res: TreeData<T> = []
   const map: Record<BaseType, TreeData<T>[number]> = {}
@@ -231,7 +231,7 @@ export function arrToTree<T extends Record<string, any>>(
     else {
       map[id] = {
         ...item,
-        children: map[id].children
+        children: map[id].children,
       }
     }
 
@@ -265,7 +265,7 @@ export function arrToTree<T extends Record<string, any>>(
 export function searchTreeData<T extends { children?: T[] }>(
   keyword: string,
   data: T[],
-  opts: SearchOpts = {}
+  opts: SearchOpts = {},
 ): T[] {
   const { key = 'name', ignoreCase = true } = opts
 
@@ -292,7 +292,7 @@ export function searchTreeData<T extends { children?: T[] }>(
         if (filterData.length) {
           result.push({
             ...item,
-            children: filterData
+            children: filterData,
           })
         }
       }
@@ -311,7 +311,8 @@ export function searchTreeData<T extends { children?: T[] }>(
  * @returns 返回二维数组
  */
 export function arrToChunk<T>(arr: T[], size: number): T[][] {
-  if (size <= 1) return arr.map((item) => [item])
+  if (size <= 1)
+    return arr.map(item => [item])
 
   const _arr: any[] = []
   const chunkSize = Math.ceil(arr.length / size)
@@ -322,8 +323,7 @@ export function arrToChunk<T>(arr: T[], size: number): T[][] {
   return _arr
 }
 
-
-/** 
+/**
  * 二分查找，必须是正序的数组
  * @param arr 数组
  * @param value 目标值
@@ -333,11 +333,11 @@ export function arrToChunk<T>(arr: T[], size: number): T[][] {
 export function binarySearch<T>(
   arr: T[],
   value: number,
-  getValFn: (item: T) => number = (item: T) => item as number
+  getValFn: (item: T) => number = (item: T) => item as number,
 ) {
-  let left = 0,
-    right = arr.length - 1,
-    candidate = -1
+  let left = 0
+  let right = arr.length - 1
+  let candidate = -1
 
   while (left <= right) {
     const mid = (left + right) >>> 1
@@ -361,27 +361,27 @@ export function binarySearch<T>(
  */
 export function bfsFind<T extends TreeNode>(
   arr: T[],
-  condition: (value: T) => boolean
+  condition: (value: T) => boolean,
 ): T | null {
   /** 当前层的节点 */
   let currentLevel: T[] = arr
   /** 下一层的节点 */
   let nextLevel: T[] = []
 
-  // 循环遍历每一层
+  /** 循环遍历每一层 */
   while (currentLevel.length > 0) {
     for (const item of currentLevel) {
       if (condition(item)) {
         return item
       }
 
-      // 将当前节点的子节点添加到下一层
+      /** 将当前节点的子节点添加到下一层 */
       if (item.children && item.children.length > 0) {
         nextLevel.push(...item.children)
       }
     }
 
-    // 当前层遍历完毕，进入下一层
+    /** 当前层遍历完毕，进入下一层 */
     currentLevel = nextLevel
     nextLevel = []
   }
@@ -394,14 +394,14 @@ export function bfsFind<T extends TreeNode>(
  */
 export function dfsFind<T extends TreeNode>(
   arr: T[],
-  condition: (value: T) => boolean
+  condition: (value: T) => boolean,
 ): T | null {
   for (const item of arr) {
     if (condition(item)) {
       return item
     }
 
-    // 如果当前节点有子节点，递归搜索子节点
+    /** 如果当前节点有子节点，递归搜索子节点 */
     if (item.children && item.children.length > 0) {
       const result = dfsFind(item.children, condition)
       if (result) {
@@ -413,7 +413,6 @@ export function dfsFind<T extends TreeNode>(
   return null
 }
 
-
 /**
  * 生成一个指定大小的类型化数组，默认 `Float32Array`，并用指定的生成函数填充
  * @param size 数组的长度
@@ -424,7 +423,7 @@ export function dfsFind<T extends TreeNode>(
 export function genTypedArr<T extends AllTypedArrConstructor = Float32ArrayConstructor>(
   size: number,
   genVal: (index: number) => number,
-  ArrayFn: T = Float32Array as T
+  ArrayFn: T = Float32Array as T,
 ): ArrReturnType<T> {
   const arr = new ArrayFn(size)
   for (let i = 0; i < arr.length; i++) {
@@ -456,8 +455,9 @@ export function genArr<V>(
  * @param ignoreOrder 是否忽略顺序，默认 true
  */
 export function arrIsEqual<T = string | number>(
-  arr1: T[], arr2: T[],
-  ignoreOrder = true
+  arr1: T[],
+  arr2: T[],
+  ignoreOrder = true,
 ): boolean {
   if (arr1.length !== arr2.length) {
     return false
@@ -475,7 +475,6 @@ export function arrIsEqual<T = string | number>(
   return arr1.every((value, index) => value === arr2[index])
 }
 
-
 export type AllTypedArrConstructor =
   | Float32ArrayConstructor
   | Float64ArrayConstructor
@@ -488,14 +487,14 @@ export type AllTypedArrConstructor =
 
 type ArrReturnType<T extends AllTypedArrConstructor = Float32ArrayConstructor> =
   T extends Float32ArrayConstructor ? Float32Array
-  : T extends Float64ArrayConstructor ? Float64Array
-  : T extends Int8ArrayConstructor ? Int8Array
-  : T extends Uint8ArrayConstructor ? Uint8Array
-  : T extends Int16ArrayConstructor ? Int16Array
-  : T extends Uint16ArrayConstructor ? Uint16Array
-  : T extends Int32ArrayConstructor ? Int32Array
-  : T extends Uint32ArrayConstructor ? Uint32Array
-  : never
+    : T extends Float64ArrayConstructor ? Float64Array
+      : T extends Int8ArrayConstructor ? Int8Array
+        : T extends Uint8ArrayConstructor ? Uint8Array
+          : T extends Int16ArrayConstructor ? Int16Array
+            : T extends Uint16ArrayConstructor ? Uint16Array
+              : T extends Int32ArrayConstructor ? Int32Array
+                : T extends Uint32ArrayConstructor ? Uint32Array
+                  : never
 
 export type SearchOpts = {
   /** 要搜索比对的键，@default name */

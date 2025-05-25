@@ -1,8 +1,6 @@
 import { applyAnimation } from '@/animation/applyAnimation'
 
-
 export class Clock {
-
   private getNow: () => number
 
   /** 开始时间 */

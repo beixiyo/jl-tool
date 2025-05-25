@@ -20,7 +20,7 @@ export class MinHeap<T extends HeapItem> {
   }
 
   push(...items: T[]) {
-    items.forEach((item) => this.pushOne(item))
+    items.forEach(item => this.pushOne(item))
   }
 
   /** 删除并返回堆顶的值 */
@@ -30,8 +30,8 @@ export class MinHeap<T extends HeapItem> {
       return data.pop()
     }
 
-    const first = data[0],
-      last = data.pop()!
+    const first = data[0]
+    const last = data.pop()!
     data[0] = last
 
     if (first.sortIndex === last.sortIndex) {
@@ -42,20 +42,20 @@ export class MinHeap<T extends HeapItem> {
     while (curIndex < data.length) {
       let minIndex = curIndex
       const
-        [left, leftIndex] = this.getLeft(curIndex),
-        [right, rightIndex] = this.getRight(curIndex),
-        curItem = data[curIndex]
+        [left, leftIndex] = this.getLeft(curIndex)
+      const [right, rightIndex] = this.getRight(curIndex)
+      const curItem = data[curIndex]
 
       if (
-        leftIndex < data.length &&
-        left.sortIndex < curItem.sortIndex
+        leftIndex < data.length
+        && left.sortIndex < curItem.sortIndex
       ) {
         minIndex = leftIndex
       }
 
       if (
-        rightIndex < data.length &&
-        right.sortIndex < data[minIndex].sortIndex
+        rightIndex < data.length
+        && right.sortIndex < data[minIndex].sortIndex
       ) {
         minIndex = rightIndex
       }
@@ -75,7 +75,7 @@ export class MinHeap<T extends HeapItem> {
     const { data } = this
     data.push(item)
 
-    // 向上交换
+    /** 向上交换 */
     let curIndex = data.length - 1
     while (curIndex > 0) {
       const [parent, parentIndex] = this.getParent(curIndex)
@@ -106,12 +106,11 @@ export class MinHeap<T extends HeapItem> {
   }
 
   private swap(i: number, j: number) {
-    let temp = this.data[i]
+    const temp = this.data[i]
     this.data[i] = this.data[j]
     this.data[j] = temp
   }
 }
-
 
 /** 最大堆算法 */
 export class MaxHeap<T extends HeapItem> {
@@ -135,7 +134,7 @@ export class MaxHeap<T extends HeapItem> {
   }
 
   push(...items: T[]) {
-    items.forEach((item) => this.pushOne(item))
+    items.forEach(item => this.pushOne(item))
   }
 
   /** 删除并返回堆顶的值 */
@@ -145,8 +144,8 @@ export class MaxHeap<T extends HeapItem> {
       return data.pop()
     }
 
-    const first = data[0],
-      last = data.pop()!
+    const first = data[0]
+    const last = data.pop()!
     data[0] = last
 
     if (first.sortIndex === last.sortIndex) {
@@ -157,20 +156,20 @@ export class MaxHeap<T extends HeapItem> {
     while (curIndex < data.length) {
       let maxIndex = curIndex
       const
-        [left, leftIndex] = this.getLeft(curIndex),
-        [right, rightIndex] = this.getRight(curIndex),
-        curItem = data[curIndex]
+        [left, leftIndex] = this.getLeft(curIndex)
+      const [right, rightIndex] = this.getRight(curIndex)
+      const curItem = data[curIndex]
 
       if (
-        leftIndex < data.length &&
-        curItem.sortIndex < left.sortIndex
+        leftIndex < data.length
+        && curItem.sortIndex < left.sortIndex
       ) {
         maxIndex = leftIndex
       }
 
       if (
-        rightIndex < data.length &&
-        right.sortIndex > data[maxIndex].sortIndex
+        rightIndex < data.length
+        && right.sortIndex > data[maxIndex].sortIndex
       ) {
         maxIndex = rightIndex
       }

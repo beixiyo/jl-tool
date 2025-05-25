@@ -1,6 +1,5 @@
 const DEBUG_KEY = '__@@DEBUG@@__'
 
-
 /**
  * 禁用调试
  * @example
@@ -25,7 +24,8 @@ export function disableDebug(debugOpts: DebugOpts) {
     inputStyleText,
   } = debugOpts
 
-  if (!enable) return
+  if (!enable)
+    return
 
   const isAdmin = localStorage.getItem(DEBUG_KEY) === secret
   if (isAdmin) {
@@ -36,12 +36,11 @@ export function disableDebug(debugOpts: DebugOpts) {
   preventDebug()
   disableDebugAndContextMenu(disableF12, disableMenu)
 
-
   /**
    * shift + d 输入密码打开调试
    */
   function addEvent(key: string) {
-    window.addEventListener('keydown', e => {
+    window.addEventListener('keydown', (e) => {
       if (e.shiftKey && e.key.toLocaleLowerCase() === key) {
         createInput()
       }
@@ -111,27 +110,27 @@ function disableDebugAndContextMenu(disableF12 = true, disableMenu = true) {
   })
 
   disableF12 && document.addEventListener('keydown', (e) => {
-    // 检查是否是 F12 键
+    /** 检查是否是 F12 键 */
     if (e.key === 'F12' || e.code === 'F12') {
       e.preventDefault()
     }
-    // 检查是否是 Command + Option + I (MacOS 下 Chrome/Firefox 的开发者工具快捷键)
+    /** 检查是否是 Command + Option + I (MacOS 下 Chrome/Firefox 的开发者工具快捷键) */
     else if ((e.metaKey && e.altKey && (e.key === 'I' || e.key === 'i')) || (e.metaKey && e.key === 'J' || e.key === 'j')) {
       e.preventDefault()
     }
-    // 检查是否是 Command + Shift + C (MacOS 下 Chrome/Firefox 的元素检查快捷键)
+    /** 检查是否是 Command + Shift + C (MacOS 下 Chrome/Firefox 的元素检查快捷键) */
     else if (e.metaKey && e.shiftKey && (e.key === 'C' || e.key === 'c')) {
       e.preventDefault()
     }
-    // 检查是否是 Command + Shift + J (MacOS 下 Chrome/Firefox 的控制台快捷键)
+    /** 检查是否是 Command + Shift + J (MacOS 下 Chrome/Firefox 的控制台快捷键) */
     else if (e.metaKey && e.shiftKey && (e.key === 'J' || e.key === 'j')) {
       e.preventDefault()
     }
-    // 检查是否是 Command + Alt + C (MacOS 下 Safari 的元素检查快捷键)
+    /** 检查是否是 Command + Alt + C (MacOS 下 Safari 的元素检查快捷键) */
     else if (e.metaKey && e.altKey && (e.key === 'C' || e.key === 'c')) {
       e.preventDefault()
     }
-    // 检查是否是 Command + Alt + J (MacOS 下 Safari 的控制台快捷键)
+    /** 检查是否是 Command + Alt + J (MacOS 下 Safari 的控制台快捷键) */
     else if (e.metaKey && e.altKey && (e.key === 'J' || e.key === 'j')) {
       e.preventDefault()
     }
@@ -145,7 +144,7 @@ function preventDebug() {
   const debug = new Function('debugger')
   const getOut = () => location.href = 'about:blank'
 
-  let id = setInterval(() => {
+  const id = setInterval(() => {
     const start = Date.now()
     debug()
 
@@ -154,8 +153,8 @@ function preventDebug() {
     }
 
     if (
-      outerWidth - innerWidth > 250 ||
-      outerHeight - innerHeight > 250
+      outerWidth - innerWidth > 250
+      || outerHeight - innerHeight > 250
     ) {
       getOut()
     }
@@ -165,7 +164,6 @@ function preventDebug() {
     clearInterval(id)
   }
 }
-
 
 export type DebugOpts = {
   /**

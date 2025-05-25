@@ -23,7 +23,6 @@ export class Observer {
   }
 }
 
-
 export interface IObserver {
-  update(...data: any[]): void
+  update: (...data: any[]) => void
 }

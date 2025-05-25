@@ -4,10 +4,10 @@ export const IMAGE_SIGNATURES: Record<ImageType, any[]> = {
   'image/jpeg': [[0xFF, 0xD8, 0xFF]],
   'image/gif': [[0x47, 0x49, 0x46, 0x38]],
   'image/webp': [
-    [0x52, 0x49, 0x46, 0x46, , , , , 0x57, 0x45, 0x42, 0x50]
+    [0x52, 0x49, 0x46, 0x46, , , , , 0x57, 0x45, 0x42, 0x50],
   ],
   'image/bmp': [[0x42, 0x4D]],
-  'image/tiff': [[0x49, 0x49, 0x2A, 0x00], [0x4D, 0x4D, 0x00, 0x2A]]
+  'image/tiff': [[0x49, 0x49, 0x2A, 0x00], [0x4D, 0x4D, 0x00, 0x2A]],
 }
 
 /** 压缩包魔数检测表 */
@@ -15,34 +15,34 @@ export const COMPRESSION_SIGNATURES: Record<CompressedType, any[]> = {
   'application/zip': [
     [0x50, 0x4B, 0x03, 0x04], // 标准ZIP
     [0x50, 0x4B, 0x05, 0x06], // 空文档ZIP
-    [0x50, 0x4B, 0x07, 0x08]  // 分卷ZIP
+    [0x50, 0x4B, 0x07, 0x08], // 分卷ZIP
   ],
   'application/x-rar-compressed': [
     [0x52, 0x61, 0x72, 0x21, 0x1A, 0x07, 0x00], // RAR4
-    [0x52, 0x61, 0x72, 0x21, 0x1A, 0x07, 0x01, 0x00] // RAR5
+    [0x52, 0x61, 0x72, 0x21, 0x1A, 0x07, 0x01, 0x00], // RAR5
   ],
   'application/x-7z-compressed': [
-    [0x37, 0x7A, 0xBC, 0xAF, 0x27, 0x1C]
+    [0x37, 0x7A, 0xBC, 0xAF, 0x27, 0x1C],
   ],
   'application/x-tar': [
-    [0x75, 0x73, 0x74, 0x61, 0x72] // ustar
+    [0x75, 0x73, 0x74, 0x61, 0x72], // ustar
   ],
   'application/gzip': [
-    [0x1F, 0x8B, 0x08]
-  ]
+    [0x1F, 0x8B, 0x08],
+  ],
 }
 
 /**
  * 检测文件类型，目前仅仅支持图片、压缩包和文本文件
  */
 export async function detectFileType(input: InputType): Promise<FileTypeResult> {
-  // 如果是字符串直接返回文本类型
+  /** 如果是字符串直接返回文本类型 */
   if (typeof input === 'string') {
     return {
       isText: true,
       isImage: false,
       isCompressed: false,
-      mimeType: 'text/plain'
+      mimeType: 'text/plain',
     }
   }
 
@@ -52,14 +52,14 @@ export async function detectFileType(input: InputType): Promise<FileTypeResult> 
    */
   const uint8Array = await normalizeToUint8Array(input)
 
-  // 首先检查常见图片文件的魔数(Magic Number)
+  /** 首先检查常见图片文件的魔数(Magic Number) */
   const imageType = detectImgType(uint8Array)
   if (imageType) {
     return {
       isText: false,
       isImage: true,
       isCompressed: false,
-      mimeType: imageType
+      mimeType: imageType,
     }
   }
 
@@ -69,18 +69,20 @@ export async function detectFileType(input: InputType): Promise<FileTypeResult> 
       isText: false,
       isImage: false,
       isCompressed: true,
-      mimeType: compressionType
+      mimeType: compressionType,
     }
   }
 
-  // 检查是否为文本文件
+  /** 检查是否为文本文件 */
   const isText = isLikelyText(uint8Array)
 
   return {
     isText,
     isImage: false,
     isCompressed: false,
-    mimeType: isText ? 'text/plain' : null
+    mimeType: isText
+      ? 'text/plain'
+      : null,
   }
 }
 
@@ -101,7 +103,7 @@ export async function normalizeToUint8Array(input: InputType): Promise<Uint8Arra
   }
 
   if (typeof input === 'string') {
-    // 如果是字符串，直接检查是否为文本
+    /** 如果是字符串，直接检查是否为文本 */
     return new TextEncoder().encode(input)
   }
 
@@ -138,7 +140,8 @@ export function detectImgType(uint8Array: Uint8Array): ImageType | null {
           break
         }
       }
-      if (match) return mimeType as ImageType
+      if (match)
+        return mimeType as ImageType
     }
   }
   return null
@@ -150,7 +153,8 @@ export function detectImgType(uint8Array: Uint8Array): ImageType | null {
 export function detectCompressionType(uint8Array: Uint8Array): CompressedType | null {
   for (const [mimeType, signatures] of Object.entries(COMPRESSION_SIGNATURES)) {
     for (const signature of signatures) {
-      if (uint8Array.length < signature.length) continue
+      if (uint8Array.length < signature.length)
+        continue
 
       let match = true
       for (let i = 0; i < signature.length; i++) {
@@ -160,7 +164,8 @@ export function detectCompressionType(uint8Array: Uint8Array): CompressedType | 
         }
       }
 
-      if (match) return mimeType as CompressedType
+      if (match)
+        return mimeType as CompressedType
     }
   }
   return null
@@ -170,21 +175,24 @@ export function detectCompressionType(uint8Array: Uint8Array): CompressedType | 
  * 数据是否是文本
  */
 export function isLikelyText(data: Uint8Array | string) {
-  if (typeof data === 'string') return true
+  if (typeof data === 'string')
+    return true
 
   if (!(data instanceof Uint8Array)) {
     throw new TypeError('Expected Uint8Array or string')
   }
 
-  // 检查UTF BOM
+  /** 检查UTF BOM */
   if (data.length >= 2) {
     // UTF-16 BE/LE
-    if (data[0] === 0xFE && data[1] === 0xFF) return true // UTF-16 BE
-    if (data[0] === 0xFF && data[1] === 0xFE) return true // UTF-16 LE
+    if (data[0] === 0xFE && data[1] === 0xFF)
+      return true // UTF-16 BE
+    if (data[0] === 0xFF && data[1] === 0xFE)
+      return true // UTF-16 LE
 
     // UTF-8 BOM
-    if (data.length >= 3 &&
-      data[0] === 0xEF && data[1] === 0xBB && data[2] === 0xBF) {
+    if (data.length >= 3
+      && data[0] === 0xEF && data[1] === 0xBB && data[2] === 0xBF) {
       return true
     }
   }
@@ -203,7 +211,7 @@ export function isLikelyText(data: Uint8Array | string) {
       continue
     }
 
-    // 常见控制字符
+    /** 常见控制字符 */
     if (byte === 0x09 || byte === 0x0A || byte === 0x0D) {
       textChars++
       totalChecked++
@@ -212,7 +220,11 @@ export function isLikelyText(data: Uint8Array | string) {
 
     // UTF-8多字节序列
     if (byte >= 0xC2 && byte <= 0xF4) {
-      const seqLength = byte < 0xE0 ? 2 : byte < 0xF0 ? 3 : 4
+      const seqLength = byte < 0xE0
+        ? 2
+        : byte < 0xF0
+          ? 3
+          : 4
       let valid = true
 
       for (let j = 1; j < seqLength && i + j < sampleSize; j++) {
@@ -230,7 +242,7 @@ export function isLikelyText(data: Uint8Array | string) {
       }
     }
 
-    // 其他情况认为是非文本
+    /** 其他情况认为是非文本 */
     totalChecked++
   }
 
@@ -238,10 +250,9 @@ export function isLikelyText(data: Uint8Array | string) {
     return false
   }
 
-  // 允许少量非文本字符（如二进制文本混合格式）
+  /** 允许少量非文本字符（如二进制文本混合格式） */
   return textChars / totalChecked > 0.85
 }
-
 
 export type FileTypeResult = {
   isText: boolean

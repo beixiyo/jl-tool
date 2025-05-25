@@ -8,7 +8,7 @@
 export function bindWinEvent<K extends keyof WindowEventMap>(
   eventName: K,
   listener: WinListenerParams<K>[1],
-  options?: WinListenerParams<K>[2]
+  options?: WinListenerParams<K>[2],
 ) {
   window.addEventListener(eventName, listener, options)
   const unBind = () => {
@@ -23,14 +23,14 @@ export function bindWinEvent<K extends keyof WindowEventMap>(
  * @param el 要判断的元素 默认 document
  * @returns 是否加载完成
  */
-export const judgeImgLoad = (el = document): Promise<boolean> => {
+export function judgeImgLoad(el = document): Promise<boolean> {
   const imgArr = el.querySelectorAll('img')
 
   const promArr = Array.from(imgArr).map(
     img => new Promise((resolve, reject) => {
       img.onload = resolve
       img.onerror = reject
-    })
+    }),
   )
 
   return new Promise((resolve) => {
@@ -51,8 +51,8 @@ export function doubleKeyDown<T, R>(
   fn: (this: T, e: KeyboardEvent, ...args: any[]) => R,
   gap = 150,
   {
-    triggerKey = 'key'
-  }: DoubleKeyDownOpts = {}
+    triggerKey = 'key',
+  }: DoubleKeyDownOpts = {},
 ) {
   /**
    * 调用函数记录初始时间，你不可能立即点击
@@ -61,7 +61,8 @@ export function doubleKeyDown<T, R>(
   let st = Date.now()
 
   return (e: KeyboardEvent) => {
-    if (e[triggerKey] !== key) return
+    if (e[triggerKey] !== key)
+      return
 
     const now = Date.now()
     /**
@@ -80,29 +81,30 @@ export function doubleKeyDown<T, R>(
  * 适配主流浏览器的全屏。若已全屏，则退出全屏
  * @param dom 要全屏的元素
  */
-export const fullScreen = (dom?: HTMLElement) => {
+export function fullScreen(dom?: HTMLElement) {
   const
-    doc = document as any,
-    root = document.documentElement as any,
-    rfs =
-      root.requestFullscreen ||
-      root.webkitRequestFullscreen ||
-      root.mozRequestFullScreen ||
-      root.msRequestFullscreen,
-    efs =
-      doc.exitFullscreen ||
-      doc.webkitCancelFullScreen ||
-      doc.webkitExitFullscreen ||
-      doc.mozCancelFullScreen ||
-      doc.msExitFullscreen
+    doc = document as any
+  const root = document.documentElement as any
+  const rfs
+      = root.requestFullscreen
+        || root.webkitRequestFullscreen
+        || root.mozRequestFullScreen
+        || root.msRequestFullscreen
+  const efs
+      = doc.exitFullscreen
+        || doc.webkitCancelFullScreen
+        || doc.webkitExitFullscreen
+        || doc.mozCancelFullScreen
+        || doc.msExitFullscreen
 
-  if (!rfs) return
+  if (!rfs)
+    return
 
-  const isFull =
-    doc.fullscreenElement ||
-    doc.webkitFullscreenElement ||
-    doc.mozFullScreenElement ||
-    doc.msFullscreenElement
+  const isFull
+    = doc.fullscreenElement
+      || doc.webkitFullscreenElement
+      || doc.mozFullScreenElement
+      || doc.msFullscreenElement
 
   if (dom) {
     isFull
@@ -115,7 +117,6 @@ export const fullScreen = (dom?: HTMLElement) => {
       : rfs.call(root)
   }
 }
-
 
 export type WinListenerParams<K extends keyof WindowEventMap> = Parameters<typeof window.addEventListener<K>>
 

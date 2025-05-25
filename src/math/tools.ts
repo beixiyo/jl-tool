@@ -6,7 +6,7 @@
  * @returns 限制后的值
  */
 export function clamp(value: number, min: number, max: number): number {
-  // 确保 min 不大于 max
+  /** 确保 min 不大于 max */
   if (min > max) {
     [min, max] = [max, min]
   }

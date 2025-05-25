@@ -1,6 +1,5 @@
-import { defineConfig } from 'vitest/config'
 import { fileURLToPath } from 'node:url'
-
+import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
   test: {
@@ -12,12 +11,12 @@ export default defineConfig({
       reportsDirectory: './coverage',
       include: ['../src/**/*'],
     },
-    environment: 'jsdom'
+    environment: 'jsdom',
   },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
-      '@deb': fileURLToPath(new URL('./dist/index.js', import.meta.url))
+      '@deb': fileURLToPath(new URL('./dist/index.js', import.meta.url)),
     },
   },
   // index.html 入口文件

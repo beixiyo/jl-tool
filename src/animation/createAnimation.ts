@@ -1,11 +1,10 @@
 import type { TimeFunc } from './timeFunc'
 import { genTimeFunc } from './timeFunc'
 
-
 /**
  * 根据传入的值，返回一个动画函数。通常用来做滚动动画值映射
  * #### 你可以拿到返回的函数，传入指定范围的值，他会映射成对应的值
- * 
+ *
  * @param stVal 动画起点，比如滚动起始位置
  * @param endVal 动画终点，比如滚动终点位置
  * @param animateStVal 动画起点对应的值
@@ -17,7 +16,7 @@ export function createAnimation(
   endVal: number,
   animateStVal: number,
   animateEndVal: number,
-  timeFunc?: TimeFunc
+  timeFunc?: TimeFunc,
 ) {
   /**
    * 根据当前值 返回动画值
@@ -32,9 +31,9 @@ export function createAnimation(
     }
 
     const
-      _timeFunc = genTimeFunc(timeFunc),
-      _progress = (curVal - stVal) / (endVal - stVal),
-      progress = _timeFunc(_progress)
+      _timeFunc = genTimeFunc(timeFunc)
+    const _progress = (curVal - stVal) / (endVal - stVal)
+    const progress = _timeFunc(_progress)
 
     return animateStVal + (animateEndVal - animateStVal) * progress
   }

@@ -1,11 +1,9 @@
 import type { Optional } from '@jl-org/ts-tool'
 
-
 /**
  * 根据网络状态自动重连的，自动发送心跳数据的 WebSocket
  */
 export class WS {
-
   private opts: Optional<Required<WSOpts>, 'protocols' | 'onVisible' | 'onHidden'>
   socket: WebSocket | null = null
 
@@ -93,7 +91,7 @@ export class WS {
     window.removeEventListener('visibilitychange', this.onVisibilityChange)
   }
 
-  // 私有方法 ==================================================
+  /** 私有方法 ================================================== */
 
   /**
    * 页面不可见时，关闭连接。恢复时，重新连接
@@ -112,7 +110,6 @@ export class WS {
         console.log('离开页面过久，关闭连接')
         this.socket?.close()
         this.opts.onHidden?.()
-
       }, this.opts.leaveTime)
     }
   }
@@ -164,17 +161,15 @@ export class WS {
     ping()
     this.heartbeatTimer = window.setInterval(
       ping,
-      this.opts.heartbeatInterval
+      this.opts.heartbeatInterval,
     )
   }
-
 }
-
 
 export type WSOpts = {
   url: string
   protocols?: string | string[]
-  /** 
+  /**
    * 发送心跳数据间隔，单位 ms。-1 表示不发送心跳
    * @default 5000
    */

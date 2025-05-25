@@ -1,7 +1,6 @@
-import { TransferType } from '@/types'
-import { createCvs } from './tools'
+import type { TransferType } from '@/types'
 import { getImg } from '@/tools/domTools'
-
+import { createCvs } from './tools'
 
 /**
  * 裁剪图片指定区域，可设置缩放，返回 base64 | blob
@@ -16,7 +15,8 @@ export async function cutImg<T extends TransferType = 'base64'>(
 ): Promise<HandleImgReturn<T>> {
   const image = await getImg(imgOrUrl)
 
-  if (!image) return Promise.reject(new Error('image load error'))
+  if (!image)
+    return Promise.reject(new Error('image load error'))
   const { naturalWidth, naturalHeight } = image
 
   const {
@@ -35,7 +35,7 @@ export async function cutImg<T extends TransferType = 'base64'>(
 
   const { cvs, ctx } = createCvs(scaledWidth, scaledHeight)
 
-  // 在绘制之前设置缩放
+  /** 在绘制之前设置缩放 */
   ctx.scale(scaleX, scaleY)
   ctx.drawImage(image, x, y, width, height, 0, 0, width, height)
 
@@ -56,12 +56,13 @@ export async function resizeImg<T extends TransferType = 'base64'>(
   width: number,
   height: number,
   resType: T = 'base64' as T,
-  opts: ExportImgOpts = {}
+  opts: ExportImgOpts = {},
 ) {
   const { cvs, ctx } = createCvs(width, height)
   const image = await getImg(imgOrUrl)
 
-  if (!image) return Promise.reject(new Error('image load error'))
+  if (!image)
+    return Promise.reject(new Error('image load error'))
 
   const { naturalWidth, naturalHeight } = image
   const scale = Math.min(width / naturalWidth, height / naturalHeight)
@@ -74,7 +75,7 @@ export async function resizeImg<T extends TransferType = 'base64'>(
     (width - scaledWidth) / 2,
     (height - scaledHeight) / 2,
     scaledWidth,
-    scaledHeight
+    scaledHeight,
   )
 
   return getCvsImg(cvs, resType, opts.mimeType, opts.quality)
@@ -91,12 +92,13 @@ export async function resizeImg<T extends TransferType = 'base64'>(
 export async function compressImg<T extends TransferType = 'base64'>(
   imgOrUrl: HTMLImageElement | string,
   resType: T = 'base64' as T,
-  quality = .5,
-  mimeType: 'image/jpeg' | 'image/webp' = 'image/webp'
+  quality = 0.5,
+  mimeType: 'image/jpeg' | 'image/webp' = 'image/webp',
 ): Promise<HandleImgReturn<T>> {
   const image = await getImg(imgOrUrl)
 
-  if (!image) return Promise.reject(new Error('image load error'))
+  if (!image)
+    return Promise.reject(new Error('image load error'))
   const { naturalWidth, naturalHeight } = image
 
   const { cvs, ctx } = createCvs(naturalWidth, naturalHeight)
@@ -116,7 +118,7 @@ export function getCvsImg<T extends TransferType = 'base64'>(
   cvs: HTMLCanvasElement,
   resType: T = 'base64' as T,
   mimeType?: string,
-  quality?: number
+  quality?: number,
 ): Promise<HandleImgReturn<T>> {
   switch (resType) {
     case 'base64':
@@ -124,11 +126,11 @@ export function getCvsImg<T extends TransferType = 'base64'>(
     case 'blob':
       return new Promise<Blob>((resolve) => {
         cvs.toBlob(
-          blob => {
+          (blob) => {
             resolve(blob!)
           },
           mimeType,
-          quality
+          quality,
         )
       }) as Promise<HandleImgReturn<T>>
 
@@ -143,7 +145,8 @@ export function getCvsImg<T extends TransferType = 'base64'>(
  */
 export async function getImgInfo(imgOrUrl: string | HTMLImageElement) {
   const image = await getImg(imgOrUrl)
-  if (!image) return Promise.reject(new Error('image load error'))
+  if (!image)
+    return Promise.reject(new Error('image load error'))
 
   return {
     naturalHeight: image.naturalHeight,
@@ -156,8 +159,8 @@ export async function getImgInfo(imgOrUrl: string | HTMLImageElement) {
 
 export type HandleImgReturn<T extends TransferType> =
   T extends 'blob'
-  ? Blob
-  : string
+    ? Blob
+    : string
 
 export type CutImgOpts = {
   x?: number

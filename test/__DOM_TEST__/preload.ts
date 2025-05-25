@@ -1,7 +1,6 @@
 import {
-  preloadImgs
+  preloadImgs,
 } from '@/tools/preload'
-
 
 preloadImgs([
   'http://localhost:80/test1.png',

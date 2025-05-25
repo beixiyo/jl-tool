@@ -1,14 +1,13 @@
 import { applyAnimation } from '@/animation'
 import { Clock } from './Clock'
 
-
 /**
  * setInterval 替代，用 requestAnimationFrame 实现
  * @returns 停止函数
  */
 export function timer(
   fn: (elapsedMS: number) => any,
-  durationMS: number
+  durationMS: number,
 ) {
   let tick = durationMS / durationMS
   const clock = new Clock()

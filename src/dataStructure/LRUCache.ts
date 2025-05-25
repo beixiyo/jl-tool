@@ -1,5 +1,4 @@
 export class LRUCache<K, V> extends Map<K, V> {
-
   /**
    * @param maxCacheLen 最大缓存长度
    */
@@ -37,5 +36,4 @@ export class LRUCache<K, V> extends Map<K, V> {
 
     return res
   }
-
 }

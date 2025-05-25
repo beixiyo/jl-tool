@@ -1,8 +1,7 @@
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { StreamJsonParser } from '@/tools/StreamJsonParser'
 
-describe('StreamJsonParser', () => {
-
+describe('streamJsonParser', () => {
   it('应该能解析完整的 JSON', () => {
     const parser = new StreamJsonParser()
     const json = '{"name": "张三", "age": 18, "address": "北京市海淀区"}'
@@ -18,15 +17,15 @@ describe('StreamJsonParser', () => {
   it('应该能处理分块接收的 JSON', () => {
     const parser = new StreamJsonParser()
 
-    // 第一块
+    /** 第一块 */
     let result = parser.append('{"name": "李四", ')
     expect(result).toBeNull()
 
-    // 第二块
+    /** 第二块 */
     result = parser.append('"age": 25, ')
     expect(result).toBeNull()
 
-    // 第三块 (完成 JSON)
+    /** 第三块 (完成 JSON) */
     result = parser.append('"city": "上海"}')
     expect(result).not.toBeNull()
     expect(result.name).toBe('李四')
@@ -37,7 +36,7 @@ describe('StreamJsonParser', () => {
   it('应该能修复并解析不完整的 JSON', () => {
     const parser = new StreamJsonParser()
 
-    // 不完整的 JSON
+    /** 不完整的 JSON */
     const json = '{"name": "张三", "age": 18, "address": "北京市海'
 
     const result = parser.append(json)
@@ -50,11 +49,11 @@ describe('StreamJsonParser', () => {
   it('应该能处理嵌套的 JSON', () => {
     const parser = new StreamJsonParser()
 
-    // 第一块
+    /** 第一块 */
     let result = parser.append('{"user": {"name": "王五", "contacts": [{"type": "email", "value": "wang@example.com"}, {"type": ')
     expect(result).toBeNull()
 
-    // 第二块 (完成 JSON)
+    /** 第二块 (完成 JSON) */
     result = parser.append('"phone", "value": "12345678"}]}, "status": "active"}')
     expect(result).not.toBeNull()
     expect(result.user.name).toBe('王五')
@@ -65,7 +64,7 @@ describe('StreamJsonParser', () => {
   it('应该能处理数组 JSON', () => {
     const parser = new StreamJsonParser()
 
-    // 不完整的数组 JSON
+    /** 不完整的数组 JSON */
     const json = '[{"id": 1, "name": "产品1"}, {"id": 2, "name": "产品2"}, {"id": 3, "name": "产品'
 
     const result = parser.append(json)
@@ -78,13 +77,13 @@ describe('StreamJsonParser', () => {
   it('应该能正确处理缓冲区', () => {
     const parser = new StreamJsonParser()
 
-    // 添加不完整的 JSON
+    /** 添加不完整的 JSON */
     parser.append('{"test": "value')
 
-    // 检查缓冲区
+    /** 检查缓冲区 */
     expect(parser.getBuffer()).toBe('{"test": "value')
 
-    // 清空缓冲区
+    /** 清空缓冲区 */
     parser.clear()
     expect(parser.getBuffer()).toBe('')
   })
@@ -92,7 +91,7 @@ describe('StreamJsonParser', () => {
   it('应该能处理非 JSON 开头的数据', () => {
     const parser = new StreamJsonParser()
 
-    // 非 JSON 开头的数据
+    /** 非 JSON 开头的数据 */
     const result = parser.append('这不是 JSON 数据')
 
     expect(result).toBeNull()

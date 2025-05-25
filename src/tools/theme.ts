@@ -44,5 +44,4 @@ export function onChangeTheme(onLight?: VoidFunction, onDark?: VoidFunction): Vo
   }
 }
 
-
 export type Theme = 'light' | 'dark'

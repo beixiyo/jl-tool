@@ -36,7 +36,8 @@ export class Recorder {
       }
 
       this.mediaRecorder.onstop = () => {
-        if (this.chunks.length === 0) return
+        if (this.chunks.length === 0)
+          return
         /** audio/wav | audio/mpeg | audio/ogg | audio/aac | audio/mp3 */
         const audioBlob = new Blob(this.chunks, { type: 'audio/mp3' })
         this.audioUrl = URL.createObjectURL(audioBlob)

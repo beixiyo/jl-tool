@@ -1,5 +1,5 @@
+import { describe, expect, it } from 'vitest'
 import { clamp } from '@/math/tools'
-import { describe, it, expect } from 'vitest'
 
 describe('clamp', () => {
   it('应该将值限制在最小值和最大值之间', () => {

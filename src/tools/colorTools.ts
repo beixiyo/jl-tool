@@ -1,7 +1,6 @@
 import { Reg } from '@/shared'
 import { numFixed } from './tools'
 
-
 /**
  * 把颜色提取出 RGBA
  * @example
@@ -20,18 +19,18 @@ export function getColorInfo(color: string) {
 
   let rgbColor: RegExpMatchArray | null
   if ((rgbColor = color.match(Reg.rgb))) {
-    const r = parseInt(rgbColor[1])
-    const g = parseInt(rgbColor[2])
-    const b = parseInt(rgbColor[3])
+    const r = Number.parseInt(rgbColor[1])
+    const g = Number.parseInt(rgbColor[2])
+    const b = Number.parseInt(rgbColor[3])
     const alpha = rgbColor[4] !== undefined
-      ? parseFloat(rgbColor[4])
+      ? Number.parseFloat(rgbColor[4])
       : 1
 
     return {
       r,
       g,
       b,
-      a: alpha
+      a: alpha,
     }
   }
 
@@ -39,13 +38,13 @@ export function getColorInfo(color: string) {
     r: 0,
     g: 0,
     b: 0,
-    a: 0
+    a: 0,
   }
 }
 
 /** 获取十六进制随机颜色 */
 export function getColor() {
-  return '#' + Math.random().toString(16).slice(2, 8).padEnd(6, '0')
+  return `#${Math.random().toString(16).slice(2, 8).padEnd(6, '0')}`
 }
 
 /** 随机十六进制颜色数组 */
@@ -82,12 +81,12 @@ export function hexColorToRaw(color: string) {
 /** 十六进制 转 RGB */
 export function hexToRGB(color: string) {
   if (color.startsWith('#')) {
-    const _color = hexColorToRaw(color) as string,
-      colorArr = []
+    const _color = hexColorToRaw(color) as string
+    const colorArr = []
 
     for (let i = 1; i < _color.length; i += 2) {
       const str = _color.slice(i, i + 2)
-      colorArr.push(parseInt(str, 16))
+      colorArr.push(Number.parseInt(str, 16))
     }
     if (colorArr.length === 4) {
       colorArr[3] = numFixed(colorArr[3] / 255, 2)
@@ -107,21 +106,22 @@ export function rgbToHex(color: string) {
   let rgbColor: RegExpMatchArray | null
 
   if ((rgbColor = color.match(Reg.rgb))) {
-    const r = parseInt(rgbColor[1])
-    const g = parseInt(rgbColor[2])
-    const b = parseInt(rgbColor[3])
+    const r = Number.parseInt(rgbColor[1])
+    const g = Number.parseInt(rgbColor[2])
+    const b = Number.parseInt(rgbColor[3])
     const alpha = rgbColor[4] !== undefined
-      ? parseFloat(rgbColor[4])
+      ? Number.parseFloat(rgbColor[4])
       : 1
 
-    // 将 alpha 转换为十六进制 并乘以255 然后转换为两位的十六进制
+    /** 将 alpha 转换为十六进制 并乘以255 然后转换为两位的十六进制 */
     const alphaHex = Math.round(alpha * 255).toString(16).padStart(2, '0')
 
     return `#${(1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1)}${alphaHex}`
   }
 
   const _color = hexColorToRaw(color)
-  if (_color) return _color
+  if (_color)
+    return _color
 }
 
 /**
@@ -163,7 +163,7 @@ export function lightenColor(color: string, strength = 0) {
  * @param opacity 透明度
  * @returns 返回十六进制 类似如下格式的颜色 `#ffffff11`
  */
-export function colorAddOpacity(color: string, opacity = .1) {
+export function colorAddOpacity(color: string, opacity = 0.1) {
   color = rgbToHex(color) || '#000000'
   color = color.slice(0, 7)
 

@@ -1,6 +1,5 @@
 import { isObj, isStr } from '@/shared/is'
 
-
 let id = 0
 
 /**
@@ -19,18 +18,17 @@ export const celsiusToFahrenheit = (celsius: number) => celsius * 9 / 5 + 32
 /** 华氏度转摄氏度 */
 export const fahrenheitToCelsius = (fahrenheit: number) => (fahrenheit - 32) * 5 / 9
 
-
 /**
  * 返回一个函数，该函数最多被调用 `n` 次。
  * 当无法调用时，默认返回上一次的结果。
  */
 export function once<Args extends any[], R>(
   fn: (...args: Args) => R,
-  options?: OnceOpts
+  options?: OnceOpts,
 ): (...args: Args) => R | undefined {
   const {
     maxCount = 1,
-    returnLastResult = true
+    returnLastResult = true,
   } = options || {}
 
   let count = 0
@@ -65,28 +63,34 @@ export function getRandomNum(min: number, max: number, enableFloat = false) {
     return Math.floor(r * (max - min) + min)
   }
 
-  if (r < .01) return min
+  if (r < 0.01)
+    return min
   return r * (max - min) + min
 }
 
 /**
  * 深拷贝，支持循环引用，默认调用 `structuredClone`，如果不支持则使用递归
  */
-export function deepClone<T>(data: T, map = new WeakMap): T {
+export function deepClone<T>(data: T, map = new WeakMap()): T {
   if (typeof structuredClone !== 'undefined') {
     return structuredClone(data)
   }
 
-  if (!isObj(data)) return data
-  if (data instanceof Date) return new Date(data) as T
-  if (data instanceof RegExp) return new RegExp(data) as T
+  if (!isObj(data))
+    return data
+  if (data instanceof Date)
+    return new Date(data) as T
+  if (data instanceof RegExp)
+    return new RegExp(data) as T
 
-  if (map.has(data)) return map.get(data)
+  if (map.has(data))
+    return map.get(data)
 
   const tar = new (data as any).constructor()
   map.set(data, tar)
   for (const key in data) {
-    if (!data.hasOwnProperty(key)) continue
+    if (!Object.prototype.hasOwnProperty.call(data, key))
+      continue
     tar[key] = deepClone(data[key], map)
   }
 
@@ -175,7 +179,8 @@ export function padEmptyObj<T extends object>(data: T, config?: {
   const { padStr = '--', ignoreNum = true } = config || {}
 
   for (const k in data) {
-    if (!Object.hasOwnProperty.call(data, k)) continue
+    if (!Object.hasOwnProperty.call(data, k))
+      continue
 
     const item = data[k] as any
 
@@ -214,7 +219,7 @@ export function padEmptyObj<T extends object>(data: T, config?: {
  * @param replaceStr 默认是 `_`，也就是蛇形转驼峰
  */
 export function toCamel(key: string, replaceStr = '_') {
-  const reg = new RegExp(`${replaceStr}([a-z])`, 'ig')
+  const reg = new RegExp(`${replaceStr}([a-z])`, 'gi')
 
   return key.replace(reg, (_, g1) => {
     return g1.toUpperCase()
@@ -222,9 +227,9 @@ export function toCamel(key: string, replaceStr = '_') {
 }
 
 /** 柯里化 */
-export function curry() {
-  const fn = Array.prototype.slice.call(arguments, 0, 1)[0],
-    argArr = Array.prototype.slice.call(arguments, 1)
+export function curry(...args: any[]) {
+  const fn = Array.prototype.slice.call(args, 0, 1)[0]
+  const argArr = Array.prototype.slice.call(args, 1)
 
   if (arguments.length >= fn.length) {
     // @ts-ignore
@@ -260,13 +265,14 @@ export function curry() {
  */
 export function padNum(num: string | number, precision = 2, placeholder = '0') {
   num = String(num)
-  if (!num) return ''
+  if (!num)
+    return ''
   if (!num.includes('.')) {
-    return num + '.' + placeholder.repeat(precision)
+    return `${num}.${placeholder.repeat(precision)}`
   }
 
-  const arr = num.split('.'),
-    len = arr[1].length
+  const arr = num.split('.')
+  const len = arr[1].length
   if (len < precision) {
     return num + placeholder.repeat(precision - len)
   }
@@ -302,7 +308,6 @@ export function genIcon(name: string, prefix = 'iconfont', suffix = 'icon', conn
   return `${prefix} ${suffix}${connector}${name}`
 }
 
-
 /**
  * - 提取值在 extractArr 中的元素，返回一个对象
  * - 例如提取对象中所有空字符串
@@ -318,7 +323,8 @@ export function filterVals<T>(data: T, extractArr: any[]) {
   const _data: Partial<T> = {}
 
   for (const k in data) {
-    if (!Object.hasOwnProperty.call(data, k)) continue
+    if (!Object.hasOwnProperty.call(data, k))
+      continue
 
     const item = data[k]
     if (extractArr.includes(item)) {
@@ -343,7 +349,8 @@ export function excludeVals<T extends object>(data: T, excludeArr: any[]) {
   const _data: Partial<T> = {}
 
   for (const k in data) {
-    if (!Object.hasOwnProperty.call(data, k)) continue
+    if (!Object.hasOwnProperty.call(data, k))
+      continue
 
     const item = data[k]
     if (!excludeArr.includes(item)) {
@@ -365,12 +372,13 @@ export function excludeVals<T extends object>(data: T, excludeArr: any[]) {
  */
 export function filterKeys<T extends object, K extends keyof T>(
   data: T,
-  keys: K[]
+  keys: K[],
 ) {
   const _data: any = {}
 
   for (const k in data) {
-    if (!Object.hasOwnProperty.call(data, k)) continue
+    if (!Object.hasOwnProperty.call(data, k))
+      continue
 
     if (keys.includes(k as unknown as K)) {
       const item = data[k]
@@ -392,12 +400,13 @@ export function filterKeys<T extends object, K extends keyof T>(
  */
 export function excludeKeys<T extends object, K extends keyof T>(
   data: T,
-  keys: K[]
+  keys: K[],
 ) {
   const _data: any = {}
 
   for (const k in data) {
-    if (!Object.hasOwnProperty.call(data, k)) continue
+    if (!Object.hasOwnProperty.call(data, k))
+      continue
 
     if (!keys.includes(k as unknown as K)) {
       const item = data[k]
@@ -423,7 +432,6 @@ export function wait(durationMS = 1000) {
   })
 }
 
-
 export type OnceOpts = {
   /** 最大调用次数，默认 1 */
   maxCount?: number
@@ -434,7 +442,7 @@ export type OnceOpts = {
   returnLastResult?: boolean
 }
 
-// 递归树拍平简易写法
+/** 递归树拍平简易写法 */
 // export function dataToTree(data: TreeData[]) {
 //     return data.filter(p => {
 //         const children = data.filter(c => c.pid === p.id)
@@ -461,7 +469,6 @@ export type OnceOpts = {
 //         })
 //     )
 // }
-
 
 // export function deepClone<T>(source: T) {
 //     const t = getType(source)

@@ -28,7 +28,7 @@ export async function getUrlContentLen(url: string): Promise<number> {
     }
 
     const size = Number(contentLength)
-    if (isNaN(size)) {
+    if (Number.isNaN(size)) {
       throw new TypeError('无效的文件大小')
     }
 
@@ -40,7 +40,6 @@ export async function getUrlContentLen(url: string): Promise<number> {
       : '未知错误'}`)
   }
 }
-
 
 /**
  * 解析URL的查询参数为对象
@@ -55,7 +54,7 @@ export function getUrlQuery(url: string): Record<string, string> {
   queryString = urlObj.search.substring(1)
 
   if (queryString) {
-    queryString.split('&').forEach(pair => {
+    queryString.split('&').forEach((pair) => {
       const [key, value] = pair.split('=')
       if (key) {
         query[decodeURIComponent(key)] = decodeURIComponent(value || '')
@@ -114,13 +113,14 @@ export function getPort(url: string): string {
  * 创建URL对象（跨环境兼容）
  */
 export function createURL(url: string, base?: string): URL {
-  // 优先使用全局URL（浏览器和现代Node.js都支持）
+  /** 优先使用全局URL（浏览器和现代Node.js都支持） */
   if (typeof URL !== 'undefined') {
     return new URL(url, base)
   }
-  // 兼容旧版Node.js
+  /** 兼容旧版Node.js */
   if (typeof require !== 'undefined') {
-    const { URL } = require('url')
+    // eslint-disable-next-line ts/no-require-imports
+    const { URL } = require('node:url')
     return new URL(url, base)
   }
   throw new Error('URL is not supported in this environment')

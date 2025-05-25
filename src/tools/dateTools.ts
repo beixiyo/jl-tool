@@ -1,15 +1,15 @@
-import { ONE_DAY } from '@/shared'
 import type { TimeType } from '@/types/base'
-import { getType } from './tools'
+import { ONE_DAY } from '@/shared'
 import { isFn } from '@/shared/is'
-
+import { getType } from './tools'
 
 /** 今年的第几天 */
-export const dayOfYear = (date = new Date()) =>
-  Math.floor(
+export function dayOfYear(date = new Date()) {
+  return Math.floor(
     (+date - +(new Date(date.getFullYear(), 0, 0)))
-    / ONE_DAY
+    / ONE_DAY,
   )
+}
 
 /** 获取时分秒 */
 export const timeFromDate = (date: Date) => date.toTimeString().slice(0, 8)
@@ -34,8 +34,8 @@ export function getQuarter(date: TimeType = new Date()) {
 
 /** 获取日期间隔 单位(天) */
 export function dayDiff(date1: TimeType, date2: TimeType) {
-  const d1 = new Date(date1),
-    d2 = new Date(date2)
+  const d1 = new Date(date1)
+  const d2 = new Date(date2)
   return Math.ceil(Math.abs(+d1 - +d2) / ONE_DAY)
 }
 
@@ -46,10 +46,12 @@ export function dayDiff(date1: TimeType, date2: TimeType) {
  * @returns 如`2016-06-10 10:00:00`
  */
 export function padDate(date: string, placeholder = '00:00:00') {
-  if (!date) return formatDate()
-  if (date.length !== '2016-06-10'.length) return date
+  if (!date)
+    return formatDate()
+  if (date.length !== '2016-06-10'.length)
+    return date
 
-  return date + ' ' + placeholder
+  return `${date} ${placeholder}`
 }
 
 /**
@@ -94,8 +96,8 @@ export function isLtYear(curDate: Date | string | number, yearLen = -1) {
  */
 export function timeGap(date?: TimeType, opts: TimeGapOpts = {}) {
   const { afterFn, beforeFn, fallback = '--' } = opts
-  let isFuture = false,
-    time = Date.now() - new Date(date ?? Date.now()).getTime()
+  let isFuture = false
+  let time = Date.now() - new Date(date ?? Date.now()).getTime()
 
   const detailMap = [
     { desc: '年', gap: 3600 * 24 * 365 * 1e3 },
@@ -104,11 +106,13 @@ export function timeGap(date?: TimeType, opts: TimeGapOpts = {}) {
     { desc: '小时', gap: 3600 * 1e3 },
     { desc: '分钟', gap: 60 * 1e3 },
     { desc: '秒', gap: 1 * 1e3 },
-    { desc: '刚刚', gap: 0 }
+    { desc: '刚刚', gap: 0 },
   ]
 
-  if (Number.isNaN(time)) return fallback
-  if (Math.abs(time) < 1e3) return detailMap[detailMap.length - 1].desc // 小于1秒都返回 "刚刚"
+  if (Number.isNaN(time))
+    return fallback
+  if (Math.abs(time) < 1e3)
+    return detailMap[detailMap.length - 1].desc // 小于1秒都返回 "刚刚"
 
   if (time < 0) {
     isFuture = true
@@ -123,15 +127,15 @@ export function timeGap(date?: TimeType, opts: TimeGapOpts = {}) {
       if (isFuture) {
         return afterFn
           ? afterFn(str)
-          : str + '后'
+          : `${str}后`
       }
       return beforeFn
         ? beforeFn(str)
-        : str + '前'
+        : `${str}前`
     }
   }
 
-  // 这行实际上不会执行到，但为了类型安全保留
+  /** 这行实际上不会执行到，但为了类型安全保留 */
   return fallback
 }
 
@@ -154,7 +158,7 @@ export function timeGap(date?: TimeType, opts: TimeGapOpts = {}) {
 export function formatDate(
   formatter: DateFormat = 'yyyy-MM-dd HH:mm:ss',
   date?: Date,
-  opts: FormatDateOpts = {}
+  opts: FormatDateOpts = {},
 ) {
   const { locales, timeZone } = opts
   const formatterFn = _formatNormalize()
@@ -182,7 +186,8 @@ export function formatDate(
    ***************************************************/
 
   function _formatNormalize() {
-    if (isFn(formatter)) return formatter
+    if (isFn(formatter))
+      return formatter
 
     return (dateInfo: DateInfo) => {
       const { yyyy, MM, dd, HH, mm, ss, ms } = dateInfo
@@ -211,7 +216,7 @@ export function formatDate(
       ms: String(newDate.getMilliseconds()),
     }
 
-    // 补零
+    /** 补零 */
     for (const key in dateInfo) {
       const k = key as keyof DateInfo
       const item = dateInfo[k]
@@ -226,7 +231,7 @@ export function formatDate(
    */
   function _getLocaleDateInfo(locales: Intl.LocalesArgument, timeZone: string) {
     if (typeof Intl === 'undefined') {
-      throw new Error('Intl is not supported in this environment')
+      throw new TypeError('Intl is not supported in this environment')
     }
 
     // @ts-ignore
@@ -239,13 +244,13 @@ export function formatDate(
       second: '2-digit',
       fractionalSecondDigits: 3, // 如果需要显示毫秒数
       hour12: false,
-      timeZone
+      timeZone,
     })
 
-    // 格式化日期为部分
+    /** 格式化日期为部分 */
     const formattedParts = formatter.formatToParts(newDate)
 
-    // 将格式化后的部分组装成对象
+    /** 将格式化后的部分组装成对象 */
     const dateInfo = {} as DateInfo
     for (const part of formattedParts) {
       switch (part.type) {
@@ -262,7 +267,6 @@ export function formatDate(
     return dateInfo
   }
 }
-
 
 export type FormatDateOpts = {
   /**

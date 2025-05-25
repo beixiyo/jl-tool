@@ -9,12 +9,11 @@ import { numFixed } from '../tools/tools'
  * const progress = chunker.progress
  */
 export class FileChunker {
-
   private offset: number = 0
 
   constructor(
     private file: File | Blob,
-    private chunkSize: number
+    private chunkSize: number,
   ) { }
 
   /**
@@ -39,5 +38,4 @@ export class FileChunker {
   get progress() {
     return numFixed(this.offset / this.file.size)
   }
-
 }

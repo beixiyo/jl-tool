@@ -1,6 +1,6 @@
 {
   "name": "@jl-org/tool",
-  "version": "1.9.8",
+  "version": "2.0.0",
   "description": "TypeScript 编写的工具函数",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
@@ -29,9 +29,12 @@
     "docs:preview": "vitepress preview ./docs",
     "------test------": "",
     "test": "vitest",
-    "test:dev": "vite"
+    "test:dev": "vite",
+    "lint": "eslint --fix"
   },
   "devDependencies": {
+    "@antfu/eslint-config": "^4.13.2",
+    "@jl-org/eslint-plugins": "^1.0.0",
     "@jl-org/ts-tool": "^0.0.8",
     "@rollup/plugin-alias": "^5.1.0",
     "@rollup/plugin-node-resolve": "^15.2.3",

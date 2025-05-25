@@ -9,7 +9,7 @@ import { getUrlContentLen, isValidUrl } from '../tools/urlTools'
 export function downloadByData(
   data: Blob | ArrayBuffer | string,
   fileName = 'download',
-  opts?: DownloadOptions
+  opts?: DownloadOptions,
 ) {
   let blob: Blob
   if (data instanceof Blob) {
@@ -39,11 +39,11 @@ export function downloadByData(
 export async function downloadByUrl(
   url: string,
   fileName = 'download',
-  options?: Omit<DownloadOptions, 'mimeType'>
+  options?: Omit<DownloadOptions, 'mimeType'>,
 ) {
   const {
     matchProto = false,
-    needClearObjectURL = false
+    needClearObjectURL = false,
   } = options || {}
 
   if (matchProto) {
@@ -200,13 +200,13 @@ export function getFilenameAndExt(
 
   const decodeRes = (name: string, ext: string) => decode
     ? {
-      name: decodeURIComponent(name),
-      ext: decodeURIComponent(ext),
-    }
+        name: decodeURIComponent(name),
+        ext: decodeURIComponent(ext),
+      }
     : {
-      name,
-      ext,
-    }
+        name,
+        ext,
+      }
 
   /** 处理URL情况（如 https://example.com/file.txt） */
   let filename: string
@@ -261,7 +261,7 @@ function getTextDecoder(encode = 'utf-8') {
 export function dataToStr(
   buffer: AllowSharedBufferSource,
   encode = 'utf-8',
-  options?: TextDecodeOptions
+  options?: TextDecodeOptions,
 ): string {
   try {
     const textDecoder = getTextDecoder(encode) // 获取解码器，这里可能抛出错误

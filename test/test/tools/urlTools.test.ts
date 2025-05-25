@@ -1,13 +1,13 @@
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import {
-  getUrlQuery,
-  getUrlPaths,
   getHostname,
-  getProtocol,
   getPort,
+  getProtocol,
+  getUrlPaths,
+  getUrlQuery,
 } from '@/tools/urlTools'
 
-describe('URL工具函数', () => {
+describe('uRL工具函数', () => {
   const testUrl = 'https://example.com:8080/path/to/resource?name=John&age=30'
 
   it('获取查询参数', () => {
@@ -17,7 +17,7 @@ describe('URL工具函数', () => {
       age: '30',
     })
 
-    // 测试空查询参数
+    /** 测试空查询参数 */
     expect(getUrlQuery('https://example.com')).toEqual({})
   })
 
@@ -25,7 +25,7 @@ describe('URL工具函数', () => {
     const segments = getUrlPaths(testUrl)
     expect(segments).toEqual(['path', 'to', 'resource'])
 
-    // 测试根路径
+    /** 测试根路径 */
     expect(getUrlPaths('https://example.com')).toEqual([])
   })
 
@@ -44,7 +44,7 @@ describe('URL工具函数', () => {
     expect(getPort('http://example.com:9527')).toBe('9527')
   })
 
-  // 测试相对URL（仅在浏览器环境有效）
+  /** 测试相对URL（仅在浏览器环境有效） */
   if (typeof window !== 'undefined') {
     it('浏览器环境 - 处理相对URL', () => {
       window.history.pushState({}, '', '/current?test=1')

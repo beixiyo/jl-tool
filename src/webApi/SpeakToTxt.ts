@@ -54,8 +54,8 @@ export class SpeakToTxt {
       continuous,
       interimResults,
       lang,
-    } =
-      this.opts
+    }
+      = this.opts
 
     recognition.continuous = continuous ?? false
     recognition.interimResults = interimResults ?? false
@@ -68,7 +68,6 @@ export class SpeakToTxt {
     }
   }
 }
-
 
 export type SpeakToTxtOpts = {
   onstart?: (ev: Event) => void

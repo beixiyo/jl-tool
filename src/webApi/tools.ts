@@ -3,10 +3,11 @@
  * @param callbackOrVideoEl 视频元素或者回调
  * @returns 停止播放的函数
  */
-export const openCamera = async (callbackOrVideoEl: ((stream: MediaStream) => void) | HTMLVideoElement) => {
+export async function openCamera(callbackOrVideoEl: ((stream: MediaStream) => void) | HTMLVideoElement) {
   const stream = await navigator.mediaDevices
     .getUserMedia({
-      audio: true, video: true
+      audio: true,
+      video: true,
     })
 
   switch (typeof callbackOrVideoEl) {
@@ -23,25 +24,24 @@ export const openCamera = async (callbackOrVideoEl: ((stream: MediaStream) => vo
 
   return new Promise<Function>((resolve) => {
     resolve(() => {
-      stream.getTracks().forEach((item) => item.stop())
+      stream.getTracks().forEach(item => item.stop())
     })
   })
 }
 
-
 /** 录屏 */
-export const screenCAP = async (fileName?: string) => {
+export async function screenCAP(fileName?: string) {
   const
-    stream = await navigator.mediaDevices.getDisplayMedia(),
-    recoder = new MediaRecorder(stream),
-    [video] = stream.getVideoTracks()
+    stream = await navigator.mediaDevices.getDisplayMedia()
+  const recoder = new MediaRecorder(stream)
+  const [video] = stream.getVideoTracks()
 
   recoder.start()
-  video.addEventListener("ended", () => {
+  video.addEventListener('ended', () => {
     recoder.stop()
   })
-  recoder.addEventListener("dataavailable", (evt) => {
-    const a = document.createElement("a")
+  recoder.addEventListener('dataavailable', (evt) => {
+    const a = document.createElement('a')
     a.href = URL.createObjectURL(evt.data)
     a.download = `${fileName || Date.now()}.webm`
     a.click()

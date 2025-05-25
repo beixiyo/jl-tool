@@ -6,7 +6,7 @@
 export function isPureNum(value: string | number, enableParseFloat = false) {
   let num: number
   if (enableParseFloat) {
-    num = parseFloat(value + '')
+    num = Number.parseFloat(`${value}`)
   }
   else {
     num = Number(value)

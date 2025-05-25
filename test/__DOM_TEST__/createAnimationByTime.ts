@@ -1,21 +1,18 @@
 import { ATo, createAnimationByTime } from '@/animation'
 import { getColor } from '@/tools/colorTools'
 
-
-const div1 = genDiv('0', '0'),
-  div2 = genDiv('40px', '100px'),
-  div3 = genDiv('300px', '0', '#000')
-
+const div1 = genDiv('0', '0')
+const div2 = genDiv('40px', '100px')
+const div3 = genDiv('300px', '0', '#000')
 
 createAnimationByTime(
   div3.style,
   {
     left: '100px',
-    translateY: '500px'
+    translateY: '500px',
   },
   1000,
 )
-
 
 const aTo = new ATo()
 /**
@@ -29,9 +26,9 @@ aTo
     {
       left: '200px',
       top: '200px',
-      opacity: '0.1'
+      opacity: '0.1',
     },
-    1000
+    1000,
   )
   .next(
     div2.style,
@@ -42,23 +39,22 @@ aTo
     2000,
     {
       timeFunc: 'backInOut',
-    }
+    },
   )
   .next(
     () => div2.style,
     {
       translateX: '10px',
       translateY: '0px',
-      rotate: 135
+      rotate: 135,
     },
     1000,
     {
       callback(p, progress) {
         console.log(p)
-      }
-    }
+      },
+    },
   )
-
 
 function genDiv(left: string, top: string, color = getColor()) {
   const div = document.createElement('div')
@@ -74,4 +70,3 @@ function genDiv(left: string, top: string, color = getColor()) {
 
   return div
 }
-

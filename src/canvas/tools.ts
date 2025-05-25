@@ -1,6 +1,5 @@
+import type { Pixel } from '@/types'
 import { getImg } from '@/tools/domTools'
-import { Pixel } from '@/types'
-
 
 /**
  * 创建一个指定宽高的画布
@@ -10,8 +9,8 @@ import { Pixel } from '@/types'
  * @returns 包含画布和上下文的对象
  */
 export function createCvs(width?: number, height?: number, options?: CanvasRenderingContext2DSettings) {
-  const cvs = document.createElement('canvas'),
-    ctx = cvs.getContext('2d', options)!
+  const cvs = document.createElement('canvas')
+  const ctx = cvs.getContext('2d', options)!
   width && (cvs.width = width)
   height && (cvs.height = height)
 
@@ -58,7 +57,7 @@ export function getPixel(x: number, y: number, imgData: ImageData) {
  */
 export function eachPixel(
   imgData: ImageData,
-  callback: (pixel: Pixel, x: number, y: number, index: number) => void
+  callback: (pixel: Pixel, x: number, y: number, index: number) => void,
 ) {
   const { width, height } = imgData
   for (let x = 0; x < width; x++) {
@@ -114,18 +113,18 @@ export function scaleImgData(imgData: ImageData, scale: number) {
 
   for (let y = 0; y < height; ++y) {
     for (let x = 0; x < width; ++x) {
-      // 获取原始图像中像素的索引
+      /** 获取原始图像中像素的索引 */
       const srcIndex = (y * width + x) * 4
 
-      // 将该像素放大 scale 倍
+      /** 将该像素放大 scale 倍 */
       for (let sy = 0; sy < scale; ++sy) {
         for (let sx = 0; sx < scale; ++sx) {
-          // 计算新图像中的目标位置
+          /** 计算新图像中的目标位置 */
           const dstX = x * scale + sx
           const dstY = y * scale + sy
           const dstIndex = (dstY * newWidth + dstX) * 4
 
-          // 设置放大的图像中对应位置的颜色
+          /** 设置放大的图像中对应位置的颜色 */
           pixelData[dstIndex] = data[srcIndex]
           pixelData[dstIndex + 1] = data[srcIndex + 1]
           pixelData[dstIndex + 2] = data[srcIndex + 2]
@@ -143,7 +142,7 @@ export function scaleImgData(imgData: ImageData, scale: number) {
  */
 export async function getImgData(
   imgOrUrl: HTMLImageElement | string,
-  setImg = (img: HTMLImageElement) => img.crossOrigin = 'anonymous'
+  setImg = (img: HTMLImageElement) => img.crossOrigin = 'anonymous',
 ) {
   const img = await getImg(imgOrUrl, setImg)
   if (!img) {

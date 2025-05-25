@@ -73,5 +73,5 @@ export const TRANSFORM_UNIT_MAP = {
   translate3d: 'px',
   perspective: 'px',
   matrix: '',
-  matrix3d: ''
+  matrix3d: '',
 }

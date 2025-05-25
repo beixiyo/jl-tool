@@ -2,27 +2,25 @@ import { isNode } from '@/shared'
 import { isPureNum, isStr } from '@/shared/is'
 import { judgeImgLoad } from './eventTools'
 
-
 /** 获取浏览器内容宽度 */
 export function getWinWidth() {
   return isNode
     ? 0
-    : window.innerWidth ||
-    document.documentElement.clientWidth ||
-    document.body.clientWidth
+    : window.innerWidth
+      || document.documentElement.clientWidth
+      || document.body.clientWidth
 }
 /** 获取浏览器内容高度 */
 export function getWinHeight() {
   return isNode
     ? 0
-    : window.innerHeight ||
-    document.documentElement.clientHeight ||
-    document.body.clientHeight
+    : window.innerHeight
+      || document.documentElement.clientHeight
+      || document.body.clientHeight
 }
 
-
 /** 把 `http` 协议转换成当前协议 */
-export const matchProtocol = (url: string) => {
+export function matchProtocol(url: string) {
   const proto = window.location.protocol
   return url.replace(/(http:|https:)/, proto)
 }
@@ -33,16 +31,12 @@ export const matchProtocol = (url: string) => {
  * @param designSize 设计稿大小 默认`1920`
  * @param type 根据什么缩放 默认是宽度
  */
-export const adaptPx = (
-  px: number | string,
-  designSize = 1920,
-  type: 'height' | 'width' = 'width'
-) => {
+export function adaptPx(px: number | string, designSize = 1920, type: 'height' | 'width' = 'width') {
   if (['%', 'vw', 'vh'].includes(String(px))) {
     return px as string
   }
 
-  px = parseFloat(String(px))
+  px = Number.parseFloat(String(px))
   const size = type === 'width'
     ? getWinWidth()
     : getWinHeight()
@@ -53,7 +47,7 @@ export const adaptPx = (
 /** 处理 `CSS` 单位，如果可以转换成数字，则添加 px */
 export function handleCssUnit(value: string | number) {
   if (isPureNum(value)) {
-    return value + 'px'
+    return `${value}px`
   }
   return value
 }
@@ -68,13 +62,13 @@ export function handleCssUnit(value: string | number) {
 export function pxToVw(
   px: number | string,
   designSize = 1920,
-  unit: 'vw' | 'vh' = 'vw'
+  unit: 'vw' | 'vh' = 'vw',
 ) {
   if (['%', 'vw', 'vh'].includes(String(px))) {
     return px
   }
 
-  px = parseFloat(String(px))
+  px = Number.parseFloat(String(px))
   return (px / designSize) * 100 + unit
 }
 
@@ -84,25 +78,21 @@ export function pxToVw(
  * @param attr 样式属性键值
  * @param pseudoElt 伪元素
  */
-export const getStyle = (el: HTMLElement, attr: string, pseudoElt?: string) => {
+export function getStyle(el: HTMLElement, attr: string, pseudoElt?: string) {
   const val = window.getComputedStyle(el, pseudoElt).getPropertyValue(attr)
 
   if (val.endsWith('px')) {
-    return parseFloat(val)
+    return Number.parseFloat(val)
   }
   return val
 }
-
 
 /**
  * 判断图片的 src 是否可用，可用则返回图片
  * @param imgOrUrl 图片或者图片的地址
  * @param setImg 图片加载前执行的回调函数
  */
-export const getImg = (
-  imgOrUrl: string | HTMLImageElement,
-  setImg?: (img: HTMLImageElement) => void
-) => {
+export function getImg(imgOrUrl: string | HTMLImageElement, setImg?: (img: HTMLImageElement) => void) {
   let img = imgOrUrl as HTMLImageElement
   if (isStr(imgOrUrl)) {
     img = new Image()
@@ -119,7 +109,6 @@ export const getImg = (
     img.onerror = () => resolve(false)
   })
 }
-
 
 /**
  * 节流
@@ -174,7 +163,7 @@ export function throttle<P extends any[]>(
  */
 export function debounce<P extends any[]>(
   fn: (...args: P) => any,
-  delay = 200
+  delay = 200,
 ) {
   let id: number
 
@@ -191,12 +180,13 @@ export function debounce<P extends any[]>(
  * @param fn 可以是异步函数
  */
 export function rafThrottle<P extends any[]>(
-  fn: (...args: P) => any
+  fn: (...args: P) => any,
 ) {
   let lock = false
 
   return function (this: any, ...args: P) {
-    if (lock) return
+    if (lock)
+      return
     lock = true
 
     window.requestAnimationFrame(async () => {
@@ -212,15 +202,16 @@ export function rafThrottle<P extends any[]>(
  * @param storage 存储对象，默认 localStorage
  */
 export function setLocalStorage(
-  key: string, value: any,
+  key: string,
+  value: any,
   autoToJSON = true,
-  storage: Storage = localStorage
+  storage: Storage = localStorage,
 ) {
   return storage.setItem(
     key,
     autoToJSON
       ? JSON.stringify(value)
-      : value
+      : value,
   )
 }
 /**
@@ -232,7 +223,7 @@ export function setLocalStorage(
 export function getLocalStorage<T>(
   key: string,
   autoParseJSON = true,
-  storage: Storage = localStorage
+  storage: Storage = localStorage,
 ): T | null {
   const item = storage.getItem(key)
   if (item === 'undefined') {
@@ -256,10 +247,7 @@ export const copyToClipboard = (text: string) => navigator.clipboard.writeText(t
  * @param el 要判断的元素，默认是 `document.documentElement`
  * @param threshold 距离底部多少像素时触发，默认是 5
  */
-export const isToBottom = (
-  el: HTMLElement = document.documentElement || document.body,
-  threshold = 5
-): boolean => {
+export function isToBottom(el: HTMLElement = document.documentElement || document.body, threshold = 5): boolean {
   if ([document.documentElement, document.body].includes(el)) {
     const scrollY = window.scrollY ?? window.pageYOffset ?? document.documentElement.scrollTop
     return getWinHeight() + scrollY + threshold >= document.documentElement.scrollHeight
@@ -271,14 +259,13 @@ export const isToBottom = (
   return distanceFromBottom <= threshold
 }
 
-
 /** 获取所有样式表 */
-export const getAllStyle = async () => {
+export async function getAllStyle() {
   const styleTxtArr = Array.from(document.querySelectorAll('style'))
     .map((item: HTMLElement) => item.outerHTML)
 
   const linkPromiseArr = (Array.from(document.querySelectorAll('link[rel="stylesheet"]')) as HTMLLinkElement[])
-    .map((item) => fetch(item.href).then(res => res.text()))
+    .map(item => fetch(item.href).then(res => res.text()))
 
   try {
     const linkArr = await Promise.all(linkPromiseArr)
@@ -300,13 +287,15 @@ export const getAllStyle = async () => {
 export const print: Print = (
   el: string | HTMLElement,
   styleStr: string | undefined,
-  href = location.href
+  href = location.href,
 ) => {
-  if (window.location.protocol === 'file:') return console.warn('请启动服务运行; please start server')
+  if (window.location.protocol === 'file:')
+    return console.warn('请启动服务运行; please start server')
 
   const win = window.open(href, '_blank')
   const doc = win?.document
-  if (!doc) return
+  if (!doc)
+    return
 
   const _elStr = typeof el === 'string'
     ? el
@@ -316,7 +305,7 @@ export const print: Print = (
   doc.body.innerHTML = _elStr
   doc.body.style.padding = '10px'
 
-  // 定时器可以解决`window`因为开启深色模式打印的bug
+  /** 定时器可以解决`window`因为开启深色模式打印的bug */
   setTimeout(async () => {
     const loadDone = await judgeImgLoad(doc)
 
@@ -330,7 +319,7 @@ export const print: Print = (
 }
 
 /** 解析出 `HTML` 的所有字符串 */
-export const HTMLToStr = (HTMLStr: string) => {
+export function HTMLToStr(HTMLStr: string) {
   const p = new DOMParser()
   const doc = p.parseFromString(HTMLStr, 'text/html')
   return doc.body.textContent
@@ -343,50 +332,54 @@ export const HTMLToStr = (HTMLStr: string) => {
  */
 export function findElementsByText(
   text: string,
-  options: FindByTextOptions = {}
+  options: FindByTextOptions = {},
 ): Element[] {
   const {
     multiple = false,
     caseSensitive = false,
-    parentEl = document.body
+    parentEl = document.body,
   } = options
 
-  // 空文本直接返回
-  if (text.trim().length === 0) return []
+  /** 空文本直接返回 */
+  if (text.trim().length === 0)
+    return []
 
-  // 创建文本匹配器
-  const targetText = caseSensitive ? text : text.toLowerCase()
+  /** 创建文本匹配器 */
+  const targetText = caseSensitive
+    ? text
+    : text.toLowerCase()
   const results: Element[] = []
 
-  // 递归遍历 DOM 树
+  /** 递归遍历 DOM 树 */
   const walker = document.createTreeWalker(
     parentEl,
     NodeFilter.SHOW_ELEMENT,
     {
       acceptNode(node) {
-        // 跳过不可见元素
-        if ((node as Element).clientHeight === 0 &&
-          (node as Element).clientWidth === 0) {
+        /** 跳过不可见元素 */
+        if ((node as Element).clientHeight === 0
+          && (node as Element).clientWidth === 0) {
           return NodeFilter.FILTER_REJECT
         }
         return NodeFilter.FILTER_ACCEPT
-      }
-    }
+      },
+    },
   )
 
-  // 遍历所有可见元素
+  /** 遍历所有可见元素 */
   while (walker.nextNode()) {
     const element = walker.currentNode as Element
 
-    // 获取处理后的文本内容
+    /** 获取处理后的文本内容 */
     const elementText = caseSensitive
       ? element.textContent?.trim()
       : element.textContent?.toLowerCase().trim()
 
-    // 精确匹配逻辑
+    /** 精确匹配逻辑 */
     if (elementText === targetText) {
       results.push(element)
-      if (!multiple) break // 找到第一个匹配项时提前退出
+      if (!multiple)
+        break // 找到第一个匹配项时提前退出
     }
   }
 
@@ -401,7 +394,6 @@ export function isMobile() {
   const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i
   return mobileRegex.test(navigator.userAgent)
 }
-
 
 interface Print {
   /**

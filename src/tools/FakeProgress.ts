@@ -1,6 +1,6 @@
 /**
  * 虚假进度条
- * 
+ *
  * @example
  * ```ts
  * const progress = new FakeProgress({ ... })
@@ -8,7 +8,6 @@
  * ```
  */
 export class FakeProgress {
-
   timeConstant = 10000
   /** 进度，0 ~ 1 之间 */
   progress = 0
@@ -25,7 +24,7 @@ export class FakeProgress {
       autoStart = true,
       timeConstant = 60000,
       initialProgress = 0,
-      onChange
+      onChange,
     } = fakeProgressOpts
 
     this.timeConstant = timeConstant
@@ -45,7 +44,7 @@ export class FakeProgress {
       const deltaProgress = 1 - Math.exp(-elapsedTime / this.timeConstant * 2)
       const nextProgress = this.initialProgress + (1 - this.initialProgress) * deltaProgress
 
-      // 更新进度，但确保不会回退
+      /** 更新进度，但确保不会回退 */
       if (nextProgress > this.progress) {
         this.setProgress(nextProgress)
       }

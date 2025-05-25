@@ -1,8 +1,7 @@
 import { isNode } from '@/constants'
 
-
 /** 检查是否为浏览器环境，并且根据参数决定是否警告 */
-export const checkEnv = (needWarn = false) => {
+export function checkEnv(needWarn = false) {
   if (isNode) {
     needWarn && console.warn('this api only run in window')
     return 'node'
@@ -27,6 +26,6 @@ export function warn(name: string, min = 0, max = 1) {
   console.warn(
     `%c${name}:%c 值必须在 ${min} ~ ${max} 之间`,
     'background-color: #14c9fc; color: #fff; padding: 2px 4px; border-radius: 5px',
-    'color: #e07f52'
+    'color: #e07f52',
   )
 }

@@ -1,15 +1,15 @@
+import { compressImg, cutImg } from '@/canvas/imgHandle'
 import {
   createCvs,
-  getPixel,
   fillPixel,
+  getPixel,
   parseImgData,
 } from '@/canvas/tools'
-import { compressImg, cutImg } from '@/canvas/imgHandle'
 import { blobToBase64 } from '@/fileTool/tools'
 import { getImg } from '@/tools/domTools'
 
-
-/** --------------------------------------------------------------
+/**
+ * --------------------------------------------------------------
  * 压缩测试
  */
 const input = document.createElement('input')
@@ -25,27 +25,25 @@ input.addEventListener('change', async (e) => {
   console.log('------------------------------------------------------------')
 
   const img = await getImg(src) as HTMLImageElement
-  const blob = await compressImg(img, 'base64', .5, 'image/webp')
+  const blob = await compressImg(img, 'base64', 0.5, 'image/webp')
   console.log(blob)
 
   const img2 = await getImg(blob) as HTMLImageElement
   document.body.appendChild(img2)
 })
 
-
-
-/** --------------------------------------------------------------
+/**
+ * --------------------------------------------------------------
  * 辅助函数测试
  */
-const WIDTH = 4,
-  HEIGHT = 4
+const WIDTH = 4
+const HEIGHT = 4
 
 const { ctx, cvs } = createCvs(WIDTH, HEIGHT)
 document.body.appendChild(cvs)
 
 fillPixel(ctx, 0, 0, 'rgba(255, 0, 0, 0.5)')
 fillPixel(ctx, WIDTH - 1, HEIGHT - 1, 'rgba(40, 255, 255, 0.5)')
-
 
 const imgData = ctx.getImageData(0, 0, WIDTH, HEIGHT)
 
@@ -61,15 +59,14 @@ console.log(getPixel(WIDTH - 1, HEIGHT - 1, imgData))
 console.log(imgData)
 console.log(parseImgData(imgData));
 
-
 /** ------------------------- 裁剪图片测试 ----------------------------- */
 
 (async () => {
   const img = await getImg(
     'https://cdn.pixabay.com/photo/2023/04/10/20/41/bird-7914702_640.jpg',
-    img => {
+    (img) => {
       img.crossOrigin = 'anonymous'
-    }
+    },
   ) as HTMLImageElement
 
   document.body.appendChild(img)

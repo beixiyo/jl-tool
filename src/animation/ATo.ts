@@ -1,8 +1,7 @@
-import { createAnimationByTime } from '@/animation/createAnimationByTime'
 import type { AnimationOpts } from '@/types'
 import type { AnimiateParams, FinalProp } from '@/types/tools'
+import { createAnimationByTime } from '@/animation/createAnimationByTime'
 import { isFn } from '@/shared'
-
 
 /**
  * 一个动画类 能够链式调用; 请先调用`start`函数, 参数和`createAnimationByTime`一致
@@ -52,7 +51,7 @@ export class ATo {
     target: T,
     finalProps: P,
     durationMS: number,
-    animationOpts?: AnimationOpts<T, P>
+    animationOpts?: AnimationOpts<T, P>,
   ) {
     // @ts-ignore
     this.animateArr.push([target, finalProps, durationMS, animationOpts || {}])
@@ -72,7 +71,7 @@ export class ATo {
     target: T | (() => any),
     finalProps: P,
     durationMS: number,
-    animationOpts?: AnimationOpts<T, P>
+    animationOpts?: AnimationOpts<T, P>,
   ) {
     // @ts-ignore
     this.pendingAnimateArr.push([target, finalProps, durationMS, animationOpts || {}])
@@ -90,12 +89,14 @@ export class ATo {
   /** 添加并执行一个动画 */
   private addAnimate(animateArr: AnimiateParams[]) {
     const animate = animateArr.shift()
-    if (!animate) return
+    if (!animate)
+      return
 
-    // 第四个参数为配置项
+    /** 第四个参数为配置项 */
     const res = animate[3]
-    if (!res) return
-    
+    if (!res)
+      return
+
     const { onEnd } = res
     /** 重写函数，实现动画完成后继续添加 */
     const _onEnd = (target: any, diffProps: any) => {

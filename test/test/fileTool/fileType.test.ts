@@ -1,6 +1,5 @@
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { detectFileType } from '@/fileTool/fileType'
-
 
 describe('detectFileType', () => {
   it('应该正确识别文本文件', async () => {
@@ -10,7 +9,7 @@ describe('detectFileType', () => {
       isText: true,
       isImage: false,
       isCompressed: false,
-      mimeType: 'text/plain'
+      mimeType: 'text/plain',
     })
   })
 
@@ -28,7 +27,7 @@ describe('detectFileType', () => {
       isText: false,
       isImage: true,
       isCompressed: false,
-      mimeType: 'image/png'
+      mimeType: 'image/png',
     })
   })
 
@@ -47,7 +46,7 @@ describe('detectFileType', () => {
       isText: true,
       isImage: false,
       isCompressed: false,
-      mimeType: 'text/plain'
+      mimeType: 'text/plain',
     })
   })
 
@@ -65,7 +64,6 @@ describe('detectFileType', () => {
   })
 })
 
-
 describe('压缩文件检测', () => {
   it('应该识别ZIP文件', async () => {
     // ZIP文件头
@@ -75,7 +73,7 @@ describe('压缩文件检测', () => {
       isText: false,
       isImage: false,
       isCompressed: true,
-      mimeType: 'application/zip'
+      mimeType: 'application/zip',
     })
   })
 
@@ -101,10 +99,17 @@ describe('压缩文件检测', () => {
   })
 
   it('应该正确处理混合类型', async () => {
-    // 前部分是ZIP头，后面是文本
+    /** 前部分是ZIP头，后面是文本 */
     const mixedData = new Uint8Array([
-      0x50, 0x4B, 0x03, 0x04, // ZIP头
-      0x48, 0x65, 0x6C, 0x6C, 0x6F // Hello(文本)
+      0x50,
+      0x4B,
+      0x03,
+      0x04, // ZIP头
+      0x48,
+      0x65,
+      0x6C,
+      0x6C,
+      0x6F, // Hello(文本)
     ])
     const result = await detectFileType(mixedData)
     expect(result.isCompressed).toBe(true) // 优先识别压缩格式
