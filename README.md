@@ -339,6 +339,30 @@ export declare function clamp(value: number, min: number, max: number): number
 ## 网络请求工具
 ```ts
 /**
+ * 并发执行异步任务数组，并保持结果顺序。
+ * 当一个任务完成后，会自动从队列中取下一个任务执行，直到所有任务完成。
+ * @param tasks 要执行的异步任务函数数组。每个函数应返回一个 Promise。
+ * @param maxConcurrency 最大并发数。默认为 4。
+ * @returns 返回一个 Promise，该 Promise resolve 为一个结果对象数组，
+ *          每个结果对象表示对应任务的完成状态（成功或失败）。
+ *          结果数组的顺序与输入 tasks 数组的顺序一致。
+ */
+export declare function concurrentTask<T>(tasks: (() => Promise<T>)[], maxConcurrency?: number): Promise<TaskResult<T>[]>
+
+export declare class RetryError extends Error {
+  readonly attempts: number
+  readonly lastError?: Error
+  constructor(message: string, attempts: number, lastError?: Error)
+}
+/**
+ * 失败后自动重试异步任务。
+ * @param task 要执行的异步任务函数，该函数应返回一个 Promise。
+ * @param maxAttempts 最大尝试次数（包括首次尝试）。默认为 3。
+ * @returns 返回任务成功的结果 Promise。如果所有尝试都失败，则 reject 一个 RetryError。
+ */
+export declare function retryTask<T>(task: () => Promise<T>, maxAttempts?: number, opts?: RetryTaskOpts): Promise<T>
+
+/**
  * 根据网络状态自动重连的，自动发送心跳数据的 WebSocket
  */
 export declare class WS {
