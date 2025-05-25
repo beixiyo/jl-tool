@@ -8,8 +8,11 @@ npm i @jl-org/tool
 ## 工具目录
 
 - [各种常用工具](#各种常用工具)
-- [流式解析JSON，适用于SSE等](#流式解析JSON)
+- [宏任务调度器，千万级函数执行也不卡顿](#分时渲染调度器)
 - [数学运算，如数值映射、坐标计算、比例计算 ...](#数学运算)
+<br />
+
+- [流式解析JSON，适用于SSE等](#流式解析JSON)
 - [网络请求工具，如最大并发、自动重试、自动重连的 Websocket 等](#网络请求工具)
 <br />
 
@@ -32,7 +35,6 @@ npm i @jl-org/tool
 - [文件分块处理](#文件分块处理)
 <br />
 
-- [分时渲染函数，再多函数也不卡顿](#分时渲染函数)
 - [Media API，如录屏、录音、文字语音互转...](#media-api)
 - [一些数据结构，如：最小堆、LRU缓存](#数据结构)
 <br />
@@ -1179,15 +1181,14 @@ export declare class FileChunker {
 
 ---
 
-## 分时渲染函数
+## 分时渲染调度器
 ```ts
 /**
  * 类似`React`调度器，在浏览器空闲时，用`MessageChannel`调度任务。在任务很多时，可以避免卡顿
  * @param taskArr 任务数组
- * @param onEnd 任务完成的回调
  * @param needStop 是否停止任务
  */
-export declare const scheduleTask: (taskArr: Function[], onEnd?: Function, needStop?: () => boolean) => void
+export declare function scheduleTask<T>(taskArr: (() => Promise<T>)[], needStop?: () => boolean): Promise<TaskResult<T>[]>
 ```
 
 ---

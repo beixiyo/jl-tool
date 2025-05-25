@@ -4,6 +4,11 @@ export type TransferType = 'base64' | 'blob'
 export type BaseType = string | number
 export type BaseKey = keyof any
 
+/** 任务结果类型 */
+export type TaskResult<T> =
+  | { status: 'fulfilled', value: T }
+  | { status: 'rejected', reason: Error }
+
 /** 可用的日期类型 */
 export type TimeType = Date | number | string
 

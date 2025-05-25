@@ -1,22 +1,34 @@
+import type { TaskResult } from '@/types'
+
 /** 一帧 一眼盯帧 */
 const TICK = 1000 / 60
 
 /**
  * 类似`React`调度器，在浏览器空闲时，用`MessageChannel`调度任务。在任务很多时，可以避免卡顿
  * @param taskArr 任务数组
- * @param onEnd 任务完成的回调
  * @param needStop 是否停止任务
  */
-export function scheduleTask(taskArr: Function[], onEnd?: Function, needStop?: () => boolean) {
+export async function scheduleTask<T>(
+  taskArr: (() => Promise<T>)[],
+  needStop?: () => boolean,
+) {
   let i = 0
+  const res: (TaskResult<T>)[] = []
   const { start, hasIdleRunTask } = genFunc()
   const { port1, port2 } = new MessageChannel()
+  const { promise, resolve, reject } = Promise.withResolvers<(TaskResult<T>)[]>()
 
   port2.onmessage = () => {
     runMacroTasks(hasIdleRunTask)
     start()
   }
-  start()
+
+  try {
+    start()
+  }
+  catch (error) {
+    reject(error)
+  }
 
   function genFunc() {
     const isEnd = needStop
@@ -25,24 +37,36 @@ export function scheduleTask(taskArr: Function[], onEnd?: Function, needStop?: (
 
     function start() {
       if (isEnd()) {
-        onEnd?.()
+        resolve(res)
       }
       else {
         port1.postMessage(null)
       }
     }
 
-    function hasIdleRunTask(hasIdle: HasIdle) {
+    async function hasIdleRunTask(hasIdle: HasIdle) {
       const st = performance.now()
       while (hasIdle(st)) {
         if (isEnd())
-          return
+          return resolve(res)
 
+        const curIndex = i
         try {
-          taskArr[i++]()
+          i++
+          const data = await taskArr[curIndex]()
+          res[curIndex] = {
+            status: 'fulfilled',
+            value: data,
+          }
         }
         catch (error) {
-          console.warn(`第${i}个任务执行失败`, error)
+          console.warn(`第${curIndex}个任务执行失败`, error)
+          res[curIndex] = {
+            status: 'rejected',
+            reason: error instanceof Error
+              ? error
+              : new Error(String(error)),
+          }
         }
       }
     }
@@ -55,10 +79,12 @@ export function scheduleTask(taskArr: Function[], onEnd?: Function, needStop?: (
     }
   }
 
-  /** 放入宏任务执行 并回调***执行时间和开始时间的差值 */
+  /** 放入宏任务执行 并回调执行时间和开始时间的差值 */
   function runMacroTasks(hasIdleRunTask: (hasIdle: HasIdle) => void) {
     hasIdleRunTask(st => performance.now() - st < TICK)
   }
+
+  return promise
 }
 
-type HasIdle = (st: number) => boolean
+type HasIdle = (startTime: number) => boolean

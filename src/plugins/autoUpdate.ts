@@ -12,13 +12,13 @@ export function autoUpdate(opts: AutoUpdateOpts = {}) {
   if (!needUpdate())
     return
 
-  let timer: number
   let scriptArr: string[] = []
   let styleArr: string[] = []
 
-  timer = window.setInterval(async () => {
+  const timer = window.setInterval(async () => {
     const flag = await hasChange()
     if (flag) {
+      // eslint-disable-next-line no-alert
       const userConfirm = window.confirm(confirmText)
       if (userConfirm) {
         window.clearInterval(timer)

@@ -59,6 +59,7 @@ export default antfu({
        */
     },
   },
+  regexp: false,
 
   /**
    * Language config

@@ -1,3 +1,5 @@
+import type { TaskResult } from '@/types'
+
 /**
  * 并发执行异步任务数组，并保持结果顺序。
  * 当一个任务完成后，会自动从队列中取下一个任务执行，直到所有任务完成。
@@ -57,7 +59,3 @@ export function concurrentTask<T>(
     runNextTask()
   })
 }
-
-export type TaskResult<T> =
-  | { status: 'fulfilled', value: T }
-  | { status: 'rejected', reason: Error }
