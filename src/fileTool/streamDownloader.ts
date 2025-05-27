@@ -36,7 +36,7 @@ export async function createStreamDownloader(
       console.log('Using File System Access API for streaming download.')
 
       return {
-        append: async (chunk: Uint8Array): Promise<void> => {
+        append: async (chunk: ArrayBuffer): Promise<void> => {
           await writableStream.write(chunk)
         },
         complete: async (): Promise<void> => {
@@ -66,11 +66,11 @@ export async function createStreamDownloader(
 
   /** 回退机制：累积 Uint8Array，完成后创建 Blob 下载 */
   console.log('Using fallback: in-memory accumulation and Blob download.')
-  let accumulatedChunks: Uint8Array[] = []
+  let accumulatedChunks: ArrayBuffer[] = []
   let aborted = false
 
   return {
-    append: async (chunk: Uint8Array): Promise<void> => {
+    append: async (chunk: ArrayBuffer): Promise<void> => {
       if (aborted)
         return
       accumulatedChunks.push(chunk)
@@ -110,7 +110,7 @@ export async function createStreamDownloader(
 }
 
 export interface StreamDownloader {
-  append: (chunk: Uint8Array) => Promise<void>
+  append: (chunk: ArrayBuffer) => Promise<void>
   complete: () => Promise<void>
   abort: () => Promise<void>
 }

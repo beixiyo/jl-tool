@@ -1,3 +1,5 @@
+/* eslint-disable no-sparse-arrays */
+
 /** 图片魔数检测表 */
 export const IMAGE_SIGNATURES: Record<ImageType, any[]> = {
   'image/png': [[0x89, 0x50, 0x4E, 0x47]],
