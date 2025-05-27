@@ -32,6 +32,7 @@ npm i @jl-org/tool
 - [获取URL参数、主机、端口、大小...](#URL处理)
 - [文件处理，如 Base64 和 Blob 互转、下载文件、大小检测...](#文件处理)
 - [检测文件类型，支持图片、文本、压缩包](#文件类型检测)
+- [流式下载数据，解除内存限制](#流式下载)
 - [文件分块处理](#文件分块处理)
 <br />
 
@@ -1148,6 +1149,34 @@ export type FileTypeResult = {
 }
 
 export type InputType = Blob | Uint8Array | ArrayBuffer | string | DataView
+```
+
+---
+
+## 流式下载
+```ts
+/**
+ * 创建流式下载器
+ *
+ * @example
+ * ```ts
+ * const downloader = await createStreamDownloader('data.zip', 'application/zip')
+ * downloader.append(new Uint8Array(...))
+ * downloader.complete()
+ * ```
+ *
+ * @param fileName 建议的文件名 (包含后缀, e.g., "data.zip")
+ * @param mimeType 文件的MIME类型 (e.g., "application/zip")
+ * @returns Promise，解析为一个包含 append, complete, abort 方法的对象。
+ *          如果用户取消文件选择或API不支持且无回退，可能会reject。
+ */
+export declare function createStreamDownloader(fileName: string, mimeType?: MIMEType): Promise<StreamDownloader>
+
+export interface StreamDownloader {
+  append: (chunk: Uint8Array) => Promise<void>
+  complete: () => Promise<void>
+  abort: () => Promise<void>
+}
 ```
 
 ---

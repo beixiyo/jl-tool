@@ -35,6 +35,9 @@ importers:
       '@types/webspeechapi':
         specifier: ^0.0.29
         version: 0.0.29
+      '@types/wicg-file-system-access':
+        specifier: ^2023.10.6
+        version: 2023.10.6
       '@vitest/coverage-v8':
         specifier: ^2.1.8
         version: 2.1.8(vitest@2.1.8(@types/node@20.11.17)(jsdom@25.0.1)(terser@5.24.0))
@@ -1061,6 +1064,9 @@ packages:
   '@types/webspeechapi@0.0.29':
     resolution: {integrity: sha512-AYEhqEJLdR08YPBOwYa73IHTiGU4DdngbKbtZdW+bzuM7s8LzKBed0Fwgl/a3oMqMY227qOT+3Lpr5A0WSmm+A==}
     deprecated: Now provided by --lib dom
+
+  '@types/wicg-file-system-access@2023.10.6':
+    resolution: {integrity: sha512-YO/183gNRzZFSdKu+ikkD7ambAj4PhgjFAF2A/Mw/7wroSF6ne8r804RkpZzqrJ/F6DO2/IYlQF/ULOZ/bhKyA==}
 
   '@typescript-eslint/eslint-plugin@8.32.1':
     resolution: {integrity: sha512-6u6Plg9nP/J1GRpe/vcjjabo6Uc5YQPAMxsgQyGC/I0RuukiG1wIe3+Vtg3IrSCVJDmqK3j8adrtzXSENRtFgg==}
@@ -3599,7 +3605,7 @@ snapshots:
       debug: 4.4.0
       espree: 10.3.0
       globals: 14.0.0
-      ignore: 5.3.0
+      ignore: 5.3.2
       import-fresh: 3.3.1
       js-yaml: 4.1.0
       minimatch: 3.1.2
@@ -3970,6 +3976,8 @@ snapshots:
   '@types/web-bluetooth@0.0.20': {}
 
   '@types/webspeechapi@0.0.29': {}
+
+  '@types/wicg-file-system-access@2023.10.6': {}
 
   '@typescript-eslint/eslint-plugin@8.32.1(@typescript-eslint/parser@8.32.1(eslint@9.27.0)(typescript@5.3.3))(eslint@9.27.0)(typescript@5.3.3)':
     dependencies:
@@ -4830,7 +4838,7 @@ snapshots:
       file-entry-cache: 8.0.0
       find-up: 5.0.0
       glob-parent: 6.0.2
-      ignore: 5.3.0
+      ignore: 5.3.2
       imurmurhash: 0.1.4
       is-glob: 4.0.3
       json-stable-stringify-without-jsonify: 1.0.1
