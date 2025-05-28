@@ -281,6 +281,7 @@ interface DownloadOptions {
   matchProto?: boolean
   /**
    * 是否自动清除通过 `URL.createObjectURL` 创建的链接 (仅对 blob: URL 有效)
+   * @default true
    */
   needClearObjectURL?: boolean
   /**
