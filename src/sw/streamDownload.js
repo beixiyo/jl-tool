@@ -1,9 +1,11 @@
-self.addEventListener('install', () => {
-  self.skipWaiting()
+self.addEventListener('install', (event) => {
+  console.log('StreamDownloader SW installed')
+  event.waitUntil(self.skipWaiting()) // 强制立即激活
 })
 
 self.addEventListener('activate', (event) => {
-  event.waitUntil(self.clients.claim())
+  console.log('StreamDownloader SW activated')
+  event.waitUntil(self.clients.claim()) // 立即控制所有页面
 })
 
 const downloadMap = new Map()

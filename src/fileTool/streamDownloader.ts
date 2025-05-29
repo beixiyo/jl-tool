@@ -2,19 +2,16 @@ import { randomStr } from '@/tools/tools'
 import { downloadByData } from './tools'
 
 /**
- * 创建流式下载器
+ * 创建流式下载器，使用 Service Worker 或 File System Access API 进行流式下载。
+ * 如果没有传递 `swPath`，则使用 File System Access API 进行下载。
+ * 如果不支持 File System Access API，则用原始的 a 标签下载。
  *
  * @example
  * ```ts
- * const downloader = await createStreamDownloader('data.zip', 'application/zip')
- * downloader.append(new Uint8Array(...))
+ * const downloader = await createStreamDownloader('data.zip', { swPath: '/sw.js' })
+ * downloader.append(...)
  * downloader.complete()
  * ```
- *
- * @param fileName 建议的文件名 (包含后缀, e.g., "data.zip")
- * @param mimeType 文件的MIME类型 (e.g., "application/zip")
- * @returns Promise，解析为一个包含 append, complete, abort 方法的对象。
- *          如果用户取消文件选择或API不支持且无回退，可能会reject。
  */
 export async function createStreamDownloader(
   fileName: string,
@@ -26,18 +23,27 @@ export async function createStreamDownloader(
   }
 
   if (opts.swPath) {
-    return serviceWorkerDownload(fileName, {
-      ...formatOpts,
-      ...opts,
-    } as any)
+    try {
+      return serviceWorkerDownload(fileName, {
+        ...formatOpts,
+        ...opts,
+      } as any)
+    }
+    catch (error) {
+      console.error(error)
+      return otherDownload()
+    }
   }
 
-  // @ts-ignore
-  if (showSaveFilePicker) {
-    return filePickerDownload(fileName, formatOpts)
-  }
+  return otherDownload()
 
-  return blobDonwload(fileName, formatOpts)
+  function otherDownload() {
+    // @ts-ignore
+    if (showSaveFilePicker) {
+      return filePickerDownload(fileName, formatOpts)
+    }
+    return blobDonwload(fileName, formatOpts)
+  }
 }
 
 /** 尝试使用 File System Access API */
@@ -62,7 +68,7 @@ async function filePickerDownload(
     console.log('Using File System Access API for streaming download.')
 
     return {
-      append: async (chunk: ArrayBuffer): Promise<void> => {
+      append: async (chunk: Uint8Array): Promise<void> => {
         await writableStream.write(chunk)
       },
       complete: async (): Promise<void> => {
@@ -97,11 +103,11 @@ async function blobDonwload(
   opts: Required<DownloaderOpts>,
 ): Promise<StreamDownloader> {
   console.log('Using fallback: in-memory accumulation and Blob download.')
-  const accumulatedChunks: ArrayBuffer[] = []
+  const accumulatedChunks: Uint8Array[] = []
   let aborted = false
 
   return {
-    append: async (chunk: ArrayBuffer): Promise<void> => {
+    append: async (chunk: Uint8Array): Promise<void> => {
       if (aborted)
         return
       accumulatedChunks.push(chunk)
@@ -129,6 +135,7 @@ async function blobDonwload(
   }
 }
 
+/** Service Worker 下载 */
 async function serviceWorkerDownload(
   filename: string,
   opts: Required<StreamDownloadOpts>,
@@ -138,7 +145,15 @@ async function serviceWorkerDownload(
     throw new Error('Service Worker is not supported.')
   }
 
-  await navigator.serviceWorker.register(opts.swPath, { scope: '/' })
+  if (navigator.serviceWorker.controller) {
+    console.log('SW already controlling the page')
+  }
+  else {
+    await navigator.serviceWorker.register(opts.swPath, {
+      scope: '/',
+    })
+  }
+
   /**
    * 等待 Service Worker 准备好 (active 且 controlling)
    * 会等到 SW 激活并且控制当前页面
@@ -149,7 +164,7 @@ async function serviceWorkerDownload(
     throw new Error('Service Worker is not controlling the page.')
   }
 
-  const downloadId = randomStr() + Date.now().toString()
+  const downloadId = randomStr() + Date.now().toString().slice(-6)
   const channel = new MessageChannel()
 
   /** 发送端口给 Service Worker */
@@ -169,8 +184,10 @@ async function serviceWorkerDownload(
     }
 
     resolve({
-      append: async (chunk: ArrayBuffer): Promise<void> => {
-        return channel.port1.postMessage(chunk)
+      append: async (chunk: Uint8Array): Promise<void> => {
+        return channel.port1.postMessage(chunk, {
+          transfer: [chunk.buffer],
+        })
       },
       complete: async (): Promise<void> => {
         return channel.port1.postMessage('end')
@@ -183,7 +200,7 @@ async function serviceWorkerDownload(
 }
 
 export interface StreamDownloader {
-  append: (chunk: ArrayBuffer) => Promise<void>
+  append: (chunk: Uint8Array) => Promise<void>
   complete: () => Promise<void>
   abort: () => Promise<void>
 }

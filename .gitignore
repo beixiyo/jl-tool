@@ -14,8 +14,8 @@ docs/.vitepress/cache
 
 node_modules
 dist
-dist-ssr
 *.local
+public
 
 # Editor directories and files
 !.vscode/extensions.json

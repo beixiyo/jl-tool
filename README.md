@@ -1154,29 +1154,25 @@ export type InputType = Blob | Uint8Array | ArrayBuffer | string | DataView
 ---
 
 ## 流式下载
+
+1. 复制 `dist/sw/streamDownload.js` 文件到你项目根目录，一定要在根目录
+2. createStreamDownloader 指定 `swPath` 为指定的文件路径
+3. 开始下载，调用 `append` 方法添加数据，调用 `complete` 方法结束下载
+
 ```ts
 /**
- * 创建流式下载器
+ * 创建流式下载器，使用 Service Worker 或 File System Access API 进行流式下载。
+ * 如果没有传递 `swPath`，则使用 File System Access API 进行下载。
+ * 如果不支持 File System Access API，则用原始的 a 标签下载。
  *
  * @example
  * ```ts
- * const downloader = await createStreamDownloader('data.zip', 'application/zip')
- * downloader.append(new Uint8Array(...))
+ * const downloader = await createStreamDownloader('data.zip', { swPath: '/sw.js' })
+ * downloader.append(...)
  * downloader.complete()
  * ```
- *
- * @param fileName 建议的文件名 (包含后缀, e.g., "data.zip")
- * @param mimeType 文件的MIME类型 (e.g., "application/zip")
- * @returns Promise，解析为一个包含 append, complete, abort 方法的对象。
- *          如果用户取消文件选择或API不支持且无回退，可能会reject。
  */
-export declare function createStreamDownloader(fileName: string, mimeType?: MIMEType): Promise<StreamDownloader>
-
-export interface StreamDownloader {
-  append: (chunk: Uint8Array) => Promise<void>
-  complete: () => Promise<void>
-  abort: () => Promise<void>
-}
+export declare function createStreamDownloader(fileName: string, opts?: StreamDownloadOpts): Promise<StreamDownloader>
 ```
 
 ---
