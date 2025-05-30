@@ -288,6 +288,7 @@ export interface DispatchWorkOptions<
    *
    * @param message Worker `MessageEvent` 中的 `data` 属性。
    * @param workerInfo 关于 Worker 实例及其分配的任务项索引范围的信息。
+   * @param callbacks 回调函数集合，用于报告任务项进展、完成或失败。某个任务完成时，必须调用 `resolveBatch` 才会收集结果。
    */
   onMessage: (
     message: ReceiveWorkerMsg,
@@ -309,7 +310,7 @@ export type Callbacks<
    */
   reportItemProcessed: (itemGlobalIndex: number, itemData: WorkerProgressData) => void
   /**
-   * 当 Worker 完成其分配范围内的所有任务项时调用此函数。
+   * 当某个 Worker 完成其分配范围内的所有任务项时调用此函数。
    * `batchResults` 必须是一个 `WorkerResultItem` 数组，按照从 `workerInfo.startIndex` 到 `workerInfo.endIndex - 1` 的全局任务项索引排序。
    */
   resolveBatch: (batchResults: WorkerResultItem[]) => void
