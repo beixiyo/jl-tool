@@ -14,9 +14,8 @@ document.body.append(swButton, fileButton)
 const fileName = 'myStreamedFile.txt'
 
 async function exampleUseServiceWorker() {
-  const swPath = new URL('/streamDownload.js', import.meta.url).href
   const swDownloader = await createStreamDownloader(fileName, {
-    swPath,
+    swPath: '/streamDownload.js',
   })
 
   for (let i = 0; i < 1000; i++) {

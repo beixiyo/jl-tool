@@ -1161,6 +1161,26 @@ export type InputType = Blob | Uint8Array | ArrayBuffer | string | DataView
 
 ```ts
 /**
+ * 示例
+ */
+async function exampleUseServiceWorker() {
+  const swDownloader = await createStreamDownloader(fileName, {
+    swPath: '/streamDownload.js',
+  })
+
+  for (let i = 0; i < 1000; i++) {
+    await write(swDownloader, `Line ${i}\n`)
+  }
+  await swDownloader.complete()
+}
+
+async function write(downloader: StreamDownloader, str: string) {
+  const data = new Blob([str])
+  const buffer = await data.arrayBuffer()
+  await downloader.append(new Uint8Array(buffer))
+}
+
+/**
  * 创建流式下载器，使用 Service Worker 或 File System Access API 进行流式下载。
  * 如果没有传递 `swPath`，则使用 File System Access API 进行下载。
  * 如果不支持 File System Access API，则用原始的 a 标签下载。
