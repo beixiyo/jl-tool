@@ -140,13 +140,17 @@ async function serviceWorkerDownload(
   filename: string,
   opts: Required<StreamDownloadOpts>,
 ): Promise<StreamDownloader> {
-  /** 注册 Service Worker */
-  if (!('serviceWorker' in navigator)) {
+  let isRegistered = false
+  if (!navigator.serviceWorker) {
     throw new Error('Service Worker is not supported.')
+  }
+  if (typeof ReadableStream === 'undefined') {
+    throw new TypeError('Stream API not supported')
   }
 
   if (navigator.serviceWorker.controller) {
-    console.log('SW already controlling the page')
+    isRegistered = true
+    console.log('Service Worker already controlling the page')
   }
   else {
     await navigator.serviceWorker.register(opts.swPath, {
@@ -159,7 +163,15 @@ async function serviceWorkerDownload(
    * 会等到 SW 激活并且控制当前页面
    * 如果 SW 中使用了 clients.claim()，这个过程会更快
    */
-  await navigator.serviceWorker.ready
+  const controllerPromise = isRegistered
+    ? Promise.resolve()
+    : new Promise((resolve) => {
+      navigator.serviceWorker.addEventListener('controllerchange', resolve, { once: true })
+    })
+  await Promise.all([
+    navigator.serviceWorker.ready,
+    controllerPromise,
+  ])
   if (!navigator.serviceWorker.controller) {
     throw new Error('Service Worker is not controlling the page.')
   }
@@ -190,10 +202,12 @@ async function serviceWorkerDownload(
         })
       },
       complete: async (): Promise<void> => {
-        return channel.port1.postMessage('end')
+        const action: PostAction = 'end'
+        return channel.port1.postMessage(action)
       },
       abort: async (): Promise<void> => {
-        return channel.port1.postMessage('abort')
+        const action: PostAction = 'abort'
+        return channel.port1.postMessage(action)
       },
     })
   })
@@ -218,3 +232,5 @@ export type StreamDownloadOpts = DownloaderOpts & {
    */
   swPath?: string
 }
+
+export type PostAction = 'abort' | 'end' | Uint8Array

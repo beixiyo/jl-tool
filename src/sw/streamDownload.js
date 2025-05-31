@@ -18,20 +18,35 @@ self.addEventListener('message', (event) => {
   const port = event.ports[0]
 
   /** 生成下载URL */
-  const downloadUrl = `${self.registration.scope}download/${downloadId}/${filename}`
+  const downloadUrl = `${self.registration.scope}jl-org-download/${downloadId}/${filename}`
 
   /** 创建流 */
   const stream = new ReadableStream({
     start(controller) {
-      port.onmessage = ({ data }) => {
+      port.onmessage = (event) => {
+        /**
+         * @type {PostAction}
+         */
+        const data = event.data
         if (data === 'end') {
-          return controller.close()
+          controller.close()
         }
-        if (data === 'abort') {
-          controller.error('Download aborted')
-          return
+        else if (data === 'abort') {
+          onError('Download aborted')
         }
-        controller.enqueue(data)
+        else {
+          controller.enqueue(data)
+        }
+      }
+
+      port.onmessageerror = () => {
+        onError('Channel error')
+      }
+
+      function onError(msg) {
+        controller.error(msg)
+        controller.close()
+        downloadMap.delete(url)
       }
     },
   })
@@ -46,17 +61,23 @@ self.addEventListener('message', (event) => {
 self.addEventListener('fetch', (event) => {
   const url = event.request.url
 
-  if (downloadMap.has(url)) {
-    const downloadData = downloadMap.get(url)
-    if (downloadData) {
-      downloadMap.delete(url)
+  if (!downloadMap.has(url)) {
+    return
+  }
 
-      const headers = new Headers({
-        'Content-Type': 'application/octet-stream',
-        'Content-Disposition': `attachment; filename="${downloadData.filename}"`,
-      })
+  const downloadData = downloadMap.get(url)
+  if (downloadData) {
+    downloadMap.delete(url)
 
-      event.respondWith(new Response(downloadData.stream, { headers }))
-    }
+    const headers = new Headers({
+      'Content-Type': 'application/octet-stream',
+      'Content-Disposition': `attachment; filename="${downloadData.filename}"`,
+    })
+
+    event.respondWith(new Response(downloadData.stream, { headers }))
   }
 })
+
+/**
+ * @typedef {import('../fileTool/streamDownloader').PostAction} PostAction
+ */
