@@ -24,13 +24,26 @@ export async function createStreamDownloader(
 
   if (opts.swPath) {
     try {
-      return serviceWorkerDownload(fileName, {
+      if (!navigator.serviceWorker) {
+        throw new Error('Service Worker is not supported.')
+      }
+      if (typeof ReadableStream === 'undefined') {
+        throw new TypeError('Stream API not supported')
+      }
+
+      const data = await serviceWorkerDownload(fileName, {
         ...formatOpts,
         ...opts,
       } as any)
+
+      if (data === false) {
+        throw new Error('Service Worker failed to download.')
+      }
+
+      return data
     }
     catch (error) {
-      console.error(error)
+      console.warn(error)
       return otherDownload()
     }
   }
@@ -39,9 +52,11 @@ export async function createStreamDownloader(
 
   function otherDownload() {
     // @ts-ignore
-    if (showSaveFilePicker) {
+    if (typeof showSaveFilePicker !== 'undefined') {
       return filePickerDownload(fileName, formatOpts)
     }
+
+    console.warn('File System Access API not supported, falling back to in-memory accumulation and Blob download.')
     return blobDonwload(fileName, formatOpts)
   }
 }
@@ -139,14 +154,8 @@ async function blobDonwload(
 async function serviceWorkerDownload(
   filename: string,
   opts: Required<StreamDownloadOpts>,
-): Promise<StreamDownloader> {
+): Promise<StreamDownloader | false> {
   let isRegistered = false
-  if (!navigator.serviceWorker) {
-    throw new Error('Service Worker is not supported.')
-  }
-  if (typeof ReadableStream === 'undefined') {
-    throw new TypeError('Stream API not supported')
-  }
 
   if (navigator.serviceWorker.controller) {
     isRegistered = true
@@ -172,8 +181,9 @@ async function serviceWorkerDownload(
     navigator.serviceWorker.ready,
     controllerPromise,
   ])
+
   if (!navigator.serviceWorker.controller) {
-    throw new Error('Service Worker is not controlling the page.')
+    return false
   }
 
   const downloadId = randomStr() + Date.now().toString().slice(-6)

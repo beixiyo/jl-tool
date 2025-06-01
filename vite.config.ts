@@ -22,4 +22,8 @@ export default defineConfig({
   // index.html 入口文件
   root: fileURLToPath(new URL('./test', import.meta.url)),
   publicDir: fileURLToPath(new URL('./public', import.meta.url)),
+
+  server: {
+    host: '::',
+  },
 })
