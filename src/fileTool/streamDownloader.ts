@@ -1,3 +1,4 @@
+import type { PartRequired } from '@jl-org/ts-tool'
 import { randomStr } from '@/tools/tools'
 import { downloadByData } from './tools'
 
@@ -17,20 +18,13 @@ export async function createStreamDownloader(
   fileName: string,
   opts: StreamDownloadOpts = {},
 ): Promise<StreamDownloader> {
-  const formatOpts: Required<DownloaderOpts> = {
+  const formatOpts: ServiceWorkerDownloadOpts = {
     mimeType: 'application/octet-stream',
     ...opts,
   }
 
   if (opts.swPath) {
     try {
-      if (!navigator.serviceWorker) {
-        throw new Error('Service Worker is not supported.')
-      }
-      if (typeof ReadableStream === 'undefined') {
-        throw new TypeError('Stream API not supported')
-      }
-
       const data = await serviceWorkerDownload(fileName, {
         ...formatOpts,
         ...opts,
@@ -153,8 +147,15 @@ async function blobDonwload(
 /** Service Worker 下载 */
 async function serviceWorkerDownload(
   filename: string,
-  opts: Required<StreamDownloadOpts>,
+  opts: PartRequired<ServiceWorkerDownloadOpts, 'swPath'>,
 ): Promise<StreamDownloader | false> {
+  if (!navigator.serviceWorker) {
+    throw new Error('Service Worker is not supported.')
+  }
+  if (typeof ReadableStream === 'undefined') {
+    throw new TypeError('Stream API not supported')
+  }
+
   let isRegistered = false
 
   if (navigator.serviceWorker.controller) {
@@ -189,20 +190,40 @@ async function serviceWorkerDownload(
   const downloadId = randomStr() + Date.now().toString().slice(-6)
   const channel = new MessageChannel()
 
+  const {
+    contentLength,
+    mimeType,
+  } = opts
+  const postData: PostServiceWorkerData = {
+    filename,
+    downloadId,
+    contentLength,
+    mimeType,
+  }
+
   /** 发送端口给 Service Worker */
   navigator.serviceWorker.controller.postMessage(
-    { filename, downloadId },
+    postData,
     [channel.port2],
   )
 
   return new Promise((resolve) => {
     channel.port1.onmessage = (event) => {
       const { downloadUrl } = event.data
-      const a = document.createElement('a')
-      a.href = downloadUrl
-      document.body.appendChild(a)
-      a.click()
-      a.remove()
+
+      const iframe = document.createElement('iframe')
+      Object.assign(iframe.style, {
+        display: 'none',
+        position: 'fixed',
+        top: '0',
+        left: '0',
+      })
+
+      document.body.appendChild(iframe)
+      iframe.src = downloadUrl
+      iframe.onload = () => {
+        document.body.removeChild(iframe)
+      }
     }
 
     resolve({
@@ -229,7 +250,7 @@ export interface StreamDownloader {
   abort: () => Promise<void>
 }
 
-export type DownloaderOpts = {
+type DownloaderOpts = {
   /**
    * @default 'application/octet-stream'
    */
@@ -241,6 +262,19 @@ export type StreamDownloadOpts = DownloaderOpts & {
    * Service Worker 文件路径，如果传入，则使用 Service Worker 下载
    */
   swPath?: string
+  /**
+   * 文件大小，单位字节
+   */
+  contentLength?: number
 }
 
+type ServiceWorkerDownloadOpts = PartRequired<StreamDownloadOpts, 'mimeType'>
+
 export type PostAction = 'abort' | 'end' | Uint8Array
+
+export type PostServiceWorkerData = {
+  filename: string
+  downloadId: string
+  contentLength?: number
+  mimeType: MIMEType
+}

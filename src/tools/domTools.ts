@@ -240,7 +240,42 @@ export function getLocalStorage<T>(
 export const getSelectedText = () => window.getSelection()?.toString()
 
 /** 文本复制到剪贴板 */
-export const copyToClipboard = (text: string) => navigator.clipboard.writeText(text)
+export async function copyToClipboard(text: string) {
+  try {
+    return navigator.clipboard.writeText(text)
+  }
+  catch (error) {
+    return fallback()
+  }
+
+  function fallback() {
+    const textarea = document.createElement('textarea')
+    textarea.value = text
+
+    Object.assign(textarea.style, {
+      transform: 'translate(-9999px, -9999px)',
+      position: 'absolute',
+      top: 0,
+      left: 0,
+    })
+
+    document.body.appendChild(textarea)
+    textarea.select()
+
+    try {
+      const successful = document.execCommand('copy')
+      if (!successful) {
+        console.error('复制失败')
+      }
+    }
+    catch (err) {
+      console.error('复制错误:', err)
+    }
+    finally {
+      document.body.removeChild(textarea)
+    }
+  }
+}
 
 /**
  * 是否滑倒页面底部
