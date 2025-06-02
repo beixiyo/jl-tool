@@ -1166,6 +1166,8 @@ export type InputType = Blob | Uint8Array | ArrayBuffer | string | DataView
 async function exampleUseServiceWorker() {
   const swDownloader = await createStreamDownloader(fileName, {
     swPath: '/streamDownload.js',
+    /** 配合 swPath 传递了才有进度显示 */
+    contentLength
   })
 
   for (let i = 0; i < 1000; i++) {

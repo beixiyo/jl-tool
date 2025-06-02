@@ -1,8 +1,8 @@
 import type { PartRequired } from '@jl-org/ts-tool'
-import { randomStr } from '@/tools/tools'
+import { randomStr, uniqueId } from '@/tools/tools'
 import { downloadByData } from './tools'
 
-const ID = '__jl-org_stream-downloader__'
+const iframeIds: string[] = []
 
 /**
  * 创建流式下载器，使用 Service Worker 或 File System Access API 进行流式下载。
@@ -189,7 +189,7 @@ async function serviceWorkerDownload(
     return false
   }
 
-  const downloadId = randomStr() + Date.now().toString().slice(-6)
+  const downloadId = randomStr() + Date.now().toString()
   const channel = new MessageChannel()
   filename = encodeURIComponent(filename.replace(/\//g, ':'))
     .replace(/\*/g, '%2A')
@@ -211,11 +211,14 @@ async function serviceWorkerDownload(
     [channel.port2],
   )
 
+  let downloadUrl = ''
+  let iframeId = ''
+
   return new Promise((resolve) => {
     channel.port1.onmessage = (event) => {
-      const { downloadUrl } = event.data
-      console.log(`收到下载地址：${downloadUrl}, 发送 fetch 请求`)
-      downloadByIframe(downloadUrl)
+      downloadUrl = event.data.downloadUrl
+      iframeId = `${downloadUrl}-${uniqueId()}`
+      downloadByIframe(downloadUrl, iframeId)
     }
 
     resolve({
@@ -226,6 +229,7 @@ async function serviceWorkerDownload(
       },
       complete: async (): Promise<void> => {
         const action: PostAction = 'end'
+        rmIframeById(iframeId)
         return channel.port1.postMessage(action)
       },
       abort: async (): Promise<void> => {
@@ -236,14 +240,8 @@ async function serviceWorkerDownload(
   })
 }
 
-function downloadByIframe(src: string) {
-  let iframe = document.getElementById(ID) as HTMLIFrameElement
-  if (iframe) {
-    iframe.remove()
-  }
-  else {
-    iframe = document.createElement('iframe')
-  }
+function downloadByIframe(src: string, id: string) {
+  const iframe = document.createElement('iframe')
 
   iframe.hidden = true
   Object.assign(iframe.style, {
@@ -251,11 +249,24 @@ function downloadByIframe(src: string) {
     top: '-9999px',
     left: '-9999px',
   })
+
+  iframe.id = id
+  iframeIds.push(id)
+
   iframe.src = src
-  iframe.id = ID
   document.body.appendChild(iframe)
 
   return iframe
+}
+
+function rmIframeById(id: string) {
+  if (!iframeIds.includes(id)) {
+    return
+  }
+
+  const iframe = document.getElementById(id)
+  iframe?.remove()
+  iframeIds.splice(iframeIds.indexOf(id), 1)
 }
 
 export interface StreamDownloader {

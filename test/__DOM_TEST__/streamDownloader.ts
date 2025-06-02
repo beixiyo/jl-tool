@@ -18,9 +18,11 @@ async function exampleUseServiceWorker() {
     swPath: '/streamDownload.js',
   })
 
-  for (let i = 0; i < 1000; i++) {
+  for (let i = 0; i < 10; i++) {
+    await wait(200)
     await write(swDownloader, `Line ${i}\n`)
   }
+  console.log('Service Worker Stream Download Complete')
   await swDownloader.complete()
 }
 
