@@ -292,3 +292,5 @@ export type PostServiceWorkerData = {
   contentLength?: number
   mimeType: MIMEType
 }
+
+export type MIMEType = `${string}/${string}`
