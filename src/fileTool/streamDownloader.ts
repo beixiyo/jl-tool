@@ -2,6 +2,8 @@ import type { PartRequired } from '@jl-org/ts-tool'
 import { randomStr } from '@/tools/tools'
 import { downloadByData } from './tools'
 
+const ID = '__jl-org_stream-downloader__'
+
 /**
  * 创建流式下载器，使用 Service Worker 或 File System Access API 进行流式下载。
  * 如果没有传递 `swPath`，则使用 File System Access API 进行下载。
@@ -189,6 +191,8 @@ async function serviceWorkerDownload(
 
   const downloadId = randomStr() + Date.now().toString().slice(-6)
   const channel = new MessageChannel()
+  filename = encodeURIComponent(filename.replace(/\//g, ':'))
+    .replace(/\*/g, '%2A')
 
   const {
     contentLength,
@@ -210,20 +214,8 @@ async function serviceWorkerDownload(
   return new Promise((resolve) => {
     channel.port1.onmessage = (event) => {
       const { downloadUrl } = event.data
-
-      const iframe = document.createElement('iframe')
-      Object.assign(iframe.style, {
-        display: 'none',
-        position: 'fixed',
-        top: '0',
-        left: '0',
-      })
-
-      document.body.appendChild(iframe)
-      iframe.src = downloadUrl
-      iframe.onload = () => {
-        document.body.removeChild(iframe)
-      }
+      console.log(`收到下载地址：${downloadUrl}, 发送 fetch 请求`)
+      downloadByIframe(downloadUrl)
     }
 
     resolve({
@@ -242,6 +234,28 @@ async function serviceWorkerDownload(
       },
     })
   })
+}
+
+function downloadByIframe(src: string) {
+  let iframe = document.getElementById(ID) as HTMLIFrameElement
+  if (iframe) {
+    iframe.remove()
+  }
+  else {
+    iframe = document.createElement('iframe')
+  }
+
+  iframe.hidden = true
+  Object.assign(iframe.style, {
+    position: 'fixed',
+    top: '-9999px',
+    left: '-9999px',
+  })
+  iframe.src = src
+  iframe.id = ID
+  document.body.appendChild(iframe)
+
+  return iframe
 }
 
 export interface StreamDownloader {

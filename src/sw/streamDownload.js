@@ -26,7 +26,8 @@ self.addEventListener('message', (event) => {
   const port = event.ports[0]
 
   // @ts-ignore
-  const downloadUrl = `${self.registration.scope}jl-org-download/${data.downloadId}/${data.filename}`
+  const scope = self.registration.scope
+  const downloadUrl = `${scope}jl-org-download/${data.downloadId}/${data.filename}`
 
   /** 创建流 */
   const stream = new ReadableStream({
@@ -72,7 +73,6 @@ self.addEventListener('message', (event) => {
 self.addEventListener('fetch', (event) => {
   // @ts-ignore
   const url = event.request.url
-
   if (!downloadMap.has(url)) {
     return
   }
