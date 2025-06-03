@@ -229,7 +229,13 @@ async function serviceWorkerDownload(
       },
       complete: async (): Promise<void> => {
         const action: PostAction = 'end'
-        rmIframeById(iframeId)
+        /**
+         * 等待 Service Worker 完成下载
+         */
+        setTimeout(() => {
+          rmIframeById(iframeId)
+        }, 1000)
+
         return channel.port1.postMessage(action)
       },
       abort: async (): Promise<void> => {
