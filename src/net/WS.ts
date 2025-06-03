@@ -13,7 +13,7 @@ export class WS {
   private leaveTimer?: number
 
   /** 删除事件 */
-  private rmNetEvent?: VoidFunction
+  private rmNetEvent?: RmEvent
 
   constructor(opts: WSOpts) {
     const defaultOpts = {
@@ -46,7 +46,7 @@ export class WS {
   /**
    * socket.readyState === WebSocket.CLOSING
    */
-  get isClose() {
+  get isClosed() {
     return this.socket?.readyState === WebSocket.CLOSED
   }
 
@@ -66,12 +66,16 @@ export class WS {
     console.warn('未连接，请先调用 connect')
   }
 
+  /**
+   * 开启连接并初始化事件（报错、关闭、网络状态变更等）。
+   * 如果已经连接，则直接返回 socket，不做任何操作
+   * @returns WebSocket
+   */
   connect(): WebSocket {
     if (this.isConnected) {
       return this.socket!
     }
 
-    this.rmNetEvent?.()
     this.socket = new WebSocket(this.opts.url, this.opts.protocols)
     this.rmNetEvent = this.bindNetEvent()
     window.removeEventListener('visibilitychange', this.onVisibilityChange)
@@ -80,9 +84,13 @@ export class WS {
     return this.socket
   }
 
+  /**
+   * 关闭连接并清除事件
+   */
   close() {
     if (this.socket) {
-      this.rmNetEvent?.()
+      this.rmNetEvent?.rmNetEvent()
+      this.rmNetEvent?.rmSocketEvent()
       this.socket.close()
       this.socket = null
     }
@@ -99,12 +107,16 @@ export class WS {
   private onVisibilityChange = () => {
     clearTimeout(this.leaveTimer)
 
-    if (document.visibilityState === 'visible' && this.isClose) {
+    if (document.visibilityState === 'visible' && (!this.socket || this.isClosed)) {
       console.log('页面可见，尝试重连...')
       const socket = this.connect()
       this.opts.onVisible?.(socket)
     }
     else if (document.visibilityState === 'hidden') {
+      if (this.opts.leaveTime < 0) {
+        return
+      }
+
       this.leaveTimer = window.setTimeout(() => {
         clearInterval(this.heartbeatTimer)
         console.log('离开页面过久，关闭连接')
@@ -115,7 +127,10 @@ export class WS {
   }
 
   /** 网络状态变更处理逻辑 */
-  private bindNetEvent() {
+  private bindNetEvent(): RmEvent {
+    this.rmNetEvent?.rmNetEvent()
+    this.rmNetEvent?.rmSocketEvent()
+
     const onOnline = () => {
       console.log('网络恢复，尝试重连...')
       this.connect()
@@ -128,7 +143,7 @@ export class WS {
 
     const onClose = () => {
       console.log('WebSocket 已关闭')
-      this.rmNetEvent?.()
+      this.rmNetEvent?.rmSocketEvent()
       clearInterval(this.heartbeatTimer)
     }
 
@@ -138,12 +153,15 @@ export class WS {
     this.socket?.addEventListener('open', this.heartbeat)
     this.socket?.addEventListener('close', onClose)
 
-    return () => {
-      window.removeEventListener('online', onOnline)
-      window.removeEventListener('offline', onOffline)
-
-      this.socket?.removeEventListener('open', this.heartbeat)
-      this.socket?.removeEventListener('close', onClose)
+    return {
+      rmSocketEvent: () => {
+        this.socket?.removeEventListener('open', this.heartbeat)
+        this.socket?.removeEventListener('close', onClose)
+      },
+      rmNetEvent: () => {
+        window.removeEventListener('online', onOnline)
+        window.removeEventListener('offline', onOffline)
+      },
     }
   }
 
@@ -180,7 +198,7 @@ export type WSOpts = {
    */
   genHeartbeatMsg?: () => any
   /**
-   * 页面不可见时，多久后断开连接，单位 ms
+   * 页面不可见时，多久后断开连接，单位 ms，如果小于 0 则不自动断开
    * @default 10000
    */
   leaveTime?: number
@@ -198,4 +216,12 @@ export type WSOpts = {
    * 页面不可见时的回调
    */
   onHidden?: () => void
+}
+
+type RmEvent = {
+  rmSocketEvent: VoidFunction
+  /**
+   * 移除 online、offline 事件监听
+   */
+  rmNetEvent: VoidFunction
 }

@@ -369,6 +369,7 @@ export declare function retryTask<T>(task: () => Promise<T>, maxAttempts?: numbe
  * 根据网络状态自动重连的，自动发送心跳数据的 WebSocket
  */
 export declare class WS {
+  socket: WebSocket | null
   constructor(opts: WSOpts)
   /**
    * socket.readyState === WebSocket.OPEN
@@ -381,13 +382,21 @@ export declare class WS {
   /**
    * socket.readyState === WebSocket.CLOSING
    */
-  get isClose(): boolean
+  get isClosed(): boolean
   /**
    * 网络状态是否离线，!window.navigator.onLine
    */
   get isOffline(): boolean
   send(message: Parameters<WebSocket['send']>[0]): void
-  connect(): void
+  /**
+   * 开启连接并初始化事件（报错、关闭、网络状态变更等）。
+   * 如果已经连接，则直接返回 socket，不做任何操作
+   * @returns WebSocket
+   */
+  connect(): WebSocket
+  /**
+   * 关闭连接并清除事件
+   */
   close(): void
 }
 ```
