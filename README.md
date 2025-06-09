@@ -1127,10 +1127,15 @@ interface DownloadOptions {
 ```ts
 /**
  * 获取资源的 MIME 类型（兼容 HTTP/HTTPS 和 Base64 DataURL）
+ * - 首先通过 Fetch HEAD 请求获取 Content-Type
+ * - 失败尝试 XHR HEAD 请求（兼容旧浏览器）
+ * - 再失败尝试下载前几个字节并推断类型
+ * - 最后通过扩展名推断类型 (跨域后备方案)
+ *
  * @param url HTTP 地址或 Base64 DataURL
  * @returns 返回 MIME 类型（如 "image/png"），失败返回 "unknown"
  */
-export declare function getMimeType(url: string): Promise<MimeType>
+export declare function getMimeType(url: string, opts?: GetMimeTypeOpts): Promise<MimeType>
 
 /**
  * 检测文件类型，目前仅仅支持图片、压缩包和文本文件
