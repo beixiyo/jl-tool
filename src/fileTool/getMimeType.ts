@@ -10,10 +10,8 @@ export async function getMimeType(url: string): Promise<MimeType> {
   /** 如果是 Base64 DataURL，直接解析 */
   if (url.startsWith('data:')) {
     try {
-      const mimeMatch = url.split('data:')[1].split(';')[0].trim()
-      return mimeMatch
-        ? mimeMatch[1] as MimeType
-        : 'unknown'
+      const mimeMatch = url.split('data:')[1].split(';')[0].trim() as MimeType
+      return mimeMatch || 'unknown'
     }
     catch (error) {
       console.warn('Failed to parse data URL:', error)
@@ -50,7 +48,7 @@ export async function getMimeType(url: string): Promise<MimeType> {
     })
 
     if (mime === 'unknown') {
-      throw new Error('unknown is inValidate, next')
+      throw new Error('unknown is inValidate, use getMimeTypeByMagicNumbers instead')
     }
 
     return mime as MimeType
@@ -71,9 +69,14 @@ export async function getMimeType(url: string): Promise<MimeType> {
     console.warn(error)
   }
 
-  /** 通过扩展名推断类型 (跨域后备方案) */
-  const extension = url.split('.').pop()?.split('?')[0]?.toLowerCase()
-  return mimeFromExt[extension as keyof typeof mimeFromExt] || 'unknown'
+  try {
+    /** 通过扩展名推断类型 (跨域后备方案) */
+    const extension = url.split('.').pop()?.split('?')[0]?.toLowerCase()
+    return mimeFromExt[extension as keyof typeof mimeFromExt] || 'unknown'
+  }
+  catch (error) {
+    return 'unknown'
+  }
 }
 
 /**
