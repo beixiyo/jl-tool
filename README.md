@@ -1126,6 +1126,13 @@ interface DownloadOptions {
 ## 文件类型检测
 ```ts
 /**
+ * 获取资源的 MIME 类型（兼容 HTTP/HTTPS 和 Base64 DataURL）
+ * @param url HTTP 地址或 Base64 DataURL
+ * @returns 返回 MIME 类型（如 "image/png"），失败返回 "unknown"
+ */
+export declare function getMimeType(url: string): Promise<MimeType>
+
+/**
  * 检测文件类型，目前仅仅支持图片、压缩包和文本文件
  */
 export declare function detectFileType(input: InputType): Promise<FileTypeResult>
