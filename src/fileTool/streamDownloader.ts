@@ -1,4 +1,5 @@
 import type { PartRequired } from '@jl-org/ts-tool'
+import type { MIMEType } from '@/types'
 import { randomStr, uniqueId } from '@/tools/tools'
 import { downloadByData } from './tools'
 
@@ -309,5 +310,3 @@ export type PostServiceWorkerData = {
   contentLength?: number
   mimeType: MIMEType
 }
-
-export type MIMEType = `${string}/${string}`

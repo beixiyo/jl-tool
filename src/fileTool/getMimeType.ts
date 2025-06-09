@@ -1,3 +1,4 @@
+import type { MIMEType } from '@/types'
 import { mimeFromExt } from './constants'
 import { detectFileType } from './fileType'
 

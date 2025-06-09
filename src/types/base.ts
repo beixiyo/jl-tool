@@ -1,6 +1,8 @@
 /** 输出类型 */
 export type TransferType = 'base64' | 'blob'
 
+export type MIMEType = `${string}/${string}`
+
 export type BaseType = string | number
 export type BaseKey = keyof any
 
