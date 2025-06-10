@@ -69,10 +69,15 @@ export function getRandomNum(min: number, max: number, enableFloat = false) {
 }
 
 /**
- * 深拷贝，支持循环引用，默认调用 `structuredClone`，如果不支持则使用递归
+ * 深拷贝，支持循环引用，不支持 Set、Map
  */
-export function deepClone<T>(data: T, map = new WeakMap()): T {
-  if (typeof structuredClone !== 'undefined') {
+export function deepClone<T>(
+  data: T,
+  map = new WeakMap(),
+  opts: DeepCloneOpts = {},
+): T {
+  const { useStructuredClone = false } = opts
+  if (typeof structuredClone !== 'undefined' && useStructuredClone) {
     return structuredClone(data)
   }
 
@@ -430,6 +435,14 @@ export function wait(durationMS = 1000) {
   return new Promise((resolve) => {
     setTimeout(resolve, durationMS)
   })
+}
+
+export type DeepCloneOpts = {
+  /**
+   * 是否使用 structuredClone，如果不支持深克隆会报错
+   * @default false
+   */
+  useStructuredClone?: boolean
 }
 
 export type OnceOpts = {

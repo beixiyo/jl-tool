@@ -87,9 +87,9 @@ export declare function once<Args extends any[], R>(fn: (...args: Args) => R, op
 export declare function getRandomNum(min: number, max: number, enableFloat?: boolean): number
 
 /**
- * 深拷贝，支持循环引用，默认调用 `structuredClone`，如果不支持则使用递归
+ * 深拷贝，支持循环引用，不支持 Set、Map
  */
-export declare function deepClone<T>(data: T, map?: WeakMap<WeakKey, any>): T
+export declare function deepClone<T>(data: T, map?: WeakMap<WeakKey, any>, opts?: DeepCloneOpts): T
 
 /**
  * 深度比较对象 `Map | Set` 无法使用
