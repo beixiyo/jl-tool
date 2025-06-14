@@ -1223,27 +1223,57 @@ export declare function createStreamDownloader(fileName: string, opts?: StreamDo
 ## 文件分块处理
 ```ts
 /**
- * 文件分块
+ * 文件分块处理器
  * @example
- * const chunker = new FileChunker(file, this.chunkSize)
+ * // 基本用法
+ * const chunker = new FileChunker(file, { chunkSize: 1024 * 1024 })
  * const blob = chunker.next()
  * const done = chunker.done
  * const progress = chunker.progress
+ *
+ * @example
+ * // 从指定偏移量开始
+ * const chunker = new FileChunker(file, {
+ *   chunkSize: 1024 * 1024,
+ *   startOffset: 512 * 1024 // 从512KB处开始
+ * })
  */
 export declare class FileChunker {
-  constructor(file: File | Blob, chunkSize: number)
+  /**
+   * 创建文件分块处理器
+   * @param file 要分块的文件或Blob对象
+   * @param options 配置选项
+   * @param options.chunkSize 每个分块的大小(字节)
+   * @param options.startOffset 起始偏移量(字节)，默认为0
+   */
+  constructor(file: File | Blob, options: {
+    chunkSize: number
+    startOffset?: number
+  })
+
   /**
    * 获取下一块分片
+   * @returns {Blob} 文件分片数据
    */
   next(): Blob
+
   /**
-   * 是否完成
+   * 是否已完成所有分块读取
+   * @returns {boolean} 如果已读取完所有分块返回true，否则返回false
    */
   get done(): boolean
+
   /**
-   * 进度
+   * 获取当前读取进度(0-1之间的小数)
+   * @returns {number} 当前进度(0-1)
    */
   get progress(): number
+
+  /**
+   * 获取当前偏移量
+   * @returns {number} 当前偏移量(字节)
+   */
+  get currentOffset(): number
 }
 ```
 
