@@ -242,7 +242,8 @@ export const getSelectedText = () => window.getSelection()?.toString()
 /** 文本复制到剪贴板 */
 export async function copyToClipboard(text: string) {
   try {
-    return navigator.clipboard.writeText(text)
+    const res = await navigator.clipboard.writeText(text)
+    return res
   }
   catch (error) {
     return fallback()

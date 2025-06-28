@@ -1,6 +1,6 @@
 {
   "name": "@jl-org/tool",
-  "version": "2.1.3",
+  "version": "2.1.4",
   "description": "前端的瑞士军刀",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
@@ -22,6 +22,7 @@
   "scripts": {
     "build": "run-p build:only gen-doc",
     "build:only": "rollup -c && tsc-alias",
+    "prepublishOnly": "npm run build",
     "------doc------": "",
     "gen-doc": "typedoc --tsconfig tsconfig.json",
     "docs:dev": "vitepress dev ./docs",
