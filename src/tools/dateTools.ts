@@ -16,20 +16,8 @@ export const timeFromDate = (date: Date) => date.toTimeString().slice(0, 8)
 
 /** 获取季度 */
 export function getQuarter(date: TimeType = new Date()) {
-  const _date = new Date(date)
-  const month = _date.getMonth() + 1
-
-  if (month <= 3) {
-    return 1
-  }
-  if (month <= 6) {
-    return 2
-  }
-  if (month <= 9) {
-    return 3
-  }
-
-  return 4
+  const month = new Date(date).getMonth() + 1
+  return Math.ceil(month / 3)
 }
 
 /** 获取日期间隔 单位(天) */
