@@ -1,6 +1,6 @@
 import type { ScrollTrigger } from './ScrollTrigger'
 import type { Scroller, SmoothScrollerOptions } from './types'
-import { clamp } from '@jl-org/tool'
+import { clamp } from '@/math'
 
 /**
  * @class SmoothScroller

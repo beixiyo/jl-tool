@@ -1,5 +1,6 @@
-import type { PositionOffset, PositionValue, TriggerPosition, TriggerPositionObj } from './types'
-import { getWinHeight, getWinWidth } from '@jl-org/tool'
+import type { PositionOffset, PositionValue, ScrollTriggerProp, ScrollTriggerPropValue, TriggerPosition, TriggerPositionObj } from './types'
+import { isFn } from '@/shared'
+import { getWinHeight, getWinWidth } from '@/tools/domTools'
 
 /**
  * 解析位置值
@@ -66,7 +67,7 @@ export function parseOffset(offset: PositionOffset | undefined | null, total: nu
  * @param position 位置配置
  * @returns 解析后的标准配置对象
  */
-export function normalizeTriggerPosition(position: TriggerPosition | string | undefined): TriggerPositionObj {
+export function normalizeTriggerPosition(position: TriggerPosition | undefined): TriggerPositionObj {
   if (!position) {
     /** 默认配置 */
     return { trigger: 'top', scroller: 'bottom' }
@@ -92,6 +93,29 @@ export function normalizeTriggerPosition(position: TriggerPosition | string | un
   }
 
   return position as TriggerPositionObj
+}
+
+export function normalizeProps(props: ScrollTriggerProp[]) {
+  const fromProps = props.length === 1
+    ? {}
+    : props[0]
+  const toProps = props.length === 1
+    ? props[0]
+    : props[1]
+
+  const allPropKeys = new Set([...Object.keys(fromProps), ...Object.keys(toProps)])
+
+  return {
+    fromProps,
+    toProps,
+    allPropKeys,
+  }
+}
+
+export function getPropVal(prop: ScrollTriggerPropValue, index: number) {
+  return isFn(prop)
+    ? prop(index)
+    : prop
 }
 
 /**

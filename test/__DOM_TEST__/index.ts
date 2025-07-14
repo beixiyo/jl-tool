@@ -2,6 +2,7 @@
 // import './preload'
 // import  './webApi'
 // import './scheduleTask'
-import './streamDownloader'
+// import './streamDownloader'
 // import './canvas'
 // import './debounce'
+import './ScrollTrigger'

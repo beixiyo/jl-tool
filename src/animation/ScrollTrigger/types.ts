@@ -1,5 +1,6 @@
-import type { TimeFunc } from '@jl-org/tool'
+import type { TimeFunc } from '../types'
 import type { ScrollTrigger } from './ScrollTrigger'
+import type { BaseType } from '@/types'
 
 /**
  * 位置类型，用于定义触发位置
@@ -27,6 +28,7 @@ export type TriggerPositionObj = {
 export type TriggerPosition =
   | [PositionValue, PositionValue, PositionOffset?]
   | TriggerPositionObj
+  | string
 
 /**
  * 标记配置
@@ -43,10 +45,31 @@ export interface MarkersOptions {
  */
 export interface ScrollTriggerOptions {
   /**
-   * 触发元素，可以是选择器字符串或DOM元素
+   * 触发动画元素，可以是选择器字符串或DOM元素
    * 默认为整个视口
+   * @default document.body
    */
   trigger?: string | HTMLElement
+
+  /**
+   * 要执行动画的目标元素
+   */
+  targets?: string | HTMLElement | NodeList | HTMLElement[] | null
+
+  /**
+   * 滚动容器，默认为 window
+   * @default window
+   */
+  scroller?: string | HTMLElement | Window
+
+  /**
+   * 动画属性配置
+   * - 键为CSS属性，值为起始值和结束值的数组
+   * - 可以仅仅传入一个一个元素，它会被视为结束值
+   * - 如果传入两个元素，则视为起始值和结束值
+   * - 例如：{ opacity: [0, 1], x: [0, 100] }
+   */
+  props?: ScrollTriggerProp[]
 
   /**
    * 开始触发的位置
@@ -62,11 +85,6 @@ export interface ScrollTriggerOptions {
    * @default ['bottom', 'top']
    */
   end?: TriggerPosition
-
-  /**
-   * 滚动容器，默认为 window
-   */
-  scroller?: string | HTMLElement | Window
 
   /**
    * 是否将进度值固定在 0-1 范围内
@@ -142,20 +160,6 @@ export interface ScrollTriggerOptions {
   animation?: (progress: number) => void
 
   /**
-   * 要执行动画的目标元素
-   */
-  targets?: string | HTMLElement | NodeList | HTMLElement[] | null
-
-  /**
-   * 动画属性配置
-   * - 键为CSS属性，值为起始值和结束值的数组
-   * - 可以仅仅传入一个一个元素，它会被视为结束值
-   * - 如果传入两个元素，则视为起始值和结束值
-   * - 例如：{ opacity: [0, 1], x: [0, 100] }
-   */
-  props: Record<string, any>[]
-
-  /**
    * 标记，用于分组或识别特定的触发器
    */
   markers?: boolean | MarkersOptions
@@ -203,6 +207,9 @@ export interface ScrollTriggerOptions {
     lerp?: number
   }
 }
+
+export type ScrollTriggerPropValue = ((index: number) => BaseType) | BaseType
+export type ScrollTriggerProp = Record<string, ScrollTriggerPropValue>
 
 /**
  * 内部使用的ScrollTrigger状态

@@ -1,12 +1,18 @@
 import type { Scroller, ScrollTriggerOptions, ScrollTriggerState } from './types'
-import { clamp, createAnimation, debounce, genTimeFunc, throttle, uniqueId } from '@jl-org/tool'
+import { clamp } from '@/math'
 import { isObj } from '@/shared/is'
+import { debounce, throttle } from '@/tools/domTools'
+import { uniqueId } from '@/tools/tools'
+import { createAnimation } from '../createAnimation'
+import { genTimeFunc } from '../timeFunc'
 import { ScrollConfig } from './constants'
 import { SmoothScroller } from './SmoothScroller'
 import {
   createMarkers,
   getElement,
   getElementPosition,
+  getPropVal,
+  normalizeProps,
   normalizeTriggerPosition,
 } from './tools'
 
@@ -62,6 +68,7 @@ export class ScrollTrigger implements Scroller {
     /** 初始化默认选项 */
     this.options = {
       id: this.id,
+      props: [],
       trigger: document.body,
       start: ['top', 'bottom'],
       end: ['bottom', 'top'],
@@ -306,6 +313,12 @@ export class ScrollTrigger implements Scroller {
     /** 计算进度 */
     const { startPos, endPos } = this.state
     let rawProgress = (currentScrollPos - startPos) / (endPos - startPos)
+    console.log({
+      currentScrollPos,
+      startPos,
+      endPos,
+      rawProgress,
+    })
 
     /** 如果需要，限制进度值在0-1范围内 */
     if (this.options.clamp) {
@@ -478,13 +491,11 @@ export class ScrollTrigger implements Scroller {
     if (elements.length === 0 || !props || props.length === 0)
       return
 
-    const fromProps = props.length === 1
-      ? {}
-      : props[0]
-    const toProps = props.length === 1
-      ? props[0]
-      : props[1]
-    const allPropKeys = new Set([...Object.keys(fromProps), ...Object.keys(toProps)])
+    const {
+      fromProps,
+      toProps,
+      allPropKeys,
+    } = normalizeProps(props)
 
     const defaultFromValues: Record<string, number> = {
       opacity: 1,
@@ -497,17 +508,20 @@ export class ScrollTrigger implements Scroller {
       rotate: 0,
     }
 
-    elements.forEach((element) => {
+    elements.forEach((element, index) => {
       const transforms: string[] = []
 
       for (const prop of allPropKeys) {
-        const startVal = fromProps[prop] ?? defaultFromValues[prop] ?? 0
-        const endVal = toProps[prop]
+        const startVal = getPropVal(fromProps[prop], index).toString()
+        const endVal = getPropVal(toProps[prop], index).toString()
 
-        if (endVal === undefined)
+        const startNumVal = Number.parseFloat(startVal ?? defaultFromValues[prop].toString() ?? '0')
+        const endNumVal = Number.parseFloat(endVal ?? '0')
+
+        if (endNumVal === undefined)
           continue
 
-        const value = startVal + (endVal - startVal) * this.progress
+        const value = startNumVal + (endNumVal - startNumVal) * this.progress
 
         switch (prop) {
           case 'x':
@@ -523,10 +537,7 @@ export class ScrollTrigger implements Scroller {
           case 'rotate':
             transforms.push(`rotate(${value}deg)`)
             break
-          case 'backgroundPositionX':
-          case 'backgroundPositionY':
-            element.style[prop as any] = `${value}px`
-            break
+
           default:
             if (unitlessProps.has(prop)) {
               element.style[prop as any] = `${value}`
