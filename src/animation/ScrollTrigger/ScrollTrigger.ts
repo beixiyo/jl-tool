@@ -313,12 +313,6 @@ export class ScrollTrigger implements Scroller {
     /** 计算进度 */
     const { startPos, endPos } = this.state
     let rawProgress = (currentScrollPos - startPos) / (endPos - startPos)
-    console.log({
-      currentScrollPos,
-      startPos,
-      endPos,
-      rawProgress,
-    })
 
     /** 如果需要，限制进度值在0-1范围内 */
     if (this.options.clamp) {

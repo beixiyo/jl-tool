@@ -58,25 +58,20 @@ function createParallaxElements(): void {
 function parallax() {
   const height = document.documentElement.clientHeight
 
-  new ScrollTrigger({
-    targets: document.querySelectorAll('section'),
-    scrub: true,
-    smoothScroll: true,
-    /** 修改触发位置，当元素进入视口时开始 */
-    start: ['top', 'bottom'],
-    /** 当元素完全离开视口时结束 */
-    end: ['bottom', 'top'],
-    props: [
-      {
-        backgroundPositionY: (index) => {
-          const val = index === 0
-            ? 0
-            : `-${height / 2}px`
-          return val
-        },
-      },
-      { backgroundPositionY: `${height / 2}px` },
-    ],
+  /** 为每一个 section 单独创建 ScrollTrigger */
+  document.querySelectorAll<HTMLElement>('section').forEach((sec, i) => {
+    new ScrollTrigger({
+      trigger: sec, // 关键：把 trigger 指向该 section
+      targets: sec, // 该 section 自己
+      scrub: true,
+      smoothScroll: true,
+      start: ['top', 'bottom'],
+      end: ['bottom', 'top'],
+      props: [
+        { backgroundPositionY: `-${height / 2}px` },
+        { backgroundPositionY: `${height / 2}px` },
+      ],
+    })
   })
 }
 
