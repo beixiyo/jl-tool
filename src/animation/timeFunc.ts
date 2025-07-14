@@ -1,3 +1,5 @@
+import type { TimeFunc } from './types'
+
 /**
  * 贝塞尔曲线对象
  */
@@ -239,10 +241,3 @@ export function genTimeFunc(name?: TimeFunc) {
   const fn = timeFunc[name ?? 'linear']
   return fn
 }
-
-export type TimeFuncStr = keyof typeof timeFunc
-/**
- * ### 动画过渡函数
- * 支持内置函数和函数，函数需要返回一个 `0 ~ 1` 之间的值
- */
-export type TimeFunc = TimeFuncStr | ((progress: number) => number)

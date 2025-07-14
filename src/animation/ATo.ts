@@ -115,7 +115,7 @@ export class ATo {
     }
 
     // @ts-ignore
-    const animateFn = createAnimationByTime.apply(null, params)
+    const animateFn = () => createAnimationByTime(params)
     this.animateStopArr.push(animateFn)
   }
 }

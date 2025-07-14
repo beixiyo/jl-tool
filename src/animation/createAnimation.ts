@@ -1,4 +1,4 @@
-import type { TimeFunc } from './timeFunc'
+import type { TimeFunc } from './types'
 import { genTimeFunc } from './timeFunc'
 
 /**
