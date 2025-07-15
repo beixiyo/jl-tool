@@ -1,224 +1,353 @@
-import type { AnimationOpts } from '@/types'
-import type { FinalProp, PropMap } from '@/types/tools'
-import { CSS_DEFAULT_VAL_KEYS, TRANSFORM_KEYS, TRANSFORM_UNIT_MAP, WITHOUT_UNITS } from '@/constants/animate'
-import { Clock } from '@/tools/Clock'
+import type { AnimationHandle, CreateAnimationByTimeConfig } from './types'
+import { CSS_DEFAULT_VAL, TRANSFORM_UNIT_MAP, WITHOUT_UNITS } from '@/constants'
 import { applyAnimation } from './applyAnimation'
-import { setVal } from './setVal'
 import { genTimeFunc } from './timeFunc'
 
 /**
- * 根据传入对象，随着时间推移，自动更新值。类似 GSAP 等动画库
+ * 补间动画函数
  *
- * ### 不是 CSS 也能用，注意把配置项的 transform 设置为 false，就不会去解析了
+ * 支持两种模式:
+ * 1. DOM元素：自动处理CSS样式，包括transform属性
+ * 2. 普通对象：直接修改对象属性值
  *
- * - 如果 target 是 *CSSStyleDeclaration* 并且
- * - 不是 *transform* 属性 并且
- * - 样式表和 *finalProps* 都没有单位，则使用 `px` 作为 `CSS` 单位
+ * 示例：
+ * ```ts
+ * // DOM元素动画
+ * createAnimationByTime({
+ *   target: document.querySelectorAll('.box'),
+ *   to: { x: 100, opacity: 0.3 },
+ *   duration: 1000,
+ *   ease: 'easeOut',
+ * })
  *
- * @param target 要修改的对象，如果是 `CSSStyleDeclaration` 对象，则单位默认为`px`
- * @param finalProps 要修改对象的最终属性值，不支持 `transform` 的复合属性
- * @param durationMS 动画持续时间
- * @param animationOpts 配置项，可以控制动画曲线等; 动画单位优先级: `finalProps` > `animationOpts.unit` > `rawEl(原始 DOM 的单位)`
- *
- * @returns 返回一个停止动画函数
+ * // 普通对象动画
+ * const obj = { count: 0, alpha: 1 }
+ * createAnimationByTime({
+ *   target: obj,
+ *   to: { count: 100, alpha: 0 },
+ *   duration: 1000,
+ * })
+ * ```
  */
-export function createAnimationByTime<T, P extends FinalProp>(target: T, finalProps: P, durationMS: number, animationOpts?: AnimationOpts<T, P>) {
-  durationMS < 1 && (durationMS = 1)
+export function createAnimationByTime<T = any>(cfg: CreateAnimationByTimeConfig<T>): AnimationHandle {
+  const {
+    target,
+    to,
+    duration,
+    ease = 'linear',
+    onUpdate,
+    onComplete,
+  } = cfg
 
-  const
-    clock = new Clock()
-  const enableTransform = animationOpts?.transform ?? hasTransformKey(finalProps)
-  const diffProps = getDiff<P>(target, finalProps, enableTransform)
+  const easingFn = genTimeFunc(ease)
 
-  const timeFunc = genTimeFunc(animationOpts?.timeFunc)
-  const onUpdate = animationOpts?.onUpdate
-  const onEnd = animationOpts?.onEnd
-  const callback = animationOpts?.callback
-  const unit = animationOpts?.unit
+  /** 检查是否为DOM元素 */
+  const isDOMTarget = isDOM(target)
 
-  return applyAnimation(() => {
-    const elapsedMS = clock.elapsedMS
+  if (isDOMTarget) {
+    // DOM元素动画处理
+    return animateDOM(
+      target as HTMLElement | HTMLElement[] | NodeList | CSSStyleDeclaration,
+      to,
+      duration,
+      easingFn,
+      onUpdate,
+      onComplete,
+    )
+  }
+  else {
+    /** 普通对象动画处理 */
+    return animateObject(
+      target as T | T[],
+      to,
+      duration,
+      easingFn,
+      onUpdate,
+      onComplete,
+    )
+  }
+}
 
-    if (elapsedMS >= durationMS) {
-      setVal<T>({
-        target,
-        diffProps,
-        progress: 1,
-        optUnit: unit,
-        onUpdate,
-        callback,
-        precision: animationOpts?.precision,
-        enableTransform,
-      })
-      onEnd && onEnd(target, diffProps)
+/**
+ * 处理DOM元素动画
+ */
+function animateDOM(
+  target: HTMLElement | HTMLElement[] | NodeList | CSSStyleDeclaration,
+  to: Partial<Record<string, number>>,
+  duration: number,
+  easingFn: (p: number) => number,
+  onUpdate?: (progress: number) => void,
+  onComplete?: () => void,
+): AnimationHandle {
+  /* 目标可能是多种形式，统一转为 元素和样式对象的数组 */
+  const targets = normalizeTargets(target)
+  if (targets.length === 0) {
+    throw new Error('[createAnimationByTime] 无有效 DOM target')
+  }
+
+  /** 为每个目标存储起始值和差值 */
+  const targetData = targets.map(({ element, style }) => {
+    const startVals: Record<string, number> = {}
+    const diffVals: Record<string, number> = {}
+    const units: Record<string, string> = {}
+
+    /** 获取计算后的样式，以便更准确地获取当前值和单位 */
+    const computedStyle = element instanceof HTMLElement
+      ? getComputedStyle(element)
+      : null
+
+    Object.keys(to).forEach((prop) => {
+      const endVal = to[prop]!
+      const [startVal, unit] = getStartValAndUnit(style, computedStyle, prop)
+
+      startVals[prop] = startVal
+      diffVals[prop] = endVal - startVal
+      units[prop] = unit
+    })
+
+    return { style, startVals, diffVals, units }
+  })
+
+  const startTime = performance.now()
+
+  const stop = applyAnimation(() => {
+    const elapsed = performance.now() - startTime
+    let rawProgress = elapsed / duration
+    if (rawProgress >= 1) {
+      rawProgress = 1
+    }
+
+    const progress = easingFn(rawProgress)
+
+    /* 更新所有元素样式，每个元素使用自己的起始值和差值 */
+    targetData.forEach(({ style, startVals, diffVals, units }) => {
+      applyStyles(style, progress, startVals, diffVals, units)
+    })
+
+    onUpdate?.(progress)
+
+    if (rawProgress >= 1) {
+      onComplete?.()
       return 'stop'
     }
-
-    const
-      _progress = elapsedMS / durationMS
-    const progress = timeFunc(_progress)
-
-    setVal<T>({
-      target,
-      diffProps,
-      progress,
-      optUnit: unit,
-      onUpdate,
-      callback,
-      precision: animationOpts?.precision,
-      enableTransform,
-    })
-  })
-}
-
-/**
- * 返回 初始值、初始值和最终值差值、单位
- * @param target 目标对象
- * @param finalProps 最终值对象
- */
-function getDiff<P extends FinalProp>(
-  target: any,
-  finalProps: P,
-  enableTransform: boolean,
-) {
-  /** 要修改对象的原始 `transform` 值 */
-  let originTransform: any = {}
-  /**
-   * transform 的属性要特殊处理
-   * 这里解析所有 `transform` 的属性
-   */
-  if (enableTransform) {
-    try {
-      originTransform = parseTransform(target, finalProps)
-    }
-    catch (error) {
-      console.warn('请尝试把配置项的 `transform` 设置为 false（Please try set animationOpts `transform` to false）')
-    }
-  }
-
-  const res: any = {}
-  for (const k in finalProps) {
-    if (!Object.hasOwnProperty.call(finalProps, k))
-      continue
-
-    /** 处理`transform`属性 */
-    if ((enableTransform && TRANSFORM_KEYS.includes(k))) {
-      const
-        transformVal = originTransform[k]
-        /** 优先级: `finalProps`指定的属性单位 > `target`原始样式表查到的单位 */
-      const unit = getUnit(finalProps[k], k) ?? getUnit(transformVal, k)
-      const initVal = Number.parseFloat(transformVal)
-      const finalPropVal = Number.parseFloat(finalProps[k])
-      const diffVal = finalPropVal - initVal
-
-      res[k] = { initVal, diffVal, unit }
-      continue
-    }
-    /** 处理其他属性 */
-    const
-      finalPropVal = getDefaultVal(finalProps, k)
-    const initVal = getDefaultVal(target, k)
-    const diffVal = finalPropVal - initVal
-    const unit = getUnit(finalProps[k], k)
-    const rawElUnit = getUnit(target[k], k)
-
-    res[k] = { initVal, diffVal, unit, rawElUnit }
-  }
-
-  return res as PropMap<P>
-}
-
-/**
- * ### 给 CSS 属性去除单位，转为 number，并处理特殊情况
- * - 有些 `CSS` 属性默认是 1
- * - 但是从样式表拿到是空字串，比如 `opacity`
- * - 该函数就是解决此问题的
- */
-function getDefaultVal(target: any, k: string) {
-  if (!(target instanceof CSSStyleDeclaration)) {
-    return Number.parseFloat(target[k]) || 0
-  }
-
-  return CSS_DEFAULT_VAL_KEYS.includes(k)
-    /** 有些`CSS`属性默认是 1，但是从样式表拿到是空字串 比如 `opacity` */
-    ? 1
-    /** parseFloat是为了去处可能存在的`CSS`单位 */
-    // @ts-ignore
-    : Number.parseFloat(target[k]) || 0
-}
-
-/**
- * 匹配`transform`的每个属性，如果是复合属性 则放入数组
- * @param cssText CSS transform 的内容
- */
-function parseTransform(
-  target: CSSStyleDeclaration,
-  finalProps: any,
-): Record<string, number> {
-  const transformRegex = /(\w+)\(([^)]+)\)/g
-  const cssText = target.transform
-  const transformValues: Record<string, number> = {}
-
-  cssText.replace(transformRegex, (match, transformName, transformParams) => {
-    const paramArr = transformParams
-      .split(',')
-      .map((param: string) => param.trim())
-
-    transformValues[transformName] = paramArr.length === 1
-      ? paramArr[0]
-      : paramArr
-
-    return match
   })
 
-  /** 很大可能是空字符串 所以做个兜底 */
-  Object.keys(finalProps)
-    .filter(k => TRANSFORM_KEYS.includes(k))
-    .forEach((k) => {
-      const item = transformValues[k]
-      if (!item) {
-        transformValues[k] = getDefaultVal(target, k)
-      }
-    })
-
-  return transformValues
+  return { stop }
 }
 
 /**
- * 如果有 `propName` 则先查询默认值，否则返回解析的字符串
- * @param s 解析的字符串
- * @param propName 要从默认值映射表查询的键
+ * 处理普通对象动画
  */
-function getUnit(s: string, propName?: string): string | null {
-  if (propName) {
-    /** 没有单位的值 */
-    if (WITHOUT_UNITS.includes(propName)) {
-      return ''
-    }
-
-    const vUnit = /vw$|vh$/.exec(s)
-    if (vUnit) {
-      return vUnit[0]
-    }
-
-    /** transform 属性对应的默认单位 */
-    let _unit = ''
-    // @ts-ignore
-    if ((_unit = TRANSFORM_UNIT_MAP[propName]) != undefined) {
-      return _unit
-    }
+function animateObject<T = any>(
+  target: T | T[],
+  to: Partial<Record<string, number>>,
+  duration: number,
+  easingFn: (p: number) => number,
+  onUpdate?: (progress: number) => void,
+  onComplete?: () => void,
+): AnimationHandle {
+  const targets = Array.isArray(target)
+    ? target
+    : [target]
+  if (targets.length === 0) {
+    throw new Error('[createAnimationByTime] 无有效 target 对象')
   }
 
-  return /\D+$/.exec(s)?.[0] ?? null
+  /** 为每个目标对象存储起始值和差值 */
+  const targetData = targets.map((obj) => {
+    const startVals: Record<string, number> = {}
+    const diffVals: Record<string, number> = {}
+
+    Object.keys(to).forEach((prop) => {
+      const endVal = to[prop]!
+      const startVal = (obj as any)[prop] ?? 0
+
+      startVals[prop] = startVal
+      diffVals[prop] = endVal - startVal
+    })
+
+    return { obj, startVals, diffVals }
+  })
+
+  const startTime = performance.now()
+
+  const stop = applyAnimation(() => {
+    const elapsed = performance.now() - startTime
+    let rawProgress = elapsed / duration
+    if (rawProgress >= 1) {
+      rawProgress = 1
+    }
+
+    const progress = easingFn(rawProgress)
+
+    /* 更新所有目标对象，每个对象使用自己的起始值和差值 */
+    targetData.forEach(({ obj, startVals, diffVals }) => {
+      Object.keys(diffVals).forEach((prop) => {
+        const startVal = startVals[prop]
+        const diffVal = diffVals[prop]
+        const value = startVal + diffVal * progress
+
+        ;(obj as any)[prop] = value
+      })
+    })
+
+    onUpdate?.(progress)
+
+    if (rawProgress >= 1) {
+      onComplete?.()
+      return 'stop'
+    }
+  })
+
+  return { stop }
 }
 
+/* ------------------------------------------------------------------ */
+/* 工具函数                                                           */
+/* ------------------------------------------------------------------ */
+
 /**
- * 是否包含 `transform` 属性
+ * 检查目标是否为DOM元素
  */
-function hasTransformKey(finalProps: Record<string, any>) {
-  const keys = Object.keys(finalProps)
-  if (keys.length === 0)
+function isDOM(obj: any): boolean {
+  if (!obj)
     return false
 
-  return keys.some(k => TRANSFORM_KEYS.includes(k))
+  /** 检查是否为DOM元素或DOM相关对象 */
+  if (
+    obj instanceof HTMLElement
+    || obj instanceof CSSStyleDeclaration
+    || obj instanceof NodeList
+  ) {
+    return true
+  }
+
+  /** 检查数组中是否包含DOM元素 */
+  if (Array.isArray(obj) && obj.length > 0) {
+    return obj[0] instanceof HTMLElement
+  }
+
+  return false
+}
+
+/**
+ * 规范化目标为元素和样式对象的数组
+ */
+function normalizeTargets(t: any): Array<{ element: HTMLElement | null, style: CSSStyleDeclaration }> {
+  if (!t) {
+    return []
+  }
+
+  if (t instanceof CSSStyleDeclaration) {
+    /** 尝试获取元素引用 */
+    const element = (t as any).ownerElement || null
+    return [{ element, style: t }]
+  }
+  else if (t instanceof HTMLElement) {
+    return [{ element: t, style: t.style }]
+  }
+  else if (t instanceof NodeList) {
+    return Array.from(t).map(node => ({
+      element: node as HTMLElement,
+      style: (node as HTMLElement).style,
+    }))
+  }
+  else if (Array.isArray(t)) {
+    return t.map(el => ({
+      element: el as HTMLElement,
+      style: (el as HTMLElement).style,
+    }))
+  }
+  else {
+    return []
+  }
+}
+
+/**
+ * 获取样式起始值和单位
+ * @returns [数值, 单位]
+ */
+function getStartValAndUnit(style: CSSStyleDeclaration, computedStyle: CSSStyleDeclaration | null, prop: string): [number, string] {
+  /** 对于transform特殊属性，直接使用默认值和单位 */
+  if (TRANSFORM_UNIT_MAP[prop] !== undefined) {
+    return [CSS_DEFAULT_VAL[prop] || 0, TRANSFORM_UNIT_MAP[prop]]
+  }
+
+  /** 首先尝试从行内样式获取 */
+  let currentValue = (style as any)[prop] || ''
+
+  /** 如果行内样式为空且有计算样式，则使用计算样式 */
+  if ((!currentValue || currentValue === '') && computedStyle) {
+    currentValue = computedStyle[prop as any] || ''
+  }
+
+  /** 解析数值和单位 */
+  const value = Number.parseFloat(currentValue)
+  /** 如果能解析出数值，提取单位部分 */
+  if (!Number.isNaN(value)) {
+    const unit = currentValue.replace(/^[-\d.]+/, '')
+    return [value, unit || getDefaultUnit(prop)]
+  }
+
+  /** 如果无法解析，使用默认值和单位 */
+  return [CSS_DEFAULT_VAL[prop] || 0, getDefaultUnit(prop)]
+}
+
+/**
+ * 获取属性的默认单位
+ */
+function getDefaultUnit(prop: string): string {
+  if (WITHOUT_UNITS.has(prop)) {
+    return ''
+  }
+  return 'px'
+}
+
+function applyStyles(
+  style: CSSStyleDeclaration,
+  progress: number,
+  start: Record<string, number>,
+  diff: Record<string, number>,
+  units: Record<string, string>,
+) {
+  const transforms: string[] = []
+
+  Object.keys(diff).forEach((prop) => {
+    const startVal = start[prop]
+    const diffVal = diff[prop]
+    const value = startVal + diffVal * progress
+    const unit = units[prop]
+
+    switch (prop) {
+      case 'x':
+      case 'y':
+      case 'z':
+        transforms.push(`translate${prop.toUpperCase()}(${value}${unit})`)
+        break
+      case 'scale':
+      case 'scaleX':
+      case 'scaleY':
+        transforms.push(`${prop}(${value})`)
+        break
+      case 'rotate':
+      case 'rotateX':
+      case 'rotateY':
+      case 'rotateZ':
+        transforms.push(`${prop}(${value}${unit})`)
+        break
+      default:
+        try {
+          // @ts-ignore
+          style[prop] = `${value}${unit}`
+        }
+        catch (e) {
+          console.warn(`无法设置样式属性: ${prop}`)
+        }
+        break
+    }
+  })
+
+  if (transforms.length) {
+    style.transform = transforms.join(' ')
+  }
 }

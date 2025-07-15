@@ -1,4 +1,5 @@
 import { openCamera, Recorder, screenCAP, Speaker, SpeakToTxt } from '@/webApi'
+import { createBtn } from './tool'
 
 const speakBtn = createBtn('文字转语音', 'speak-btn')
 const recordBtn = createBtn('录音', 'record-btn')
@@ -67,11 +68,3 @@ document.body.append(
   document.body.append(screenCapBtn)
   screenCapBtn.onclick = () => screenCAP('test')
 })()
-
-function createBtn(content: string, className: string) {
-  const btn = document.createElement('button')
-  btn.textContent = content
-  btn.className = className
-
-  return btn
-}

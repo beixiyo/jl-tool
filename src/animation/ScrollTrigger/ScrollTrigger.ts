@@ -1,4 +1,5 @@
 import type { Scroller, ScrollTriggerOptions, ScrollTriggerState } from './types'
+import { CSS_DEFAULT_VAL, WITHOUT_UNITS } from '@/constants'
 import { clamp } from '@/math'
 import { isObj } from '@/shared/is'
 import { debounce, throttle } from '@/tools/domTools'
@@ -15,18 +16,6 @@ import {
   normalizeProps,
   normalizeTriggerPosition,
 } from './tools'
-
-const unitlessProps = new Set([
-  'opacity',
-  'scale',
-  'scaleX',
-  'scaleY',
-  'flexGrow',
-  'flexShrink',
-  'zIndex',
-  'lineHeight',
-  'fontWeight',
-])
 
 /**
  * 触发器实现类
@@ -491,17 +480,6 @@ export class ScrollTrigger implements Scroller {
       allPropKeys,
     } = normalizeProps(props)
 
-    const defaultFromValues: Record<string, number> = {
-      opacity: 1,
-      x: 0,
-      y: 0,
-      z: 0,
-      scale: 1,
-      scaleX: 1,
-      scaleY: 1,
-      rotate: 0,
-    }
-
     elements.forEach((element, index) => {
       const transforms: string[] = []
 
@@ -509,7 +487,7 @@ export class ScrollTrigger implements Scroller {
         const startVal = getPropVal(fromProps[prop], index).toString()
         const endVal = getPropVal(toProps[prop], index).toString()
 
-        const startNumVal = Number.parseFloat(startVal ?? defaultFromValues[prop].toString() ?? '0')
+        const startNumVal = Number.parseFloat(startVal ?? CSS_DEFAULT_VAL[prop].toString() ?? '0')
         const endNumVal = Number.parseFloat(endVal ?? '0')
 
         if (endNumVal === undefined)
@@ -533,7 +511,7 @@ export class ScrollTrigger implements Scroller {
             break
 
           default:
-            if (unitlessProps.has(prop)) {
+            if (WITHOUT_UNITS.has(prop)) {
               element.style[prop as any] = `${value}`
             }
             else {

@@ -1,7 +1,10 @@
-import type { AnimationOpts } from '@/types'
-import type { AnimiateParams, FinalProp } from '@/types/tools'
+import type { CreateAnimationByTimeConfig } from '@/animation/types'
 import { createAnimationByTime } from '@/animation/createAnimationByTime'
 import { isFn } from '@/shared'
+
+type AToAnimationConfig = CreateAnimationByTimeConfig & {
+  target: any | (() => any)
+}
 
 /**
  * 一个动画类 能够链式调用; 请先调用`start`函数, 参数和`createAnimationByTime`一致
@@ -10,112 +13,88 @@ import { isFn } from '@/shared'
  * const aTo = new ATo()
  * aTo
  *     .start(
- *         div1.style,
  *         {
- *             left: '200px',
- *             top: '200px',
- *             opacity: '0.1'
- *         },
- *         1000
+ *           target: div1,
+ *           to: {
+ *               left: '200px',
+ *               top: '200px',
+ *               opacity: '0.1'
+ *           },
+ *           duration: 1000
+ *         }
  *     )
  *     .next(
- *         div2.style,
  *         {
- *             translateX: '50vw',
- *             translateY: '300px',
- *         },
- *         2000,
- *         {
- *             transform: true,
- *             timeFunc: 'ease-in-out'
+ *           target: div2,
+ *           to: {
+ *               x: '50vw',
+ *               y: '300px',
+ *           },
+ *           duration: 2000,
+ *           ease: 'ease-in-out'
  *         }
  *     )
  * ```
  */
 export class ATo {
-  private animateArr: AnimiateParams[] = []
+  private animateArr: AToAnimationConfig[] = []
   /** 等待被执行的动画 */
-  private pendingAnimateArr: AnimiateParams[] = []
+  private pendingAnimateArr: AToAnimationConfig[] = []
   /** 所有停止动画的函数 */
   private animateStopArr: Function[] = []
 
   /**
    * 开始执行动画 首次执行请先调用此函数
-   * @param target 要修改的对象 如果是 `CSSStyleDeclaration` 对象，则单位默认为 `px`
-   * @param finalProps 要修改对象的最终属性值
-   * @param durationMS 动画持续时间
-   * @param animationOpts 配置项 可选参数
-   * @returns 返回一个停止动画函数
+   * @param config 动画配置, 与`createAnimationByTime`的参数一致
+   * @returns this
    */
-  start<T, P extends FinalProp>(
-    target: T,
-    finalProps: P,
-    durationMS: number,
-    animationOpts?: AnimationOpts<T, P>,
+  start(
+    config: AToAnimationConfig,
   ) {
-    // @ts-ignore
-    this.animateArr.push([target, finalProps, durationMS, animationOpts || {}])
+    this.animateArr.push(config)
     this.addAnimate(this.animateArr)
     return this
   }
 
   /**
    * 等待上一个动画完成后执行，**第一次请先调用 `start` 函数**
-   * @param target 要修改的对象，可以是一个函数（用来获取同一个对象不同时间的值）。如果是 `CSSStyleDeclaration` 对象，则单位默认为 `px`
-   * @param finalProps 要修改对象的最终属性值
-   * @param durationMS 动画持续时间
-   * @param animationOpts 配置项 可选参数
-   * @returns 返回一个停止动画函数
+   * @param config 动画配置, 与`createAnimationByTime`的参数一致
+   * @returns this
    */
-  next<T, P extends FinalProp>(
-    target: T | (() => any),
-    finalProps: P,
-    durationMS: number,
-    animationOpts?: AnimationOpts<T, P>,
+  next(
+    config: AToAnimationConfig,
   ) {
-    // @ts-ignore
-    this.pendingAnimateArr.push([target, finalProps, durationMS, animationOpts || {}])
+    this.pendingAnimateArr.push(config)
     return this
   }
 
   /** 停止所有动画 */
   stop() {
     let _stopAnimate: Function | undefined
-    while (_stopAnimate = this.animateStopArr.shift()) {
+    while ((_stopAnimate = this.animateStopArr.shift()))
       _stopAnimate()
-    }
   }
 
   /** 添加并执行一个动画 */
-  private addAnimate(animateArr: AnimiateParams[]) {
-    const animate = animateArr.shift()
-    if (!animate)
+  private addAnimate(animateArr: AToAnimationConfig[]) {
+    const animateConfig = animateArr.shift()
+    if (!animateConfig)
       return
 
-    /** 第四个参数为配置项 */
-    const res = animate[3]
-    if (!res)
-      return
+    const { onComplete } = animateConfig
 
-    const { onEnd } = res
     /** 重写函数，实现动画完成后继续添加 */
-    const _onEnd = (target: any, diffProps: any) => {
-      onEnd?.(target, diffProps)
+    const _onComplete = () => {
+      onComplete?.()
       this.addAnimate(this.pendingAnimateArr)
     }
 
-    /** 混合配置项 */
-    const opt = animate[3]
-      ? Object.assign({}, animate[3], { onEnd: _onEnd })
-      : { onEnd: _onEnd }
+    const config = { ...animateConfig, onComplete: _onComplete }
 
-    const params = [...animate.slice(0, 3), opt]
-    if (isFn(params[0])) {
-      params[0] = params[0]()
-    }
+    if (isFn(config.target))
+      config.target = config.target()
 
-    // @ts-ignore
-    const animateFn = () => createAnimationByTime(params)
-    this.animateStopArr.push(animateFn)
+    const { stop } = createAnimationByTime(config as CreateAnimationByTimeConfig)
+    this.animateStopArr.push(stop)
   }
 }

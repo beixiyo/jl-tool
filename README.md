@@ -49,7 +49,7 @@ yarn add @jl-org/tool
 | [`isPureNum`](./src/shared/is.ts) | 判断是否能强转成数字 |
 | [`isStr`](./src/shared/is.ts) | 判断是否为字符串 |
 | [`isObj`](./src/shared/is.ts) | 判断是否为对象 |
-| [`isArr`](./src/shared/is.ts) | 判断是否为数组 |
+| [`isXXX`](./src/shared/is.ts) | 更多判断... |
 
 ### 📊 数组处理
 
@@ -90,11 +90,11 @@ yarn add @jl-org/tool
 
 | 函数/类 | 说明 |
 |------|------|
-| [`ATo`](./src/animation/ATo.ts) | 分段执行动画 |
+| [`ATo`](./src/animation/ATo.ts) | 链式调用，分段执行动画 |
 | [`ScrollTrigger`](./src/animation/ScrollTrigger/ScrollTrigger.ts) | 滚动触发动画系统，实现视差等滚动动画效果 |
 | [`SmoothScroller`](./src/animation/ScrollTrigger/SmoothScroller.ts) | 平滑滚动实现，提供惯性滚动体验 |
 | [`createAnimation`](./src/animation/createAnimation.ts) | 创建基础动画 |
-| [`createAnimationByTime`](./src/animation/createAnimationByTime.ts) | 基于时间的动画创建器 |
+| [`createAnimationByTime`](./src/animation/createAnimationByTime.ts) | 基于时间的动画创建器，支持对 DOM 元素和普通 JS 对象的属性进行补间动画 |
 
 ### 🕒 时钟与进度
 
@@ -148,11 +148,14 @@ yarn add @jl-org/tool
 
 ### 🎨 DOM与主题
 
-- [`getCurTheme`](./src/tools/theme.ts) - 获取当前主题
-- [`isDarkMode`](./src/tools/theme.ts) - 判断是否为暗色模式
-- [`onChangeTheme`](./src/tools/theme.ts) - 监听主题变化
-- [`bindWinEvent`](./src/tools/eventTools.ts) - 绑定window事件
-- [`doubleKeyDown`](./src/tools/eventTools.ts) - 双击键盘事件
+| 函数 | 说明 |
+|------|------|
+| [`getCurTheme`](./src/tools/theme.ts) | 获取当前主题 |
+| [`isDarkMode`](./src/tools/theme.ts) | 判断是否为暗色模式 |
+| [`onChangeTheme`](./src/tools/theme.ts) | 监听主题变化 |
+| [`bindWinEvent`](./src/tools/eventTools.ts) | 绑定window事件 |
+| [`doubleKeyDown`](./src/tools/eventTools.ts) | 双击键盘事件 |
+| [`typewriterEffect`](./src/tools/typewriterEffect.ts) | 模拟打字机效果 |
 
 ---
 
@@ -196,7 +199,7 @@ async function processImage(file) {
 
 ### 🔄 分时渲染调度器
 
-类似 React 调度器，在浏览器空闲时执行任务，即使是千万级函数执行也不会卡顿！
+类似 React 调度器，在浏览器空闲时执行任务，即使是千万级函数执行也不会卡顿
 
 ```ts
 import { scheduleTask } from '@jl-org/tool'
@@ -212,34 +215,39 @@ scheduleTask(tasks).then((results) => {
 
 ### 🎨 动画处理
 
-类似 GSAP 的动画能力，但自动处理 CSS 单位
+[查看完整测试用例](./test/__DOM_TEST__/createAnimationByTime.ts)
 
 ```ts
-import { ATo } from '@jl-org/tool'
+import { ATo, createAnimationByTime } from '@jl-org/tool'
 
-const aTo = new ATo()
-aTo
-  .start(
-    div1.style,
-    {
-      left: '200px',
-      top: '200px',
-      opacity: '0.1'
-    },
-    1000
-  )
-  .next(
-    div2.style,
-    {
-      translateX: '50vw',
-      translateY: '300px',
-    },
-    2000,
-    {
-      transform: true,
-      timeFunc: 'ease-in-out'
-    }
-  )
+/**
+ * 过渡到 to 的样式属性
+ */
+createAnimationByTime({
+  target: document.querySelector('.yourSelector'),
+  to: { x: 200, opacity: 0.3 },
+  duration: 1000,
+})
+
+/**
+ * 分段处理，链式调用
+ * - 先执行 .yourSelector1 的动画
+ * - 再执行 .yourSelector2 的动画
+ */
+const ato = new ATo()
+ato
+  .start({
+    target: document.querySelector('.yourSelector1'),
+    to: { x: 100, rotate: 360 },
+    duration: 1000,
+    ease: 'easeInOut',
+  })
+  .next({
+    target: document.querySelector('.yourSelector2'),
+    to: { x: 250, scale: 1.2, rotate: -360 },
+    duration: 1000,
+    ease: 'easeInOut',
+  })
 ```
 
 ### 📜 滚动触发动画
@@ -249,7 +257,9 @@ aTo
 ```ts
 import { ScrollTrigger } from '@jl-org/tool'
 
-/** 基于滚动的动画 */
+/**
+ * 基于滚动的动画基础示例
+ */
 new ScrollTrigger({
   trigger: '.hero', // 控制进度的元素
   targets: '.hero__img', // 要动画的元素
@@ -355,6 +365,23 @@ bus.emit('dataChange', { value: 'new value' })
 /** 一次性订阅 */
 bus.once('singleEvent', () => {
   console.log('这个事件只触发一次')
+})
+```
+
+### 📠 模拟打字机效果
+
+[完整代码示例](test/__DOM_TEST__/typewriterEffect.ts)
+
+```ts
+import { typewriterEffect } from '@jl-org/tool'
+
+typewriterEffect({
+  content: '这是将要逐字显示的文本内容...',
+  speed: 50, // 打字速度 (ms)
+  onUpdate: (text) => {
+    /** 将更新后的文本应用到你的DOM元素上 */
+    document.getElementById('my-element').textContent = text
+  },
 })
 ```
 

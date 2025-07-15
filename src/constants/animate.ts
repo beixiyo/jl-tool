@@ -1,77 +1,50 @@
-/** 默认 `CSS` 值为 *1* 的`CSS`属性 */
-export const CSS_DEFAULT_VAL_KEYS = [
+export const CSS_DEFAULT_VAL: Record<string, number> = {
+  opacity: 1,
+  x: 0,
+  y: 0,
+  z: 0,
+  scale: 1,
+  scaleX: 1,
+  scaleY: 1,
+  rotate: 0,
+}
+
+/** 没有单位的 `CSS` 属性 */
+export const WITHOUT_UNITS = new Set([
   'opacity',
-  'fill-opacity',
-  'z-index',
-  'stroke-opacity',
+  'lineHeight',
+  'fontWeight',
+
+  'counterReset',
+  'counterIncrement',
+
+  'flex',
+  'flexGrow',
+  'flexShrink',
+  'flexBasis',
+
   'scale',
   'scaleX',
   'scaleY',
-  'zoom',
-]
 
-/** 没有单位的 `CSS` 属性 */
-export const WITHOUT_UNITS = [
-  'opacity',
-  'line-height',
-  'counter-reset',
-  'counter-increment',
-  'flex',
-  'flex-grow',
-  'flex-shrink',
-  'flex-basis',
   'order',
   'orphans',
   'widows',
-  'z-index',
-]
+  'zIndex',
+])
 
-/** 所有 `transform` 的键 */
-export const TRANSFORM_KEYS = [
-  'matrix',
-  'matrix3d',
-  'perspective',
-  'rotate',
-  'rotateX',
-  'rotateY',
-  'rotateZ',
-  'rotate3d',
-  'scale',
-  'scaleX',
-  'scaleY',
-  'scaleZ',
-  'scale3d',
-  'skew',
-  'skewX',
-  'skewY',
-  'translate',
-  'translateX',
-  'translateY',
-  'translateZ',
-  'translate3d',
-]
-
-/** `transform` 属性的默认映射单位 */
-export const TRANSFORM_UNIT_MAP = {
-  scale: '',
-  scaleX: '',
-  scaleY: '',
-  scaleZ: '',
-  scale3d: '',
+/**
+ * 常见transform属性的默认单位
+ */
+export const TRANSFORM_UNIT_MAP: Record<string, string> = {
+  x: 'px',
+  y: 'px',
+  z: 'px',
   rotate: 'deg',
   rotateX: 'deg',
   rotateY: 'deg',
   rotateZ: 'deg',
-  rotate3d: 'deg',
-  skew: 'deg',
-  skewX: 'deg',
-  skewY: 'deg',
-  translate: 'px',
-  translateX: 'px',
-  translateY: 'px',
-  translateZ: 'px',
-  translate3d: 'px',
-  perspective: 'px',
-  matrix: '',
-  matrix3d: '',
+  scale: '',
+  scaleX: '',
+  scaleY: '',
 }
