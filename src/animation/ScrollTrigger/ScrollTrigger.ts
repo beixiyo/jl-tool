@@ -233,7 +233,7 @@ export class ScrollTrigger implements Scroller {
     /** 如果启用了平滑滚动 */
     if (this.options.smoothScroll) {
       if (!ScrollConfig.smoothScrollers.has(scroller)) {
-        const smoothScrollOptions = typeof this.options.smoothScroll === 'object'
+        const smoothScrollOptions = isObj(this.options.smoothScroll)
           ? this.options.smoothScroll
           : {}
         const newScroller = new SmoothScroller(scroller, {

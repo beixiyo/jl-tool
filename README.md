@@ -86,6 +86,16 @@ yarn add @jl-org/tool
 - [`clamp`](./src/math/tools.ts) - 限制值在指定范围内
 - [`calcCoord`](./src/math/coord.ts) - 根据半径和角度获取坐标
 
+### 🎨 动画处理
+
+| 函数/类 | 说明 |
+|------|------|
+| [`ATo`](./src/animation/ATo.ts) | 分段执行动画 |
+| [`ScrollTrigger`](./src/animation/ScrollTrigger/ScrollTrigger.ts) | 滚动触发动画系统，实现视差等滚动动画效果 |
+| [`SmoothScroller`](./src/animation/ScrollTrigger/SmoothScroller.ts) | 平滑滚动实现，提供惯性滚动体验 |
+| [`createAnimation`](./src/animation/createAnimation.ts) | 创建基础动画 |
+| [`createAnimationByTime`](./src/animation/createAnimationByTime.ts) | 基于时间的动画创建器 |
+
 ### 🕒 时钟与进度
 
 - [`Clock`](./src/tools/Clock.ts) - 计时器，获取帧间隔、累计时间等
@@ -232,6 +242,66 @@ aTo
   )
 ```
 
+### 📜 滚动触发动画
+
+强大的滚动动画系统，类似GSAP的ScrollTrigger，实现视差效果、滚动进度指示器等
+
+```ts
+import { ScrollTrigger } from '@jl-org/tool'
+
+/** 基于滚动的动画 */
+new ScrollTrigger({
+  trigger: '.hero', // 控制进度的元素
+  targets: '.hero__img', // 要动画的元素
+  start: ['top', 'bottom'], // 当.hero顶部碰到视口底部时
+  end: ['bottom', 'top'], // 当.hero底部碰到视口顶部时
+  scrub: true, // 将进度直接绑定到滚动位置
+
+  smoothScroll: true, // 启用平滑滚动
+  props: [ // 从起始值到结束值的样式
+    { scale: 1, opacity: 1 }, // 开始状态
+    { scale: 1.3, opacity: 0 } // 结束状态
+  ],
+})
+```
+
+#### ScrollTrigger 主要特性
+
+- 📏 **声明式API** - 描述元素何时进入视口以及应该发生什么
+- 🔄 **惯性滚动** - 与`SmoothScroller`结合实现丝滑的滚动体验
+- 🧩 **可组合** - 无限触发器，共享或独立的滚动区域
+- 🔍 **调试标记** - 可选的开始/结束位置可视化标记
+
+#### 使用注意事项
+
+1. **一个触发器对应一个进度曲线** - 需要每个元素单独的进度？创建多个触发器实例
+2. **相对位置** - `['top', 'bottom']`表示*元素顶部*对齐*视口底部*时进度为0
+3. **进度更新** - 当`scrub=false`时，触发器在进入时播放一次，离开时反向（除非`once=true`）
+4. **动态内容** - 内容高度动态变化后记得调用`ScrollTrigger.refreshAll()`
+5. **性能优化** - 避免在`onUpdate`回调中进行繁重的DOM操作，尽量缓存查询结果
+
+#### 多区域视差效果示例
+
+[视差滚动完整代码](./test/__DOM_TEST__/ScrollTrigger.ts)
+
+```ts
+/** 为每一个 section 单独创建 ScrollTrigger */
+document.querySelectorAll<HTMLElement>('section').forEach((sec, i) => {
+  new ScrollTrigger({
+    trigger: sec, // 关键：把 trigger 指向该 section
+    targets: sec, // 该 section 自己
+    scrub: true,
+    smoothScroll: true,
+    start: ['top', 'bottom'],
+    end: ['bottom', 'top'],
+    props: [
+      { backgroundPositionY: `-${height / 2}px` },
+      { backgroundPositionY: `${height / 2}px` },
+    ],
+  })
+})
+```
+
 ### 📡 自动重连的 WebSocket
 
 ```ts
@@ -266,7 +336,13 @@ const cropped = await cutImg(imageEl, { x: 10, y: 10, width: 200, height: 200 })
 ```ts
 import { EventBus } from '@jl-org/tool'
 
-const bus = new EventBus()
+const bus = new EventBus({
+  /**
+   * ## 是否触发遗漏的事件
+   * 当尚未 on 监听事件前发送的事件，会存起来会在监听时执行
+   */
+  triggerBefore: true
+})
 
 /** 订阅事件 */
 bus.on('dataChange', (data) => {

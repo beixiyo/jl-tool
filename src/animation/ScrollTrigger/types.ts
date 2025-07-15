@@ -199,13 +199,7 @@ export interface ScrollTriggerOptions {
    * 是否启用平滑滚动，可以传入一个对象进行配置
    * @default false
    */
-  smoothScroll?: boolean | {
-    /**
-     * 平滑插值系数，值越小滚动越平滑，但延迟越高
-     * @default 0.1
-     */
-    lerp?: number
-  }
+  smoothScroll?: boolean | SmoothScrollerOptions
 }
 
 export type ScrollTriggerPropValue = ((index: number) => BaseType) | BaseType
