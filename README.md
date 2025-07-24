@@ -115,6 +115,7 @@ yarn add @jl-org/tool
 - [`blobToBase64`](./src/fileTool/tools.ts) / [`base64ToBlob`](./src/fileTool/tools.ts) - 格式转换
 - [`checkFileSize`](./src/fileTool/tools.ts) - 检查文件大小
 - [`FileChunker`](./src/fileTool/FileChunker.ts) - 文件分块处理器
+- [`BinaryMetadataEncoder`](./src/fileTool/BinaryMetadataEncoder.ts) - 元数据与二进制数据混合编码工具
 - [`createStreamDownloader`](./src/fileTool/streamDownloader.ts) - 流式下载（无内存限制）
 - [`getMimeType`](./src/fileTool/getMimeType.ts) - 获取资源的MIME类型
 - [`detectFileType`](./src/fileTool/fileType.ts) - 检测文件类型
@@ -398,6 +399,25 @@ cache.set('user:1', { name: 'John', age: 30 })
 
 /** 获取缓存，会自动更新使用顺序 */
 const user = cache.get('user:1')
+```
+
+### 📊 元数据与二进制混合编码
+
+```ts
+import { BinaryMetadataEncoder } from '@jl-org/tool'
+
+/** 创建元数据和二进制数据 */
+const metadata = { name: 'image.png', type: 'image/png', size: 1024 * 50 }
+const binaryData = new Uint8Array([/* 图片数据 */]).buffer
+
+/** 编码：合并元数据和二进制数据为单一 ArrayBuffer */
+const encoded = BinaryMetadataEncoder.encode(metadata, binaryData)
+
+/** 解码：提取元数据和原始二进制数据 */
+const { metadata: extractedMeta, buffer: originalBuffer }
+  = BinaryMetadataEncoder.decode<typeof metadata>(encoded)
+
+console.log(extractedMeta) // { name: 'image.png', type: 'image/png', size: 51200 }
 ```
 
 ### ⏱️ 时钟与计时

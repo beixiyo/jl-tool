@@ -107,3 +107,26 @@ describe('观察者模式', () => {
     expect(data).toEqual([2, 2])
   })
 })
+
+describe('取消订阅函数测试', () => {
+  const eb = new EventBus()
+
+  const testFn = vi.fn(() => 'testFn')
+
+  /** 订阅并获取取消订阅函数 */
+  const unsubscribe = eb.on('test', testFn)
+
+  /** 第一次触发事件 */
+  eb.emit('test')
+
+  /** 调用取消订阅函数 */
+  unsubscribe()
+
+  /** 再次触发事件 */
+  eb.emit('test')
+
+  it('取消订阅函数应能正确移除事件监听', () => {
+    /** 只应该被调用一次（取消订阅后的事件不会触发） */
+    expect(testFn).toHaveBeenCalledTimes(1)
+  })
+})

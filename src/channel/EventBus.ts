@@ -18,12 +18,16 @@ export class EventBus<T extends BaseKey = BaseKey> {
   }
 
   /**
-   * 订阅
+   * 订阅并返回取消订阅的函数
    * @param eventName 事件名
    * @param fn 接收函数
+   * @returns 取消订阅的函数
    */
   on(eventName: T, fn: Function) {
     this.subscribe(eventName, fn, false)
+    return () => {
+      this.off(eventName, fn)
+    }
   }
 
   /**

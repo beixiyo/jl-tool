@@ -1,3 +1,4 @@
+export * from './BinaryMetadataEncoder'
 export * from './constants'
 export * from './FileChunker'
 export * from './fileType'
