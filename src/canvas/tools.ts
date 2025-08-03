@@ -3,8 +3,8 @@ import { getImg } from '@/tools/domTools'
 
 /**
  * 创建一个指定 宽高、DPR 的画布
- * @param width 画布的宽度
- * @param height 画布的高度
+ * @param width 画布的宽度，无需乘以 DPR，在 options 传入 dpr 后会自动计算
+ * @param height 画布的高度，无需乘以 DPR，在 options 传入 dpr 后会自动计算
  * @param options 上下文和 DPR 配置，默认 DPR 为 1
  * @returns 包含画布和上下文的对象
  */
