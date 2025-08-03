@@ -2,17 +2,32 @@ import type { Pixel } from '@/types'
 import { getImg } from '@/tools/domTools'
 
 /**
- * 创建一个指定宽高的画布
+ * 创建一个指定 宽高、DPR 的画布
  * @param width 画布的宽度
  * @param height 画布的高度
- * @param options 上下文配置
+ * @param options 上下文和 DPR 配置，默认 DPR 为 1
  * @returns 包含画布和上下文的对象
  */
-export function createCvs(width?: number, height?: number, options?: CanvasRenderingContext2DSettings) {
+export function createCvs(
+  width?: number,
+  height?: number,
+  options: CanvasRenderingContext2DSettings & { dpr?: number } = {},
+) {
+  const {
+    dpr = 1,
+    ...contextOptions
+  } = options
+
   const cvs = document.createElement('canvas')
-  const ctx = cvs.getContext('2d', options)!
-  width && (cvs.width = width)
-  height && (cvs.height = height)
+  const ctx = cvs.getContext('2d', contextOptions)!
+  ctx.scale(dpr, dpr)
+
+  if (width !== undefined) {
+    cvs.width = width * dpr
+  }
+  if (height !== undefined) {
+    cvs.height = height * dpr
+  }
 
   return { cvs, ctx }
 }
