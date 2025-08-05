@@ -12,8 +12,8 @@ vi.mock('@/constants', () => ({
 }))
 
 // Mock console 方法
-const mockConsoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
-const mockConsoleLog = vi.spyOn(console, 'log').mockImplementation(() => {})
+const mockConsoleError = vi.spyOn(console, 'error').mockImplementation(() => { })
+const mockConsoleLog = vi.spyOn(console, 'log').mockImplementation(() => { })
 
 // Mock process.exit
 const mockProcessExit = vi.spyOn(process, 'exit').mockImplementation(() => {
@@ -68,6 +68,24 @@ describe('getEnv', () => {
     process.env.TEST_VAR = ''
     const result = getEnv('TEST_VAR', 'default_value')
     expect(result).toBe('default_value')
+  })
+
+  it('应该把所有内容解析为字符串', () => {
+    const envContent = `
+    # 这是注释
+    KEY1=100 # 这也是注释
+    # KEY2 = 200
+    KEY3 = 500 # 注释
+    `
+    mockFs.existsSync.mockReturnValue(true)
+    mockFs.readFileSync.mockReturnValue(envContent)
+
+    loadEnv('.env')
+
+    const result = getEnv('KEY1')
+    expect(result).toBe('100')
+    expect(getEnv('KEY2')).toBe('')
+    expect(getEnv('KEY3')).toBe('500')
   })
 })
 
@@ -171,5 +189,25 @@ KEY2=value2
 
     expect(process.env.KEY1).toBe('value1')
     expect(process.env.KEY2).toBe('value2')
+  })
+
+  it('应该正确解析内容', () => {
+    const envContent = `
+  KEY1  =  'value1'
+  KEY2="value2"
+KEY3=value3
+ KEY4=' value4"
+   KEY5=  value5
+`
+    mockFs.existsSync.mockReturnValue(true)
+    mockFs.readFileSync.mockReturnValue(envContent)
+
+    loadEnv('.env')
+
+    expect(process.env.KEY1).toBe('value1')
+    expect(process.env.KEY2).toBe('value2')
+    expect(process.env.KEY3).toBe('value3')
+    expect(process.env.KEY4).toBe(`' value4"`)
+    expect(process.env.KEY5).toBe('value5')
   })
 })

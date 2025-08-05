@@ -5,10 +5,11 @@ export * from '@/canvas'
 export * from '@/channel'
 
 export * from '@/dataStructure'
+export * from '@/env'
 export * from '@/fileTool'
 export * from '@/math'
-export * from '@/net'
 
+export * from '@/net'
 export * from '@/plugins'
 export * from '@/shared'
 

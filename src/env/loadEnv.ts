@@ -16,7 +16,19 @@ export function loadEnv(envPath: string) {
         /** 忽略注释和空行 */
         if (line.trim() && !line.startsWith('#')) {
           const [key, ...valueParts] = line.split('=')
-          const value = valueParts.join('=').trim()
+          let value = valueParts
+            .join('=') // 合并等号
+            .trim()
+            .split('#')[0] // 忽略注释
+            .trim() // 忽略空格
+
+          if (value.startsWith(`'`) && value.endsWith(`'`)) {
+            value = value.slice(1, -1)
+          }
+          else if (value.startsWith(`"`) && value.endsWith(`"`)) {
+            value = value.slice(1, -1)
+          }
+
           if (key && value) {
             process.env[key.trim()] = value
           }
