@@ -1,12 +1,19 @@
 # 🛠️ @jl-org/tool
 
-<p align="center">
+<div align="center">
+  <a href="./README.en.md">English</a>
+  <a href="./README.md">中文</a>
+</div>
+
+<br />
+
+<div align="center">
   <img alt="npm-version" src="https://img.shields.io/npm/v/@jl-org/tool?color=red&logo=npm" />
   <img alt="npm-download" src="https://img.shields.io/npm/dm/@jl-org/tool?logo=npm" />
   <img alt="License" src="https://img.shields.io/npm/l/@jl-org/tool?color=blue" />
   <img alt="typescript" src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white" />
   <img alt="github" src="https://img.shields.io/badge/GitHub-181717?logo=github&logoColor=white" />
-</p>
+</div>
 
 > 强大而实用的前端工具库，零依赖，类型完善，功能丰富
 
