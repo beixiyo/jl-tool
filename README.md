@@ -349,11 +349,31 @@ const resized = await resizeImg(imageEl, 800, 600)
 const cropped = await cutImg(imageEl, { x: 10, y: 10, width: 200, height: 200 })
 ```
 
-### 📊 事件总线
+### 📊 事件系统
+
+EventBus 提供了强大的类型安全性，支持多种泛型参数类型，包括字符串、枚举和对象映射类型：
 
 ```ts
 import { EventBus } from '@jl-org/tool'
 
+// 1. 基础字符串类型事件（默认）
+const basicBus = new EventBus()
+
+// 2. 枚举类型事件（推荐，提供最佳类型安全性）
+enum AppEvents {
+  DataUpdate = 'data-update',
+  UserLogin = 'user-login'
+}
+const enumBus = new EventBus<AppEvents>()
+
+// 3. 对象映射类型事件（最严格的类型检查）
+interface EventMap {
+  'user-action': { action: string, userId: string }
+  'data-loaded': { data: any[], timestamp: number }
+}
+const strictBus = new EventBus<EventMap>()
+
+/** 使用示例 */
 const bus = new EventBus({
   /**
    * ## 是否触发遗漏的事件
@@ -375,6 +395,13 @@ bus.once('singleEvent', () => {
   console.log('这个事件只触发一次')
 })
 ```
+
+#### 类型安全性优势
+
+1. **编译时检查** - TypeScript 会在编译时检查事件名称和参数类型
+2. **自动补全** - IDE 会提供事件名称和参数的自动补全
+3. **重构安全** - 重命名事件名称时，TypeScript 会确保所有引用都被更新
+4. **多种模式** - 支持字符串、枚举和严格映射三种类型模式，适应不同需求
 
 ### 📠 模拟打字机效果
 

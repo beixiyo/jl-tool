@@ -351,9 +351,29 @@ const cropped = await cutImg(imageEl, { x: 10, y: 10, width: 200, height: 200 })
 
 ### 📊 Event Bus
 
+EventBus provides strong type safety and supports multiple generic parameter types, including strings, enums, and object mapping types:
+
 ```ts
 import { EventBus } from '@jl-org/tool'
 
+// 1. Basic string type events (default)
+const basicBus = new EventBus()
+
+// 2. Enum type events (recommended for best type safety)
+enum AppEvents {
+  DataUpdate = 'data-update',
+  UserLogin = 'user-login'
+}
+const enumBus = new EventBus<AppEvents>()
+
+// 3. Object mapping type events (strictest type checking)
+interface EventMap {
+  'user-action': { action: string, userId: string }
+  'data-loaded': { data: any[], timestamp: number }
+}
+const strictBus = new EventBus<EventMap>()
+
+// Usage example
 const bus = new EventBus({
   /**
    * ## Whether to trigger missed events
@@ -375,6 +395,13 @@ bus.once('singleEvent', () => {
   console.log('This event only triggers once')
 })
 ```
+
+#### Type Safety Advantages
+
+1. **Compile-time checking** - TypeScript checks event names and parameter types at compile time
+2. **Auto-completion** - IDE provides auto-completion for event names and parameters
+3. **Refactoring safety** - When renaming event names, TypeScript ensures all references are updated
+4. **Multiple modes** - Supports string, enum, and strict mapping type modes to fit different needs
 
 ### 📠 Typewriter Effect
 

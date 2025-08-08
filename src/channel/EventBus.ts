@@ -1,9 +1,38 @@
 import type { BaseKey } from '../types'
 
 /**
- * 消息订阅与派发，订阅和派发指定消息
+ * 类型安全的消息订阅与派发，订阅和派发指定消息，支持传统模式和严格模式
+ * @example
+ * ```ts
+ * // 对象严格约束
+ * const bus = new EventBus<{
+ *   onScroll: number
+ * }>()
+ *
+ * // 有类型提示
+ * bus.on('onScroll', (data) => {
+ *   console.log(data)
+ * })
+ *
+ * // 字符串约束
+ * const bus2 = new EventBus<'TypeA' | 'TypeB'>()
+ *
+ * bus2.on('TypeA', (data) => {
+ *   console.log(data)
+ * })
+ *
+ * bus2.emit('TypeA', 1)
+ *
+ * // 枚举约束
+ * enum En {
+ *   A,
+ *   B
+ * }
+ *
+ * const bus3 = new EventBus<En>()
+ * bus3.emit(En.A, 1)
  */
-export class EventBus<T extends BaseKey = BaseKey> {
+export class EventBus<T extends BaseKey | EventMap = BaseKey> {
   private readonly eventMap = new Map<BaseKey, Set<{
     once?: boolean
     fn: Function
@@ -23,7 +52,7 @@ export class EventBus<T extends BaseKey = BaseKey> {
    * @param fn 接收函数
    * @returns 取消订阅的函数
    */
-  on(eventName: T, fn: Function) {
+  on<K extends EventType<T>>(eventName: K, fn: (param: EventParams<T, K>) => void) {
     this.subscribe(eventName, fn, false)
     return () => {
       this.off(eventName, fn)
@@ -35,28 +64,28 @@ export class EventBus<T extends BaseKey = BaseKey> {
    * @param eventName 事件名
    * @param fn 接收函数
    */
-  once(eventName: T, fn: Function) {
+  once<K extends EventType<T>>(eventName: K, fn: (param: EventParams<T, K>) => void) {
     this.subscribe(eventName, fn, true)
   }
 
   /**
    * 发送指定事件，通知所有订阅者
    * @param eventName 事件名
-   * @param args 不定参数
+   * @param param 参数
    */
-  emit(eventName: T, ...args: any[]) {
-    const fnSet = this.eventMap.get(eventName)
+  emit<K extends EventType<T>>(eventName: K, param: EventParams<T, K>) {
+    const fnSet = this.eventMap.get(eventName as BaseKey)
 
     /**
      * 没有事件接受，先存起来
      */
     if (!fnSet && this.opts.triggerBefore) {
-      const params = this.beforeTriggerMap.get(eventName)
+      const params = this.beforeTriggerMap.get(eventName as BaseKey)
       if (params) {
-        params.push(args)
+        params.push(param)
       }
       else {
-        this.beforeTriggerMap.set(eventName, [args])
+        this.beforeTriggerMap.set(eventName as BaseKey, [param])
       }
       return
     }
@@ -65,17 +94,17 @@ export class EventBus<T extends BaseKey = BaseKey> {
       return
 
     fnSet.forEach(({ fn, once }) => {
-      fn(...args)
-      once && this.off(eventName, fn)
+      fn(param)
+      once && this.off(eventName, fn as any)
     })
   }
 
   /**
-   * 取关
+   * 取消订阅
    * @param eventName 不传代表重置所有
    * @param func 要取关的函数，为空取关该事件的所有函数
    */
-  off(eventName?: T, func?: Function) {
+  off<K extends EventType<T>>(eventName?: K, func?: (param: EventParams<T, K>) => void) {
     /** 不传重置所有 */
     if (!eventName) {
       this.eventMap.clear()
@@ -83,7 +112,7 @@ export class EventBus<T extends BaseKey = BaseKey> {
       return
     }
 
-    const fnSet = this.eventMap.get(eventName)
+    const fnSet = this.eventMap.get(eventName as BaseKey)
     /**
      * fn 为空取关该事件的所有函数
      */
@@ -98,26 +127,26 @@ export class EventBus<T extends BaseKey = BaseKey> {
       }
     })
 
-    this.beforeTriggerMap.delete(eventName)
+    this.beforeTriggerMap.delete(eventName as BaseKey)
   }
 
-  private subscribe(eventName: T, fn: Function, once = false) {
-    const fnSet = this.eventMap.get(eventName)
+  private subscribe<K extends EventType<T>>(eventName: K, fn: (param: EventParams<T, K>) => void, once = false) {
+    const fnSet = this.eventMap.get(eventName as BaseKey)
     if (!fnSet) {
-      this.eventMap.set(eventName, new Set())
+      this.eventMap.set(eventName as BaseKey, new Set())
     }
 
     this.eventMap
-      .get(eventName)!
+      .get(eventName as BaseKey)!
       .add(EventBus.genItem(fn, once))
 
     /**
      * 如果有之前遗漏事件，则统一派发事件
      */
-    const args = this.beforeTriggerMap.get(eventName)
-    if (args) {
-      args.forEach(arg => fn(...(arg || [])))
-      this.beforeTriggerMap.delete(eventName)
+    const param = this.beforeTriggerMap.get(eventName as BaseKey)
+    if (param) {
+      param.forEach(arg => fn(arg))
+      this.beforeTriggerMap.delete(eventName as BaseKey)
     }
   }
 
@@ -139,3 +168,16 @@ export type EventBusOpts = {
    */
   triggerBefore?: boolean
 }
+
+/** 定义事件映射类型，用于严格模式 */
+type EventMap = Record<string, any>
+
+/** 条件类型：如果T是Record类型，则使用严格模式；否则使用传统模式 */
+type EventType<T> = T extends EventMap ? keyof T : T extends BaseKey ? T : never
+
+/** 条件类型：根据事件名获取参数类型 */
+type EventParams<T, K extends keyof any> = T extends EventMap
+  ? K extends keyof T
+    ? T[K]
+    : any
+  : any
