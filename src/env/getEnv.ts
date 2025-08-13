@@ -1,4 +1,4 @@
-import { isNode } from '@/constants'
+import { checkIsBrowser } from '@/shared'
 
 /**
  * 读取环境变量，如果不存在则使用默认值或显示错误信息
@@ -8,8 +8,7 @@ import { isNode } from '@/constants'
  * @returns 环境变量的值
  */
 export function getEnv(name: string, defaultValue?: string, required = false) {
-  if (!isNode) {
-    console.warn('[getEnv]: 非 Node 环境，跳过读取环境变量')
+  if (checkIsBrowser()) {
     return defaultValue || ''
   }
 

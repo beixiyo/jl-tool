@@ -126,6 +126,12 @@ yarn add @jl-org/tool
 - [`createStreamDownloader`](./src/fileTool/streamDownloader.ts) - 流式下载（无内存限制）
 - [`getMimeType`](./src/fileTool/getMimeType.ts) - 获取资源的MIME类型
 - [`detectFileType`](./src/fileTool/fileType.ts) - 检测文件类型
+- [`jsonToJsonl`](./src/fileTool/jsonl.ts) / [`jsonlToJson`](./src/fileTool/jsonl.ts) - JSON与JSONL格式转换
+- [`readJsonlFile`](./src/fileTool/jsonl.ts) - 逐行读取JSONL文件
+- [`appendToJsonlFile`](./src/fileTool/jsonl.ts) - 追加JSON数据到JSONL文件
+- [`mapJsonlFile`](./src/fileTool/jsonl.ts) / [`filterJsonlFile`](./src/fileTool/jsonl.ts) - 对JSONL文件进行映射和过滤操作
+- [`findWithJsonlFile`](./src/fileTool/jsonl.ts) / [`findIndexWithJsonlFile`](./src/fileTool/jsonl.ts) - 在JSONL文件中查找数据
+- [`everyWithJsonlFile`](./src/fileTool/jsonl.ts) / [`someWithJsonlFile`](./src/fileTool/jsonl.ts) - 检查JSONL文件中数据是否满足条件
 
 ### 🌍 URL处理
 

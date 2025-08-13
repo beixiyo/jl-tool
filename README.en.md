@@ -126,6 +126,12 @@ yarn add @jl-org/tool
 - [`createStreamDownloader`](./src/fileTool/streamDownloader.ts) - Stream download (memory unlimited)
 - [`getMimeType`](./src/fileTool/getMimeType.ts) - Get resource MIME type
 - [`detectFileType`](./src/fileTool/fileType.ts) - Detect file type
+- [`jsonToJsonl`](./src/fileTool/jsonl.ts) / [`jsonlToJson`](./src/fileTool/jsonl.ts) - Convert between JSON and JSONL formats
+- [`readJsonlFile`](./src/fileTool/jsonl.ts) - Read JSONL file line by line
+- [`appendToJsonlFile`](./src/fileTool/jsonl.ts) - Append JSON data to JSONL file
+- [`mapJsonlFile`](./src/fileTool/jsonl.ts) / [`filterJsonlFile`](./src/fileTool/jsonl.ts) - Map and filter operations on JSONL files
+- [`findWithJsonlFile`](./src/fileTool/jsonl.ts) / [`findIndexWithJsonlFile`](./src/fileTool/jsonl.ts) - Find data in JSONL files
+- [`everyWithJsonlFile`](./src/fileTool/jsonl.ts) / [`someWithJsonlFile`](./src/fileTool/jsonl.ts) - Check if data in JSONL files meets conditions
 
 ### 🌍 URL Processing
 

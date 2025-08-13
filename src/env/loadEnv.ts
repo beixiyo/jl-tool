@@ -1,9 +1,8 @@
 import fs from 'node:fs'
-import { isNode } from '@/constants'
+import { checkIsBrowser } from '@/shared'
 
 export function loadEnv(envPath: string) {
-  if (!isNode) {
-    console.warn('[loadEnv]: 非 Node 环境，跳过加载 .env 文件')
+  if (checkIsBrowser()) {
     return
   }
 
