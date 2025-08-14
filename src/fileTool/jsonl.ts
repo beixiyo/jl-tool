@@ -45,6 +45,9 @@ export function jsonlToJson<T>(jsonlString: string): T[] {
 /**
  * 逐行读取 JSONL 文件的生成器函数
  *
+ * 注意：为了确保文件资源被正确释放，请使用 `for await...of` 循环消费返回的迭代器。
+ * 如果创建了迭代器但没有消费它，需要手动调用迭代器的 `return()` 方法来释放资源。
+ *
  * @example
  * ```ts
  * for await (const obj of readJsonlFile('path/to/file.jsonl')) {
@@ -69,10 +72,16 @@ export async function* readJsonlFile<T>(filePath: string): AsyncGenerator<T, voi
     crlfDelay: Infinity,
   })
 
-  for await (const line of rl) {
-    if (line.trim() !== '') {
-      yield JSON.parse(line)
+  try {
+    for await (const line of rl) {
+      if (line.trim() !== '') {
+        yield JSON.parse(line)
+      }
     }
+  }
+  finally {
+    rl.close()
+    fileStream.destroy()
   }
 }
 
