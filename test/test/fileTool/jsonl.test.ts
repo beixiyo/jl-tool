@@ -68,7 +68,7 @@ describe('jSONL 工具函数测试', () => {
   describe('jsonToJsonl', () => {
     it('应该将 JSON 对象数组转换为 JSONL 字符串', () => {
       const result = jsonToJsonl(testData)
-      const expected = '{"id":1,"name":"Alice","age":30}\n{"id":2,"name":"Bob","age":25}\n{"id":3,"name":"Charlie","age":35}'
+      const expected = '{"id":1,"name":"Alice","age":30}\n{"id":2,"name":"Bob","age":25}\n{"id":3,"name":"Charlie","age":35}\n'
       expect(result).toBe(expected)
     })
 
@@ -86,7 +86,7 @@ describe('jSONL 工具函数测试', () => {
     })
 
     it('应该过滤空行', () => {
-      const jsonlString = '{"id":1,"name":"Alice","age":30}\n\n{"id":2,"name":"Bob","age":25}\n \n{"id":3,"name":"Charlie","age":35}'
+      const jsonlString = '{"id":1,"name":"Alice","age":30}\n\n{"id":2,"name":"Bob","age":25}\n \n{"id":3,"name":"Charlie","age":35}\n'
       const result = jsonlToJson(jsonlString)
       expect(result).toEqual(testData)
     })
@@ -142,7 +142,7 @@ describe('jSONL 工具函数测试', () => {
 
       /** 验证结果 */
       const content = await fs.readFile(testFile, 'utf-8')
-      const expected = '{"id":1,"name":"Alice","age":30}\n{"id":2,"name":"Bob","age":25}\n{"id":3,"name":"Charlie","age":35}'
+      const expected = '{"id":1,"name":"Alice","age":30}\n{"id":2,"name":"Bob","age":25}\n{"id":3,"name":"Charlie","age":35}\n'
       expect(content).toBe(expected)
     })
 

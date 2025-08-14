@@ -18,7 +18,14 @@ import { checkIsBrowser } from '@/shared'
  * @returns JSONL 字符串
  */
 export function jsonToJsonl(jsonArray: any[]): string {
-  return jsonArray.map(obj => JSON.stringify(obj)).join('\n')
+  return jsonArray
+    .map(obj => JSON.stringify(obj))
+    .join('\n')
+    + (
+      jsonArray.length > 0
+        ? '\n'
+        : ''
+    )
 }
 
 /**
