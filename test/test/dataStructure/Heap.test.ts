@@ -1,78 +1,127 @@
-import type { HeapItem } from '@/dataStructure/Heap'
 import { describe, expect, it } from 'vitest'
 import { MaxHeap, MinHeap } from '@/dataStructure/Heap'
 
-/**
- * 循环取值测试用不了，只能手动抛异常测试
- */
-describe('最小堆测试', () => {
-  const minNum = 3
-  const mh = new MinHeap()
+describe('heap', () => {
+  describe('minHeap', () => {
+    it('应该正确创建最小堆', () => {
+      const heap = new MinHeap<{ sortIndex: number }>()
+      expect(heap.size).toBe(0)
+      expect(heap.isEmpty()).toBe(true)
+    })
 
-  mh.push(
-    createTask(4),
-    createTask(minNum),
-    createTask(6),
-    createTask(16),
-    createTask(8),
-    createTask(8),
-    createTask(6),
-    createTask(minNum),
-  )
+    it('应该正确插入和弹出元素', () => {
+      const heap = new MinHeap<{ sortIndex: number }>()
 
-  let val: HeapItem
-  let lastNum = minNum
+      heap.push({ sortIndex: 5 })
+      heap.push({ sortIndex: 3 })
+      heap.push({ sortIndex: 7 })
+      heap.push({ sortIndex: 1 })
 
-  console.log('最小堆')
-  while (val = mh.pop()!) {
-    console.log({ 本次取值: val.sortIndex, 上次取值: lastNum })
-    if (val.sortIndex < lastNum) {
-      throw new Error('最小堆取值错误')
-    }
+      expect(heap.size).toBe(4)
+      expect(heap.peek()?.sortIndex).toBe(1)
 
-    lastNum = val.sortIndex
-  }
+      expect(heap.pop()?.sortIndex).toBe(1)
+      expect(heap.pop()?.sortIndex).toBe(3)
+      expect(heap.pop()?.sortIndex).toBe(5)
+      expect(heap.pop()?.sortIndex).toBe(7)
 
-  it('pass', () => {
-    expect(true).toBeTruthy()
+      expect(heap.isEmpty()).toBe(true)
+    })
+
+    it('应该处理重复元素', () => {
+      const heap = new MinHeap<{ sortIndex: number }>()
+
+      heap.push({ sortIndex: 3 })
+      heap.push({ sortIndex: 3 })
+      heap.push({ sortIndex: 1 })
+      heap.push({ sortIndex: 1 })
+
+      expect(heap.pop()?.sortIndex).toBe(1)
+      expect(heap.pop()?.sortIndex).toBe(1)
+      expect(heap.pop()?.sortIndex).toBe(3)
+      expect(heap.pop()?.sortIndex).toBe(3)
+    })
+
+    it('应该处理空堆的 peek 和 pop', () => {
+      const heap = new MinHeap<{ sortIndex: number }>()
+
+      expect(heap.peek()).toBeUndefined()
+      expect(heap.pop()).toBeUndefined()
+    })
+  })
+
+  describe('maxHeap', () => {
+    it('应该正确创建最大堆', () => {
+      const heap = new MaxHeap<{ sortIndex: number }>()
+      expect(heap.size).toBe(0)
+      expect(heap.isEmpty()).toBe(true)
+    })
+
+    it('应该正确插入和弹出元素', () => {
+      const heap = new MaxHeap<{ sortIndex: number }>()
+
+      heap.push({ sortIndex: 5 })
+      heap.push({ sortIndex: 3 })
+      heap.push({ sortIndex: 7 })
+      heap.push({ sortIndex: 1 })
+
+      expect(heap.size).toBe(4)
+      expect(heap.peek()?.sortIndex).toBe(7)
+
+      expect(heap.pop()?.sortIndex).toBe(7)
+      expect(heap.pop()?.sortIndex).toBe(5)
+      expect(heap.pop()?.sortIndex).toBe(3)
+      expect(heap.pop()?.sortIndex).toBe(1)
+
+      expect(heap.isEmpty()).toBe(true)
+    })
+
+    it('应该处理重复元素', () => {
+      const heap = new MaxHeap<{ sortIndex: number }>()
+
+      heap.push({ sortIndex: 3 })
+      heap.push({ sortIndex: 3 })
+      heap.push({ sortIndex: 1 })
+      heap.push({ sortIndex: 1 })
+
+      expect(heap.pop()?.sortIndex).toBe(3)
+      expect(heap.pop()?.sortIndex).toBe(3)
+      expect(heap.pop()?.sortIndex).toBe(1)
+      expect(heap.pop()?.sortIndex).toBe(1)
+    })
+  })
+
+  describe('堆操作', () => {
+    it('应该正确处理大量元素', () => {
+      const heap = new MinHeap<{ sortIndex: number }>()
+      const numbers = [9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+
+      numbers.forEach(num => heap.push({ sortIndex: num }))
+
+      expect(heap.size).toBe(10)
+
+      for (let i = 0; i < 10; i++) {
+        expect(heap.pop()?.sortIndex).toBe(i)
+      }
+    })
+
+    it('应该正确处理动态插入和弹出', () => {
+      const heap = new MinHeap<{ sortIndex: number }>()
+
+      heap.push({ sortIndex: 5 })
+      expect(heap.peek()?.sortIndex).toBe(5)
+
+      heap.push({ sortIndex: 3 })
+      expect(heap.peek()?.sortIndex).toBe(3)
+
+      heap.push({ sortIndex: 7 })
+      expect(heap.peek()?.sortIndex).toBe(3)
+
+      expect(heap.pop()?.sortIndex).toBe(3)
+      expect(heap.peek()?.sortIndex).toBe(5)
+
+      heap.push({ sortIndex: 1 })
+      expect(heap.peek()?.sortIndex).toBe(1)
+    })
   })
 })
-
-describe('最大堆测试', () => {
-  const maxNum = 16
-  const mh = new MaxHeap()
-
-  mh.push(
-    createTask(4),
-    createTask(3),
-    createTask(6),
-    createTask(maxNum),
-    createTask(8),
-    createTask(8),
-    createTask(6),
-    createTask(3),
-  )
-
-  let val: HeapItem
-  let lastNum = maxNum
-
-  console.log('最大堆')
-  while (val = mh.pop()!) {
-    console.log({ 本次取值: val.sortIndex, 上次取值: lastNum })
-    if (val.sortIndex > lastNum) {
-      throw new Error('最大堆取值错误')
-    }
-
-    lastNum = val.sortIndex
-  }
-
-  it('pass', () => {
-    expect(true).toBeTruthy()
-  })
-})
-
-function createTask(i: number): HeapItem {
-  return {
-    sortIndex: i,
-  }
-}

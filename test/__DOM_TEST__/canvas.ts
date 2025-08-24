@@ -5,8 +5,8 @@ import {
   getPixel,
   parseImgData,
 } from '@/canvas/tools'
+import { getImg } from '@/domTools'
 import { blobToBase64 } from '@/fileTool/tools'
-import { getImg } from '@/tools/domTools'
 
 /**
  * --------------------------------------------------------------

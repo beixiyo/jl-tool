@@ -1,5 +1,5 @@
 import type { Pixel } from '@/types'
-import { getImg } from '@/tools/domTools'
+import { getImg } from '@/domTools'
 
 /**
  * 创建一个指定 宽高、DPR 的画布

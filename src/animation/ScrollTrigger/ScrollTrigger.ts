@@ -2,7 +2,7 @@ import type { Scroller, ScrollTriggerOptions, ScrollTriggerState } from './types
 import { CSS_DEFAULT_VAL, WITHOUT_UNITS } from '@/constants'
 import { clamp } from '@/math'
 import { isObj } from '@/shared/is'
-import { debounce, throttle } from '@/tools/domTools'
+import { debounce, throttle } from '@/tools/timer'
 import { uniqueId } from '@/tools/tools'
 import { createAnimation } from '../createAnimation'
 import { genTimeFunc } from '../timeFunc'

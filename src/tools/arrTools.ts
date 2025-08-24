@@ -1,4 +1,4 @@
-import type { ArrToTreeOpts, BaseKey, BaseType, TreeData } from '@/types/base'
+import type { ArrToTreeOpts, BaseKey, BaseType, TreeData, TreeNode } from '@/types/base'
 import { isPureNum } from '@/shared/is'
 import { deepClone } from './tools'
 
@@ -219,7 +219,7 @@ export function arrToTree<T extends Record<string, any>>(
     return arr as TreeData<T>
 
   const res: TreeData<T> = []
-  const map: Record<BaseType, TreeData<T>[number]> = {}
+  const map: Record<BaseType, TreeNode<T>> = {}
 
   for (const item of arr) {
     const id = item[idField]
@@ -359,12 +359,12 @@ export function binarySearch<T>(
 /**
  * 广度遍历
  */
-export function bfsFind<T extends TreeNode>(
+export function bfsFind<T extends { children?: T[] }>(
   arr: T[],
   condition: (value: T) => boolean,
 ): T | null {
   /** 当前层的节点 */
-  let currentLevel: T[] = arr
+  let currentLevel: T[] = [...arr]
   /** 下一层的节点 */
   let nextLevel: T[] = []
 
@@ -392,7 +392,7 @@ export function bfsFind<T extends TreeNode>(
 /**
  * 深度遍历
  */
-export function dfsFind<T extends TreeNode>(
+export function dfsFind<T extends { children?: T[] }>(
   arr: T[],
   condition: (value: T) => boolean,
 ): T | null {
@@ -501,8 +501,4 @@ export type SearchOpts = {
   key?: string
   /** 是否忽略大小写，@default true */
   ignoreCase?: boolean
-}
-
-export type TreeNode<T = any> = {
-  children?: T[]
 }

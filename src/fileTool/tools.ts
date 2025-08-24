@@ -1,5 +1,4 @@
-import { matchProtocol } from '../tools/domTools'
-import { getUrlContentLen, isValidUrl } from '../tools/urlTools'
+import { getUrlContentLen, isValidUrl, matchProtocol } from '../tools/urlTools'
 
 /**
  * 用 `Blob` 下载

@@ -1,7 +1,7 @@
 import {
   debounce,
   throttle,
-} from '@/tools/domTools'
+} from '@/tools/timer'
 
 const throttleInput = document.createElement('input')
 const debounceInput = document.createElement('input')

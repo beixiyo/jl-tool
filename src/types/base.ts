@@ -16,9 +16,11 @@ export type TimeType = Date | number | string
 
 export type Pixel = [R: number, G: number, B: number, A: number]
 
-export type TreeData<T, K = BaseType> = (T & {
-  children?: TreeData<T, K>[]
-})[]
+export type TreeNode<T> = T & {
+  children?: TreeNode<T>[]
+}
+
+export type TreeData<T> = TreeNode<T>[]
 
 /**
  * arrToTree 函数的泛型约束

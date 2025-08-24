@@ -20,6 +20,7 @@ export class SpeakToTxt {
    */
   constructor(onResult: SpeakToTxtOnResult, opts: SpeakToTxtOpts = {}) {
     if ('webkitSpeechRecognition' in window) {
+      // eslint-disable-next-line new-cap
       this.recognition = new webkitSpeechRecognition()
     }
     else if ('SpeechRecognition' in window) {

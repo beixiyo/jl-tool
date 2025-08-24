@@ -180,7 +180,9 @@ export function formatDate(
     return (dateInfo: DateInfo) => {
       const { yyyy, MM, dd, HH, mm, ss, ms } = dateInfo
 
-      return formatter.replace('yyyy', yyyy)
+      return formatter
+        .replace('yyyy', yyyy)
+        .replace('YYYY', yyyy)
         .replace('MM', MM)
         .replace('dd', dd)
         .replace('HH', HH)
@@ -271,6 +273,7 @@ export type FormatDateOpts = {
 
 export type DateFormat =
   | ((dateInfo: DateInfo) => string)
+  // yyyy
   | 'yyyy-MM-dd'
   | 'yyyy-MM-dd HH'
   | 'yyyy-MM-dd HH:mm'
@@ -280,6 +283,16 @@ export type DateFormat =
   | 'yyyy-MM-dd 00:00:00'
   | 'yyyy-MM-dd 23:59'
   | 'yyyy-MM-dd 23:59:59'
+  // YYYY
+  | 'YYYY-MM-dd'
+  | 'YYYY-MM-dd HH'
+  | 'YYYY-MM-dd HH:mm'
+  | 'YYYY-MM-dd HH:mm:ss'
+  | 'YYYY-MM-dd HH:mm:ss:ms'
+  | 'YYYY-MM-dd 00:00'
+  | 'YYYY-MM-dd 00:00:00'
+  | 'YYYY-MM-dd 23:59'
+  | 'YYYY-MM-dd 23:59:59'
   | (string & {})
 
 export interface DateInfo {

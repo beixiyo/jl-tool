@@ -1,6 +1,6 @@
 import type { PositionOffset, PositionValue, ScrollTriggerProp, ScrollTriggerPropValue, TriggerPosition, TriggerPositionObj } from './types'
+import { getWinHeight, getWinWidth } from '@/domTools/size'
 import { isFn } from '@/shared'
-import { getWinHeight, getWinWidth } from '@/tools/domTools'
 
 /**
  * 解析位置值

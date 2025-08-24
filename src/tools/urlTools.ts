@@ -1,4 +1,14 @@
 /**
+ * 把 `http` 协议转换成当前站点的协议
+ * @param url 要转换的 URL
+ * @returns 转换后的 URL
+ */
+export function matchProtocol(url: string) {
+  const proto = window.location.protocol
+  return url.replace(/(http:|https:)/, proto)
+}
+
+/**
  * 检测链接是否合法
  */
 export function isValidUrl(url: string): boolean {

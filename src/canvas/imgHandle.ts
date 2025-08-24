@@ -1,5 +1,5 @@
 import type { TransferType } from '@/types'
-import { getImg } from '@/tools/domTools'
+import { getImg } from '@/domTools'
 import { createCvs } from './tools'
 
 /**

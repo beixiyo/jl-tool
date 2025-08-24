@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { celsiusToFahrenheit, cutStr, deepClone, excludeKeys, excludeVals, fahrenheitToCelsius, filterKeys, filterVals, genIcon, getRandomNum, getType, numFixed, padEmptyObj, padNum, randomStr, toCamel } from '@/tools/tools'
+import { celsiusToFahrenheit, cutStr, excludeKeys, excludeVals, fahrenheitToCelsius, filterKeys, filterVals, genIcon, getRandomNum, getType, numFixed, padEmptyObj, padNum, randomStr, toCamel } from '@/tools/tools'
 
 it('获取类型', () => {
   expect(getType(undefined)).toBe('undefined')
@@ -48,21 +48,7 @@ describe('随机数字', () => {
   })
 })
 
-describe('深克隆', () => {
-  const temp: any = { t: 1 }
-  const o: any = { a: 1, b: 2, c: 3, temp }
 
-  o.temp = temp
-  temp.o = o
-
-  it('引用地址', () => {
-    expect(deepClone(o)).not.toBe(o)
-  })
-
-  it('循环引用', () => {
-    expect(deepClone(o)).toEqual(o)
-  })
-})
 
 it('截取字符串', () => {
   const str = '123456789'

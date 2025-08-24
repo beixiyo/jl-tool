@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest'
-import { handleCssUnit } from '@/tools/domTools'
+import { handleCssUnit } from '@/domTools'
 
 it('处理 CSS 单位测试', () => {
   expect(handleCssUnit('10px')).toBe('10px')

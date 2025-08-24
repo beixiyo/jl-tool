@@ -5,10 +5,11 @@ export * from '@/canvas'
 export * from '@/channel'
 
 export * from '@/dataStructure'
+export * from '@/domTools'
 export * from '@/env'
 export * from '@/fileTool'
-export * from '@/math'
 
+export * from '@/math'
 export * from '@/net'
 export * from '@/plugins'
 export * from '@/shared'
@@ -16,16 +17,13 @@ export * from '@/shared'
 /***************************************************
  *                    Tools
  ***************************************************/
-
 export * from '@/tools/arrTools'
 export * from '@/tools/Clock'
 export * from '@/tools/colorTools'
 
 export * from '@/tools/dateTools'
 export * from '@/tools/disableDebug'
-export * from '@/tools/domTools'
 
-export * from '@/tools/eventTools'
 export * from '@/tools/FakeProgress'
 
 export * from '@/tools/preload'
