@@ -31,7 +31,10 @@ export class LRUCache<K, V> extends Map<K, V> {
      * 如果超出最大缓存长度，则删除最久未使用的（第一个）
      */
     if (this.size > this.maxCacheLen) {
-      this.delete(this.keys().next().value)
+      const k = this.keys().next()?.value
+      if (k) {
+        this.delete(k)
+      }
     }
 
     return res
