@@ -7,6 +7,12 @@ import { deepClone } from './tools'
  * @param arr 全部数据的数组
  * @param curPage 当前页
  * @param pageSize 一页大小，默认 20
+ * @example
+ * ```ts
+ * const data = [1, 2, 3, 4, 5]
+ * getPageData(data, 2, 2) // [3, 4]
+ * getPageData(data, 3, 2) // [5]
+ * ```
  */
 export function getPageData<T>(arr: T[], curPage: number, pageSize = 20) {
   return arr.slice((curPage - 1) * pageSize, curPage * pageSize)
@@ -14,7 +20,13 @@ export function getPageData<T>(arr: T[], curPage: number, pageSize = 20) {
 
 /**
  * 对数组求和
+ * @param arr 数组
  * @param handler 可以对数组每一项进行操作，返回值将会被相加
+ * @example
+ * ```ts
+ * getSum([1, 2, 3]) // 6
+ * getSum([{ v: 1 }, { v: 2 }], i => i.v) // 3
+ * ```
  */
 export function getSum<T>(arr: T[], handler?: (item: T) => number): number {
   return arr.reduce(
@@ -261,6 +273,17 @@ export function arrToTree<T extends Record<string, any>>(
  * @param keyword 搜索关键字
  * @param data 数据
  * @param opts 配置项，包含搜索字段和是否忽略大小写
+ * @example
+ * ```ts
+ * const tree = [
+ *   { id: 1, name: '部门1', children: [
+ *     { id: 2, name: '研发部' },
+ *     { id: 3, name: '市场部' },
+ *   ]},
+ * ]
+ * searchTreeData('研', tree, { key: 'name' }) // 命中 id:2 的分支
+ * searchTreeData('部', tree, { key: 'name' }) // 返回包含匹配子树的结构
+ * ```
  */
 export function searchTreeData<T extends { children?: T[] }>(
   keyword: string,
@@ -309,6 +332,11 @@ export function searchTreeData<T extends { children?: T[] }>(
  * @param arr 数组
  * @param size 每个数组大小
  * @returns 返回二维数组
+ * @example
+ * ```ts
+ * arrToChunk([1, 2, 3, 4, 5], 2) // [[1, 2], [3, 4], [5]]
+ * arrToChunk([1, 2, 3], 5) // [[1], [2], [3]]
+ * ```
  */
 export function arrToChunk<T>(arr: T[], size: number): T[][] {
   if (size <= 1)
@@ -329,6 +357,16 @@ export function arrToChunk<T>(arr: T[], size: number): T[][] {
  * @param value 目标值
  * @param getValFn 获取目标值的函数，可以从对象中取值
  * @returns 索引，找不到返回 -1
+ * @example
+ * ```ts
+ * binarySearch([1, 2, 2, 3, 4], 2) // 1（返回第一个匹配值的索引）
+ * const users = [
+ *   { id: 1, name: 'a' },
+ *   { id: 2, name: 'b' },
+ *   { id: 3, name: 'c' },
+ * ]
+ * binarySearch(users, 2, u => u.id) // 1
+ * ```
  */
 export function binarySearch<T>(
   arr: T[],
@@ -358,6 +396,14 @@ export function binarySearch<T>(
 
 /**
  * 广度遍历
+ * @example
+ * ```ts
+ * const tree = [
+ *   { id: 1, children: [ { id: 2 }, { id: 3 } ] },
+ * ]
+ * bfsFind(tree, n => n.id === 3) // { id: 3 }
+ * bfsFind(tree, n => n.id === 4) // null
+ * ```
  */
 export function bfsFind<T extends { children?: T[] }>(
   arr: T[],
@@ -391,6 +437,14 @@ export function bfsFind<T extends { children?: T[] }>(
 
 /**
  * 深度遍历
+ * @example
+ * ```ts
+ * const tree = [
+ *   { id: 1, children: [ { id: 2 }, { id: 3 } ] },
+ * ]
+ * dfsFind(tree, n => n.id === 2) // { id: 2 }
+ * dfsFind(tree, n => n.id === 4) // null
+ * ```
  */
 export function dfsFind<T extends { children?: T[] }>(
   arr: T[],
@@ -419,6 +473,11 @@ export function dfsFind<T extends { children?: T[] }>(
  * @param genVal 一个生成数值的函数，用于填充数组
  * @param ArrayFn 填充数组的构造函数，默认 `Float32Array`
  * @returns 返回一个填充了指定生成函数数值的数组
+ * @example
+ * ```ts
+ * genTypedArr(3, i => i * i) // Float32Array(3) [0, 1, 4]
+ * genTypedArr(3, i => i, Uint16Array) // Uint16Array(3) [0, 1, 2]
+ * ```
  */
 export function genTypedArr<T extends AllTypedArrConstructor = Float32ArrayConstructor>(
   size: number,
@@ -437,6 +496,11 @@ export function genTypedArr<T extends AllTypedArrConstructor = Float32ArrayConst
  * 生成一个指定大小的数组，并用指定的生成函数填充
  * @param size 数组的长度
  * @param genVal 一个生成数值的函数，用于填充数组
+ * @example
+ * ```ts
+ * genArr(4, i => i * 2) // [0, 2, 4, 6]
+ * genArr(3, i => `item-${i}`) // ['item-0', 'item-1', 'item-2']
+ * ```
  */
 export function genArr<V>(
   size: number,
@@ -453,6 +517,12 @@ export function genArr<V>(
 /**
  * 比较两个数组是否相等，默认不在乎顺序。空数组返回 true
  * @param ignoreOrder 是否忽略顺序，默认 true
+ * @example
+ * ```ts
+ * arrIsEqual([1, 2, 3], [3, 2, 1]) // true（忽略顺序）
+ * arrIsEqual([1, 2, 3], [1, 2, 3], false) // true（严格顺序）
+ * arrIsEqual([1, 2], [1, 2, 3]) // false
+ * ```
  */
 export function arrIsEqual<T = string | number>(
   arr1: T[],
