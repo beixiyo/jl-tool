@@ -11,20 +11,13 @@
  */
 export class MinHeap<T extends HeapItem> {
   /** 存储堆数据的数组 */
-  readonly data: T[]
-
-  /**
-   * 创建一个新的最小堆实例
-   */
-  constructor() {
-    this.data = []
-  }
+  readonly data: T[] = []
 
   /**
    * 获取堆中元素的数量
    * @returns 堆中元素的数量
    */
-  get size() {
+  get size(): number {
     return this.data.length
   }
 
@@ -32,7 +25,7 @@ export class MinHeap<T extends HeapItem> {
    * 检查堆是否为空
    * @returns 如果堆为空则返回true，否则返回false
    */
-  isEmpty() {
+  isEmpty(): boolean {
     return this.data.length === 0
   }
 
@@ -40,7 +33,7 @@ export class MinHeap<T extends HeapItem> {
    * 返回堆顶元素但不移除它
    * @returns 堆顶元素，如果堆为空则返回undefined
    */
-  peek() {
+  peek(): T | undefined {
     return this.data[0]
   }
 
@@ -48,8 +41,10 @@ export class MinHeap<T extends HeapItem> {
    * 向堆中添加一个或多个元素
    * @param items 要添加到堆中的元素
    */
-  push(...items: T[]) {
-    items.forEach(item => this.pushOne(item))
+  push(...items: T[]): void {
+    for (const item of items) {
+      this.pushOne(item)
+    }
   }
 
   /**
@@ -73,9 +68,11 @@ export class MinHeap<T extends HeapItem> {
     let curIndex = 0
     while (curIndex < data.length) {
       let minIndex = curIndex
-      const [left, leftIndex] = this.getLeft(curIndex)
-      const [right, rightIndex] = this.getRight(curIndex)
+      const leftIndex = getLeftIndex(curIndex)
+      const rightIndex = getRightIndex(curIndex)
       const curItem = data[curIndex]
+      const left = data[leftIndex]
+      const right = data[rightIndex]
 
       if (
         leftIndex < data.length
@@ -95,7 +92,7 @@ export class MinHeap<T extends HeapItem> {
         break
       }
 
-      this.swap(curIndex, minIndex)
+      swapInArray(data, curIndex, minIndex)
       curIndex = minIndex
     }
 
@@ -106,64 +103,24 @@ export class MinHeap<T extends HeapItem> {
    * 向堆中添加单个元素并维护堆性质
    * @param item 要添加的元素
    */
-  private pushOne(item: T) {
+  private pushOne(item: T): void {
     const { data } = this
     data.push(item)
 
     /** 向上交换以维护最小堆性质 */
     let curIndex = data.length - 1
     while (curIndex > 0) {
-      const [parent, parentIndex] = this.getParent(curIndex)
+      const parentIndex = getParentIndex(curIndex)
+      const parent = data[parentIndex]
 
       if (item.sortIndex < parent.sortIndex) {
-        this.swap(curIndex, parentIndex)
+        swapInArray(data, curIndex, parentIndex)
         curIndex = parentIndex
       }
       else {
         break
       }
     }
-  }
-
-  /**
-   * 获取指定索引的父节点
-   * @param index 子节点的索引
-   * @returns 包含父节点和其索引的元组
-   */
-  private getParent(index: number): [T, number] {
-    const i = Math.floor((index - 1) / 2)
-    return [this.data[i], i]
-  }
-
-  /**
-   * 获取指定索引的左子节点
-   * @param index 父节点的索引
-   * @returns 包含左子节点和其索引的元组
-   */
-  private getLeft(index: number): [T, number] {
-    const i = index * 2 + 1
-    return [this.data[i], i]
-  }
-
-  /**
-   * 获取指定索引的右子节点
-   * @param index 父节点的索引
-   * @returns 包含右子节点和其索引的元组
-   */
-  private getRight(index: number): [T, number] {
-    const i = index * 2 + 2
-    return [this.data[i], i]
-  }
-
-  /**
-   * 交换数组中两个位置的元素
-   * @param i 第一个元素的索引
-   * @param j 第二个元素的索引
-   */
-  private swap(i: number, j: number) {
-    const temp = this.data[i]
-    this.data[i] = this.data[j]
-    this.data[j] = temp
   }
 }
 
@@ -180,20 +137,13 @@ export class MinHeap<T extends HeapItem> {
  */
 export class MaxHeap<T extends HeapItem> {
   /** 存储堆数据的数组 */
-  readonly data: T[]
-
-  /**
-   * 创建一个新的最大堆实例
-   */
-  constructor() {
-    this.data = []
-  }
+  readonly data: T[] = []
 
   /**
    * 获取堆中元素的数量
    * @returns 堆中元素的数量
    */
-  get size() {
+  get size(): number {
     return this.data.length
   }
 
@@ -201,7 +151,7 @@ export class MaxHeap<T extends HeapItem> {
    * 检查堆是否为空
    * @returns 如果堆为空则返回true，否则返回false
    */
-  isEmpty() {
+  isEmpty(): boolean {
     return this.data.length === 0
   }
 
@@ -209,7 +159,7 @@ export class MaxHeap<T extends HeapItem> {
    * 返回堆顶元素但不移除它
    * @returns 堆顶元素，如果堆为空则返回undefined
    */
-  peek() {
+  peek(): T | undefined {
     return this.data[0]
   }
 
@@ -217,8 +167,10 @@ export class MaxHeap<T extends HeapItem> {
    * 向堆中添加一个或多个元素
    * @param items 要添加到堆中的元素
    */
-  push(...items: T[]) {
-    items.forEach(item => this.pushOne(item))
+  push(...items: T[]): void {
+    for (const item of items) {
+      this.pushOne(item)
+    }
   }
 
   /**
@@ -242,10 +194,11 @@ export class MaxHeap<T extends HeapItem> {
     let curIndex = 0
     while (curIndex < data.length) {
       let maxIndex = curIndex
-      const
-        [left, leftIndex] = this.getLeft(curIndex)
-      const [right, rightIndex] = this.getRight(curIndex)
+      const leftIndex = getLeftIndex(curIndex)
+      const rightIndex = getRightIndex(curIndex)
       const curItem = data[curIndex]
+      const left = data[leftIndex]
+      const right = data[rightIndex]
 
       if (
         leftIndex < data.length
@@ -265,7 +218,7 @@ export class MaxHeap<T extends HeapItem> {
         break
       }
 
-      this.swap(curIndex, maxIndex)
+      swapInArray(data, curIndex, maxIndex)
       curIndex = maxIndex
     }
 
@@ -276,64 +229,24 @@ export class MaxHeap<T extends HeapItem> {
    * 向堆中添加单个元素并维护堆性质
    * @param item 要添加的元素
    */
-  private pushOne(item: T) {
+  private pushOne(item: T): void {
     const { data } = this
     data.push(item)
 
     /** 向上交换以维护最大堆性质 */
     let curIndex = data.length - 1
     while (curIndex > 0) {
-      const [parent, parentIndex] = this.getParent(curIndex)
+      const parentIndex = getParentIndex(curIndex)
+      const parent = data[parentIndex]
 
       if (item.sortIndex > parent.sortIndex) {
-        this.swap(curIndex, parentIndex)
+        swapInArray(data, curIndex, parentIndex)
         curIndex = parentIndex
       }
       else {
         break
       }
     }
-  }
-
-  /**
-   * 获取指定索引的父节点
-   * @param index 子节点的索引
-   * @returns 包含父节点和其索引的元组
-   */
-  private getParent(i: number): [T, number] {
-    const index = Math.floor((i - 1) / 2)
-    return [this.data[index], index]
-  }
-
-  /**
-   * 获取指定索引的左子节点
-   * @param index 父节点的索引
-   * @returns 包含左子节点和其索引的元组
-   */
-  private getLeft(i: number): [T, number] {
-    const index = 2 * i + 1
-    return [this.data[index], index]
-  }
-
-  /**
-   * 获取指定索引的右子节点
-   * @param index 父节点的索引
-   * @returns 包含右子节点和其索引的元组
-   */
-  private getRight(i: number): [T, number] {
-    const index = 2 * i + 2
-    return [this.data[index], index]
-  }
-
-  /**
-   * 交换数组中两个位置的元素
-   * @param i 第一个元素的索引
-   * @param j 第二个元素的索引
-   */
-  private swap(i: number, j: number) {
-    const temp = this.data[i]
-    this.data[i] = this.data[j]
-    this.data[j] = temp
   }
 }
 
@@ -345,4 +258,25 @@ export class MaxHeap<T extends HeapItem> {
 export interface HeapItem {
   /** 用于比较元素大小的索引值 */
   sortIndex: number
+}
+
+// ======================
+// * 共享工具函数
+// ======================
+function getParentIndex(index: number): number {
+  return Math.floor((index - 1) / 2)
+}
+
+function getLeftIndex(index: number): number {
+  return index * 2 + 1
+}
+
+function getRightIndex(index: number): number {
+  return index * 2 + 2
+}
+
+function swapInArray<T>(arr: T[], i: number, j: number): void {
+  const temp = arr[i]
+  arr[i] = arr[j]
+  arr[j] = temp
 }
