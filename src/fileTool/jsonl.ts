@@ -1,3 +1,5 @@
+/* eslint-disable ts/no-require-imports */
+
 /**
  * @description JSONL 文件操作工具
  */
@@ -70,8 +72,8 @@ export async function* readJsonlFile<T>(filePath: string): AsyncGenerator<T, voi
     return
   }
 
-  const fs = await import('node:fs')
-  const readline = await import('node:readline')
+  const fs = require('node:fs') as typeof import('node:fs')
+  const readline = require('node:readline') as typeof import('node:readline')
 
   const fileStream = fs.createReadStream(filePath)
   const rl = readline.createInterface({
@@ -102,9 +104,9 @@ export async function appendToJsonlFile(jsonArray: any[], filePath: string): Pro
     return
   }
 
-  const { appendFile, mkdir, readFile, writeFile } = await import('node:fs/promises')
-  const { existsSync } = await import('node:fs')
-  const { dirname } = await import('node:path')
+  const { appendFile, mkdir, readFile, writeFile } = require('node:fs/promises') as typeof import('node:fs/promises')
+  const { existsSync } = require('node:fs') as typeof import('node:fs')
+  const { dirname } = require('node:path') as typeof import('node:path')
 
   const dirPath = dirname(filePath)
   if (!existsSync(dirPath)) {

@@ -48,8 +48,6 @@ describe('随机数字', () => {
   })
 })
 
-
-
 it('截取字符串', () => {
   const str = '123456789'
   expect(cutStr(str, 6)).toBe('123...')

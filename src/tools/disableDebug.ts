@@ -56,10 +56,10 @@ export function disableDebug(debugOpts: DebugOpts) {
     input.type = 'password'
 
     const btn = document.createElement('button')
-    btn.innerText = btnText || '确定'
+    btn.textContent = btnText || '确定'
     btnStyleText && (btn.style.cssText = btnStyleText)
 
-    label.innerText = labelText || '你想干什么？'
+    label.textContent = labelText || '你想干什么？'
     label.appendChild(input)
     label.appendChild(btn)
 
@@ -91,6 +91,7 @@ export function disableDebug(debugOpts: DebugOpts) {
         location.reload()
       }
       else {
+        // eslint-disable-next-line no-alert
         alert('？')
       }
     })
@@ -141,6 +142,7 @@ function disableDebugAndContextMenu(disableF12 = true, disableMenu = true) {
  * 阻止调试
  */
 function preventDebug() {
+  // eslint-disable-next-line no-new-func
   const debug = new Function('debugger')
   const getOut = () => location.href = 'about:blank'
 

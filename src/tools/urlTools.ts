@@ -13,7 +13,7 @@ export function matchProtocol(url: string) {
  */
 export function isValidUrl(url: string): boolean {
   try {
-    createURL(url)
+    new URL(url)
     return true
   }
   catch {
@@ -60,7 +60,7 @@ export function getUrlQuery(url: string): Record<string, string> {
   const query: Record<string, string> = {}
   let queryString = ''
 
-  const urlObj = createURL(url, window.location.href)
+  const urlObj = new URL(url, window.location.href)
   queryString = urlObj.search.substring(1)
 
   if (queryString) {
@@ -83,7 +83,7 @@ export function getUrlQuery(url: string): Record<string, string> {
 export function getUrlPaths(url: string): string[] {
   let pathname = ''
 
-  const urlObj = createURL(url, window.location.href)
+  const urlObj = new URL(url, window.location.href)
   pathname = urlObj.pathname
 
   return pathname.split('/').filter(segment => segment !== '')
@@ -95,7 +95,7 @@ export function getUrlPaths(url: string): string[] {
  * @returns 主机名
  */
 export function getHostname(url: string): string {
-  const urlObj = createURL(url, window.location.href)
+  const urlObj = new URL(url, window.location.href)
   return urlObj.hostname
 }
 
@@ -105,7 +105,7 @@ export function getHostname(url: string): string {
  * @returns 协议 (不带冒号)
  */
 export function getProtocol(url: string): string {
-  const urlObj = createURL(url, window.location.href)
+  const urlObj = new URL(url, window.location.href)
   return urlObj.protocol.replace(':', '')
 }
 
@@ -115,23 +115,6 @@ export function getProtocol(url: string): string {
  * @returns 端口 (如果没有明确指定则返回空字符串)
  */
 export function getPort(url: string): string {
-  const urlObj = createURL(url, window.location.href)
+  const urlObj = new URL(url, window.location.href)
   return urlObj.port
-}
-
-/**
- * 创建URL对象（跨环境兼容）
- */
-export function createURL(url: string, base?: string): URL {
-  /** 优先使用全局URL（浏览器和现代Node.js都支持） */
-  if (typeof URL !== 'undefined') {
-    return new URL(url, base)
-  }
-  /** 兼容旧版Node.js */
-  if (typeof require !== 'undefined') {
-    // eslint-disable-next-line ts/no-require-imports
-    const { URL } = require('node:url')
-    return new URL(url, base)
-  }
-  throw new Error('URL is not supported in this environment')
 }

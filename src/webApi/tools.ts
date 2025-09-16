@@ -17,6 +17,7 @@ export async function openCamera(callbackOrVideoEl: ((stream: MediaStream) => vo
     case 'object':
       callbackOrVideoEl.srcObject = stream
       callbackOrVideoEl.play()
+      break
 
     default:
       break

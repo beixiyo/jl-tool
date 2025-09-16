@@ -1,4 +1,3 @@
-import fs from 'node:fs'
 import { checkIsBrowser } from '@/shared'
 
 export function loadEnv(envPath: string) {
@@ -7,6 +6,9 @@ export function loadEnv(envPath: string) {
   }
 
   try {
+    /** 动态导入以避免在浏览器端被静态打包器引入 */
+    // eslint-disable-next-line ts/no-require-imports
+    const fs = require('node:fs') as typeof import('node:fs')
     if (fs.existsSync(envPath)) {
       const envContent = fs.readFileSync(envPath, 'utf-8')
       const envLines = envContent.split('\n')
