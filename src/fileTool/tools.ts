@@ -4,6 +4,29 @@ import { getUrlContentLen, isValidUrl, matchProtocol } from '../tools/urlTools'
  * 用 `Blob` 下载
  * @param data 数据
  * @param fileName 文件名
+ * @param opts 下载选项
+ * @returns Promise<void>
+ *
+ * @example
+ * ```ts
+ * // 基础用法
+ * const textData = 'Hello, World!'
+ * downloadByData(textData, 'hello.txt')
+ *
+ * const jsonData = JSON.stringify({ name: 'John', age: 30 })
+ * downloadByData(jsonData, 'data.json', { mimeType: 'application/json' })
+ * ```
+ *
+ * @example
+ * ```ts
+ * // 下载二进制数据
+ * const buffer = new ArrayBuffer(8)
+ * downloadByData(buffer, 'data.bin')
+ *
+ * // 下载 Blob 数据
+ * const blob = new Blob(['Binary data'], { type: 'application/octet-stream' })
+ * downloadByData(blob, 'file.bin')
+ * ```
  */
 export function downloadByData(
   data: Blob | ArrayBuffer | string,
@@ -34,6 +57,24 @@ export function downloadByData(
  * 用 url 下载
  * @param url 链接
  * @param fileName 文件名
+ * @param options 下载选项
+ * @returns Promise<void>
+ *
+ * @example
+ * ```ts
+ * // 基础用法
+ * await downloadByUrl('https://example.com/file.pdf', 'document.pdf')
+ * await downloadByUrl('https://example.com/image.jpg', 'photo.jpg')
+ * ```
+ *
+ * @example
+ * ```ts
+ * // 带选项的下载
+ * await downloadByUrl('http://example.com/file.txt', 'data.txt', {
+ *   matchProto: true, // 匹配当前协议
+ *   needClearObjectURL: true // 自动清理对象URL
+ * })
+ * ```
  */
 export async function downloadByUrl(
   url: string,
@@ -67,6 +108,29 @@ export async function downloadByUrl(
 
 /**
  * Blob 转 Base64
+ * @param blob Blob 对象
+ * @returns Promise<string> Base64 字符串
+ *
+ * @example
+ * ```ts
+ * // 基础用法
+ * const blob = new Blob(['Hello, World!'], { type: 'text/plain' })
+ * const base64 = await blobToBase64(blob)
+ * console.log(base64) // data:text/plain;base64,SGVsbG8sIFdvcmxkIQ==
+ * ```
+ *
+ * @example
+ * ```ts
+ * // 处理图片文件
+ * const fileInput = document.querySelector('input[type="file"]')
+ * fileInput.addEventListener('change', async (e) => {
+ *   const file = e.target.files[0]
+ *   if (file) {
+ *     const base64 = await blobToBase64(file)
+ *     console.log('图片Base64:', base64)
+ *   }
+ * })
+ * ```
  */
 export function blobToBase64(blob: Blob) {
   return new Promise<string>((resolve, reject) => {
@@ -84,8 +148,31 @@ export function blobToBase64(blob: Blob) {
 
 /**
  * Base64 转 Blob
- * @param base64Str base64
+ * @param base64Str base64 字符串
  * @param mimeType 文件类型，默认 application/octet-stream
+ * @returns Blob 对象
+ *
+ * @example
+ * ```ts
+ * // 基础用法
+ * const base64 = 'SGVsbG8sIFdvcmxkIQ==' // "Hello, World!" 的 Base64
+ * const blob = base64ToBlob(base64, 'text/plain')
+ * console.log(blob) // Blob 对象
+ * ```
+ *
+ * @example
+ * ```ts
+ * // 处理图片 Base64
+ * const imageBase64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='
+ * const blob = base64ToBlob(imageBase64, 'image/png')
+ *
+ * // 创建下载链接
+ * const url = URL.createObjectURL(blob)
+ * const a = document.createElement('a')
+ * a.href = url
+ * a.download = 'image.png'
+ * a.click()
+ * ```
  */
 export function base64ToBlob(
   base64Str: string,
@@ -120,6 +207,28 @@ export function base64ToBlob(
 /**
  * HTTP(S) URL 转 Blob
  * @param url 资源链接
+ * @returns Promise<Blob> Blob 对象
+ *
+ * @example
+ * ```ts
+ * // 基础用法
+ * const blob = await urlToBlob('https://example.com/image.jpg')
+ * console.log(blob.type) // 'image/jpeg'
+ * console.log(blob.size) // 文件大小
+ * ```
+ *
+ * @example
+ * ```ts
+ * // 下载并处理文件
+ * try {
+ *   const blob = await urlToBlob('https://example.com/data.json')
+ *   const text = await blob.text()
+ *   const data = JSON.parse(text)
+ *   console.log(data)
+ * } catch (error) {
+ *   console.error('下载失败:', error)
+ * }
+ * ```
  */
 export async function urlToBlob(url: string): Promise<Blob> {
   const response = await fetch(url)
@@ -131,9 +240,36 @@ export async function urlToBlob(url: string): Promise<Blob> {
 
 /**
  * 检查文件大小是否超过限制
- * @param files 文件数据 或 URL，可以是单个文件或数组
+ * @param files 文件数据或 URL，可以是单个文件或数组
  * @param maxSize 最大大小（字节），默认 100MB，即 1024 * 1024 * 100
  * @returns 返回文件总大小
+ *
+ * @example
+ * ```ts
+ * // 基础用法
+ * const files = [file1, file2, file3]
+ * try {
+ *   const totalSize = await checkFileSize(files, 50 * 1024 * 1024) // 50MB
+ *   console.log(`文件总大小: ${totalSize} 字节`)
+ * } catch (error) {
+ *   console.error('文件过大:', error.message)
+ * }
+ * ```
+ *
+ * @example
+ * ```ts
+ * // 检查单个文件
+ * const file = new Blob(['content'], { type: 'text/plain' })
+ * const size = await checkFileSize(file, 1024) // 1KB 限制
+ * console.log(`文件大小: ${size} 字节`)
+ * ```
+ *
+ * @example
+ * ```ts
+ * // 检查 URL 文件
+ * const urls = ['https://example.com/file1.pdf', 'https://example.com/file2.pdf']
+ * const totalSize = await checkFileSize(urls, 10 * 1024 * 1024) // 10MB
+ * ```
  */
 export async function checkFileSize(
   files: (Blob | ArrayBuffer | string)[] | (Blob | ArrayBuffer | string),
@@ -280,7 +416,6 @@ interface DownloadOptions {
   matchProto?: boolean
   /**
    * 是否自动清除通过 `URL.createObjectURL` 创建的链接 (仅对 blob: URL 有效)
-   * @default true
    */
   needClearObjectURL?: boolean
   /**

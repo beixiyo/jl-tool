@@ -57,6 +57,28 @@ export class WS {
     return !window.navigator.onLine
   }
 
+  /**
+   * 发送消息
+   * @param message 要发送的消息，支持字符串、ArrayBuffer 或 Blob
+   *
+   * @example
+   * ```ts
+   * // 基础用法
+   * const ws = new WS({ url: 'ws://localhost:8080' })
+   * ws.connect()
+   * ws.send('Hello WebSocket!')
+   * ws.send(JSON.stringify({ type: 'message', data: 'Hello' }))
+   * ```
+   *
+   * @example
+   * ```ts
+   * // 发送二进制数据
+   * const ws = new WS({ url: 'ws://localhost:8080' })
+   * ws.connect()
+   * const buffer = new ArrayBuffer(8)
+   * ws.send(buffer)
+   * ```
+   */
   send(message: Parameters<WebSocket['send']>[0]) {
     if (this.socket && this.isConnected) {
       this.socket.send(message)
@@ -67,9 +89,34 @@ export class WS {
   }
 
   /**
-   * 开启连接并初始化事件（报错、关闭、网络状态变更等）。
-   * 如果已经连接，则直接返回 socket，不做任何操作
-   * @returns WebSocket
+   * 开启连接并初始化事件（报错、关闭、网络状态变更等）
+   * @returns WebSocket 实例
+   *
+   * @example
+   * ```ts
+   * // 基础用法
+   * const ws = new WS({
+   *   url: 'ws://localhost:8080',
+   *   heartbeatInterval: 3000,
+   *   genHeartbeatMsg: () => ({ type: 'ping' })
+   * })
+   *
+   * const socket = ws.connect()
+   * socket.addEventListener('message', (event) => {
+   *   console.log('收到消息:', event.data)
+   * })
+   * ```
+   *
+   * @example
+   * ```ts
+   * // 带协议的子协议
+   * const ws = new WS({
+   *   url: 'ws://localhost:8080',
+   *   protocols: ['chat', 'notification']
+   * })
+   *
+   * const socket = ws.connect()
+   * ```
    */
   connect(): WebSocket {
     if (this.isConnected) {
@@ -86,6 +133,30 @@ export class WS {
 
   /**
    * 关闭连接并清除事件
+   *
+   * @example
+   * ```ts
+   * // 基础用法
+   * const ws = new WS({ url: 'ws://localhost:8080' })
+   * ws.connect()
+   *
+   * // 关闭连接
+   * ws.close()
+   * ```
+   *
+   * @example
+   * ```ts
+   * // 在组件卸载时关闭连接
+   * const ws = new WS({ url: 'ws://localhost:8080' })
+   * ws.connect()
+   *
+   * // 组件卸载时
+   * useEffect(() => {
+   *   return () => {
+   *     ws.close()
+   *   }
+   * }, [])
+   * ```
    */
   close() {
     if (this.socket) {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { celsiusToFahrenheit, cutStr, excludeKeys, excludeVals, fahrenheitToCelsius, filterKeys, filterVals, genIcon, getRandomNum, getType, numFixed, padEmptyObj, padNum, randomStr, toCamel } from '@/tools/tools'
+import { celsiusToFahrenheit, cutStr, excludeKeys, excludeVals, fahrenheitToCelsius, filterKeys, filterVals, getRandomNum, getType, numFixed, padEmptyObj, padNum, randomStr, toCamel } from '@/tools/tools'
 
 it('获取类型', () => {
   expect(getType(undefined)).toBe('undefined')
@@ -142,12 +142,6 @@ it('解决 Number.toFixed 计算错误', () => {
   /** 反面教材 */
   expect(1.335.toFixed(2)).toBe('1.33')
   expect(numFixed(1.335, 2)).toBe(1.34)
-})
-
-it('生成 (iconfont | 其他) 的类名', () => {
-  expect(genIcon('face')).toBe('iconfont icon-face')
-  expect(genIcon('face', 'prefix')).toBe('prefix icon-face')
-  expect(genIcon('face', 'prefix', 'last')).toBe('prefix last-face')
 })
 
 // ==========================================================

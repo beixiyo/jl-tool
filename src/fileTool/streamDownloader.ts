@@ -58,7 +58,27 @@ export async function createStreamDownloader(
   }
 }
 
-/** 尝试使用 File System Access API */
+/**
+ * 使用 File System Access API 进行流式下载
+ * @param filename 文件名
+ * @param opts 下载选项
+ * @returns StreamDownloader 实例
+ *
+ * @example
+ * ```ts
+ * // 基础用法
+ * const downloader = await filePickerDownload('data.zip', {
+ *   mimeType: 'application/zip'
+ * })
+ *
+ * // 添加数据块
+ * await downloader.append(new Uint8Array([1, 2, 3, 4]))
+ * await downloader.append(new Uint8Array([5, 6, 7, 8]))
+ *
+ * // 完成下载
+ * await downloader.complete()
+ * ```
+ */
 async function filePickerDownload(
   filename: string,
   opts: Required<DownloaderOpts>,
@@ -109,7 +129,27 @@ async function filePickerDownload(
   }
 }
 
-/** 回退机制：累积 Uint8Array，完成后创建 Blob 下载 */
+/**
+ * 回退机制：累积 Uint8Array，完成后创建 Blob 下载
+ * @param filename 文件名
+ * @param opts 下载选项
+ * @returns StreamDownloader 实例
+ *
+ * @example
+ * ```ts
+ * // 基础用法
+ * const downloader = await blobDonwload('data.txt', {
+ *   mimeType: 'text/plain'
+ * })
+ *
+ * // 添加数据块
+ * await downloader.append(new Uint8Array([72, 101, 108, 108, 111])) // "Hello"
+ * await downloader.append(new Uint8Array([32, 87, 111, 114, 108, 100])) // " World"
+ *
+ * // 完成下载
+ * await downloader.complete()
+ * ```
+ */
 async function blobDonwload(
   filename: string,
   opts: Required<DownloaderOpts>,
@@ -147,7 +187,31 @@ async function blobDonwload(
   }
 }
 
-/** Service Worker 下载 */
+/**
+ * 使用 Service Worker 进行流式下载
+ * @param filename 文件名
+ * @param opts 下载选项，必须包含 swPath
+ * @returns StreamDownloader 实例或 false
+ *
+ * @example
+ * ```ts
+ * // 基础用法
+ * const downloader = await serviceWorkerDownload('large-file.zip', {
+ *   swPath: '/sw.js',
+ *   mimeType: 'application/zip',
+ *   contentLength: 1024 * 1024 * 10 // 10MB
+ * })
+ *
+ * if (downloader) {
+ *   // 添加数据块
+ *   await downloader.append(chunk1)
+ *   await downloader.append(chunk2)
+ *
+ *   // 完成下载
+ *   await downloader.complete()
+ * }
+ * ```
+ */
 async function serviceWorkerDownload(
   filename: string,
   opts: PartRequired<ServiceWorkerDownloadOpts, 'swPath'>,

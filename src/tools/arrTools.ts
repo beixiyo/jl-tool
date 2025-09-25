@@ -436,14 +436,50 @@ export function bfsFind<T extends { children?: T[] }>(
 }
 
 /**
- * 深度遍历
+ * 深度遍历查找
+ * @param arr 树形结构数组
+ * @param condition 查找条件函数
+ * @returns 找到的节点，未找到返回 null
+ *
  * @example
  * ```ts
+ * // 基础用法
  * const tree = [
- *   { id: 1, children: [ { id: 2 }, { id: 3 } ] },
+ *   { id: 1, name: '根节点', children: [
+ *     { id: 2, name: '子节点1' },
+ *     { id: 3, name: '子节点2' }
+ *   ] },
  * ]
- * dfsFind(tree, n => n.id === 2) // { id: 2 }
+ * dfsFind(tree, n => n.id === 2) // { id: 2, name: '子节点1' }
  * dfsFind(tree, n => n.id === 4) // null
+ * ```
+ *
+ * @example
+ * ```ts
+ * // 复杂条件查找
+ * const menu = [
+ *   { id: 1, name: '首页', path: '/', children: [
+ *     { id: 2, name: '用户管理', path: '/users', children: [
+ *       { id: 3, name: '用户列表', path: '/users/list' }
+ *     ]}
+ *   ]}
+ * ]
+ *
+ * const found = dfsFind(menu, item => item.path === '/users/list')
+ * console.log(found) // { id: 3, name: '用户列表', path: '/users/list' }
+ * ```
+ *
+ * @example
+ * ```ts
+ * // 查找包含特定属性的节点
+ * const data = [
+ *   { id: 1, type: 'folder', children: [
+ *     { id: 2, type: 'file', name: 'test.txt' }
+ *   ]}
+ * ]
+ *
+ * const file = dfsFind(data, item => item.type === 'file')
+ * console.log(file) // { id: 2, type: 'file', name: 'test.txt' }
  * ```
  */
 export function dfsFind<T extends { children?: T[] }>(
