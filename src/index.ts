@@ -8,6 +8,7 @@ export * from '@/dataStructure'
 export * from '@/domTools'
 export * from '@/env'
 export * from '@/fileTool'
+export * from '@/markdown'
 
 export * from '@/math'
 export * from '@/net'

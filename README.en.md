@@ -57,6 +57,7 @@ yarn add @jl-org/tool
 | [`isStr`](./src/shared/is.ts) | Check if value is string |
 | [`isObj`](./src/shared/is.ts) | Check if value is object |
 | [`isXXX`](./src/shared/is.ts) | More type checks... |
+| [`parseMDCode`](./src/markdown/parseCode.ts) | Parse code blocks from markdown |
 
 ### 📊 Array Processing
 

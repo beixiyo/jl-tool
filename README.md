@@ -57,6 +57,7 @@ yarn add @jl-org/tool
 | [`isStr`](./src/shared/is.ts) | 判断是否为字符串 |
 | [`isObj`](./src/shared/is.ts) | 判断是否为对象 |
 | [`isXXX`](./src/shared/is.ts) | 更多判断... |
+| [`parseMDCode`](./src/markdown/parseCode.ts) | 解析 markdown 中的代码块 |
 
 ### 📊 数组处理
 
