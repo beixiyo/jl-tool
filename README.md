@@ -115,7 +115,10 @@ yarn add @jl-org/tool
 - [`concurrentTask`](./src/net/concurrentTask.ts) - 并发执行异步任务
 - [`retryTask`](./src/net/retryTask.ts) - 失败后自动重试
 - [`WS`](./src/net/WS.ts) - 自动重连的WebSocket
+
+### 📊 数据解析
 - [`StreamJsonParser`](./src/tools/StreamJsonParser.ts) - 流式解析JSON，适用于SSE
+- [`StreamSingleXmlParser`](./src/tools/StreamSingleXmlParser.ts) - 流式解析单层 XML，适用于 AI 结构化流式输出
 
 ### 📄 文件处理
 

@@ -115,7 +115,10 @@ yarn add @jl-org/tool
 - [`concurrentTask`](./src/net/concurrentTask.ts) - Execute async tasks concurrently
 - [`retryTask`](./src/net/retryTask.ts) - Automatic retry on failure
 - [`WS`](./src/net/WS.ts) - Auto-reconnecting WebSocket
-- [`StreamJsonParser`](./src/tools/StreamJsonParser.ts) - Stream JSON parser for SSE
+
+### 📊 Data Parsing
+- [`StreamJsonParser`](./src/tools/StreamJsonParser.ts) - Stream JSON parsing, suitable for SSE
+- [`StreamSingleXmlParser`](./src/tools/StreamSingleXmlParser.ts) - Stream single-layer XML parsing, suitable for AI structured streaming output
 
 ### 📄 File Processing
 
