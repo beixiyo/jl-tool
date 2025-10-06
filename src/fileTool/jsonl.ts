@@ -1,9 +1,8 @@
-/* eslint-disable ts/no-require-imports */
-
 /**
  * @description JSONL 文件操作工具
  */
 
+import { createRequire } from 'node:module'
 import { checkIsBrowser } from '@/shared'
 
 /**
@@ -72,8 +71,21 @@ export async function* readJsonlFile<T>(filePath: string): AsyncGenerator<T, voi
     return
   }
 
-  const fs = require('node:fs') as typeof import('node:fs')
-  const readline = require('node:readline') as typeof import('node:readline')
+  /** 使用 createRequire 以兼容 ESM 和 CJS 模式 */
+  let fs: typeof import('node:fs')
+  let readline: typeof import('node:readline')
+
+  if (typeof require !== 'undefined') {
+    // CJS 环境，直接使用 require
+    fs = require('node:fs') as typeof import('node:fs')
+    readline = require('node:readline') as typeof import('node:readline')
+  }
+  else {
+    // ESM 环境，使用 createRequire 创建 require 函数
+    const require = createRequire(import.meta.url)
+    fs = require('node:fs') as typeof import('node:fs')
+    readline = require('node:readline') as typeof import('node:readline')
+  }
 
   const fileStream = fs.createReadStream(filePath)
   const rl = readline.createInterface({
@@ -104,9 +116,28 @@ export async function appendToJsonlFile(jsonArray: any[], filePath: string): Pro
     return
   }
 
-  const { appendFile, mkdir, readFile, writeFile } = require('node:fs/promises') as typeof import('node:fs/promises')
-  const { existsSync } = require('node:fs') as typeof import('node:fs')
-  const { dirname } = require('node:path') as typeof import('node:path')
+  /** 使用 createRequire 以兼容 ESM 和 CJS 模式 */
+  let fsPromises: typeof import('node:fs/promises')
+  let fs: typeof import('node:fs')
+  let path: typeof import('node:path')
+
+  if (typeof require !== 'undefined') {
+    // CJS 环境，直接使用 require
+    fsPromises = require('node:fs/promises') as typeof import('node:fs/promises')
+    fs = require('node:fs') as typeof import('node:fs')
+    path = require('node:path') as typeof import('node:path')
+  }
+  else {
+    // ESM 环境，使用 createRequire 创建 require 函数
+    const require = createRequire(import.meta.url)
+    fsPromises = require('node:fs/promises') as typeof import('node:fs/promises')
+    fs = require('node:fs') as typeof import('node:fs')
+    path = require('node:path') as typeof import('node:path')
+  }
+
+  const { appendFile, mkdir, readFile, writeFile } = fsPromises
+  const { existsSync } = fs
+  const { dirname } = path
 
   const dirPath = dirname(filePath)
   if (!existsSync(dirPath)) {

@@ -122,14 +122,14 @@ export class StreamSingleXmlParser {
     let i = 0
     while (i < this.buffer.length) {
       if (!this.isInsideContent) {
-        // 寻找开始标签
+        /** 寻找开始标签 */
         const tagStart = this.buffer.indexOf('<', i)
         if (tagStart === -1) {
-          // 没有找到标签，可能是纯文本内容
+          /** 没有找到标签，可能是纯文本内容 */
           if (this.isInsideContent && this.currentTag) {
             const text = this.buffer.substring(i)
             this.contentBuffer += text
-            // 设置当前内容
+            /** 设置当前内容 */
             this.result[this.currentTag] = this.contentBuffer
           }
           break
@@ -137,8 +137,10 @@ export class StreamSingleXmlParser {
 
         const tagEnd = this.buffer.indexOf('>', tagStart)
         if (tagEnd === -1) {
-          // 标签不完整，等待更多数据
-          // 如果有未完成的标签，设置当前内容
+          /**
+           * 标签不完整，等待更多数据
+           * 如果有未完成的标签，设置当前内容
+           */
           if (this.currentTag && this.contentBuffer) {
             this.result[this.currentTag] = this.contentBuffer
           }
@@ -147,7 +149,7 @@ export class StreamSingleXmlParser {
 
         const tagContent = this.buffer.substring(tagStart + 1, tagEnd)
 
-        // 检查是否是自闭合标签
+        /** 检查是否是自闭合标签 */
         if (tagContent.endsWith('/')) {
           const tagName = tagContent.slice(0, -1)
           if (tagName) {
@@ -159,11 +161,11 @@ export class StreamSingleXmlParser {
           continue
         }
 
-        // 检查是否是结束标签
+        /** 检查是否是结束标签 */
         if (tagContent.startsWith('/')) {
           const endTag = tagContent.substring(1)
           if (this.currentTag === endTag) {
-            // 找到匹配的结束标签
+            /** 找到匹配的结束标签 */
             this.result[this.currentTag] = this.contentBuffer
             console.log(`✅ 标签完成: ${this.currentTag} = "${this.contentBuffer}"`)
             this.currentTag = null
@@ -173,8 +175,9 @@ export class StreamSingleXmlParser {
             i = 0
             continue
           }
-        } else {
-          // 开始标签
+        }
+        else {
+          /** 开始标签 */
           this.currentTag = tagContent
           this.isInsideContent = true
           this.contentBuffer = ''
@@ -183,11 +186,12 @@ export class StreamSingleXmlParser {
           i = 0
           continue
         }
-      } else {
-        // 在内容中，寻找结束标签或自闭合标签
+      }
+      else {
+        /** 在内容中，寻找结束标签或自闭合标签 */
         const tagStart = this.buffer.indexOf('<', i)
         if (tagStart === -1) {
-          // 没有找到标签，所有内容都是文本
+          /** 没有找到标签，所有内容都是文本 */
           const text = this.buffer.substring(i)
           this.contentBuffer += text
           console.log(`📝 内容更新: "${text}" (累计: "${this.contentBuffer}")`)
@@ -195,11 +199,11 @@ export class StreamSingleXmlParser {
           break
         }
 
-        // 检查是否是结束标签
+        /** 检查是否是结束标签 */
         if (this.buffer[tagStart + 1] === '/') {
           const tagEnd = this.buffer.indexOf('>', tagStart)
           if (tagEnd === -1) {
-            // 结束标签不完整，等待更多数据
+            /** 结束标签不完整，等待更多数据 */
             const text = this.buffer.substring(i, tagStart)
             this.contentBuffer += text
             console.log(`📝 内容更新: "${text}" (累计: "${this.contentBuffer}")`)
@@ -208,7 +212,7 @@ export class StreamSingleXmlParser {
 
           const endTag = this.buffer.substring(tagStart + 2, tagEnd)
           if (this.currentTag === endTag) {
-            // 找到匹配的结束标签
+            /** 找到匹配的结束标签 */
             const text = this.buffer.substring(i, tagStart)
             this.contentBuffer += text
 
@@ -223,14 +227,14 @@ export class StreamSingleXmlParser {
           }
         }
 
-        // 检查是否是自闭合标签
+        /** 检查是否是自闭合标签 */
         const tagEnd = this.buffer.indexOf('>', tagStart)
         if (tagEnd !== -1) {
           const tagContent = this.buffer.substring(tagStart + 1, tagEnd)
           if (tagContent.endsWith('/')) {
             const tagName = tagContent.slice(0, -1)
             if (tagName === this.currentTag) {
-              // 找到匹配的自闭合标签
+              /** 找到匹配的自闭合标签 */
               const text = this.buffer.substring(i, tagStart)
               this.contentBuffer += text
 
@@ -244,8 +248,9 @@ export class StreamSingleXmlParser {
               continue
             }
           }
-        } else {
-          // 标签不完整，等待更多数据
+        }
+        else {
+          /** 标签不完整，等待更多数据 */
           const text = this.buffer.substring(i, tagStart)
           this.contentBuffer += text
           console.log(`📝 内容更新: "${text}" (累计: "${this.contentBuffer}")`)
@@ -256,7 +261,7 @@ export class StreamSingleXmlParser {
       }
     }
 
-    // 如果有未完成的标签，设置当前内容
+    /** 如果有未完成的标签，设置当前内容 */
     if (this.currentTag) {
       this.result[this.currentTag] = this.contentBuffer
     }

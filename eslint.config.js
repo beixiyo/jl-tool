@@ -48,6 +48,7 @@ export default antfu({
       'style/max-statements-per-line': 'off', /** 允许每行语句数量不超过 1 */
       'no-case-declarations': 'off',
       'no-cond-assign': 'off',
+      'ts/no-require-imports': 'off', /** 允许使用 require 导入模块 */
 
       /**
        * 这个配置没用，还是删除换行，几十年了也不修复

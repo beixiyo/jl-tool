@@ -1,3 +1,4 @@
+import { createRequire } from 'node:module'
 import { checkIsBrowser } from '@/shared'
 
 export function loadEnv(envPath: string) {
@@ -6,9 +7,18 @@ export function loadEnv(envPath: string) {
   }
 
   try {
-    /** 动态导入以避免在浏览器端被静态打包器引入 */
-    // eslint-disable-next-line ts/no-require-imports
-    const fs = require('node:fs') as typeof import('node:fs')
+    /** 使用 createRequire 以兼容 ESM 和 CJS 模式 */
+    let fs: typeof import('node:fs')
+
+    if (typeof require !== 'undefined') {
+      // CJS 环境，直接使用 require
+      fs = require('node:fs') as typeof import('node:fs')
+    }
+    else {
+      // ESM 环境，使用 createRequire 创建 require 函数
+      const require = createRequire(import.meta.url)
+      fs = require('node:fs') as typeof import('node:fs')
+    }
     if (fs.existsSync(envPath)) {
       const envContent = fs.readFileSync(envPath, 'utf-8')
       const envLines = envContent.split('\n')
