@@ -1,6 +1,6 @@
 {
   "name": "@jl-org/tool",
-  "version": "3.2.0",
+  "version": "3.2.1",
   "description": "JS的瑞士军刀",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
@@ -22,11 +22,11 @@
     },
     "./node": {
       "require": {
-        "types": "./dist/typings/node/index.d.ts",
+        "types": "./dist/node/typings/node/index.d.ts",
         "default": "./dist/node/index.cjs"
       },
       "import": {
-        "types": "./dist/typings/node/index.d.ts",
+        "types": "./dist/node/typings/node/index.d.ts",
         "default": "./dist/node/index.js"
       }
     }
