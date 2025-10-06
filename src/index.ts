@@ -6,7 +6,6 @@ export * from '@/channel'
 
 export * from '@/dataStructure'
 export * from '@/domTools'
-export * from '@/env'
 export * from '@/fileTool'
 export * from '@/markdown'
 
@@ -31,8 +30,8 @@ export * from '@/tools/preload'
 export * from '@/tools/scheduleTask'
 export * from '@/tools/StreamJsonParser'
 export * from '@/tools/StreamSingleXmlParser'
-export * from '@/tools/theme'
 
+export * from '@/tools/theme'
 export * from '@/tools/timer'
 export * from '@/tools/tools'
 export * from '@/tools/typewriterEffect'

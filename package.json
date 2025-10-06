@@ -1,6 +1,6 @@
 {
   "name": "@jl-org/tool",
-  "version": "3.1.4",
+  "version": "3.2.0",
   "description": "JS的瑞士军刀",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
@@ -10,17 +10,29 @@
     "/dist"
   ],
   "exports": {
-    "require": {
-      "types": "./dist/typings/index.d.ts",
-      "default": "./dist/index.cjs"
+    ".": {
+      "require": {
+        "types": "./dist/typings/index.d.ts",
+        "default": "./dist/index.cjs"
+      },
+      "import": {
+        "types": "./dist/typings/index.d.ts",
+        "default": "./dist/index.js"
+      }
     },
-    "import": {
-      "types": "./dist/typings/index.d.ts",
-      "default": "./dist/index.js"
+    "./node": {
+      "require": {
+        "types": "./dist/typings/node/index.d.ts",
+        "default": "./dist/node/index.cjs"
+      },
+      "import": {
+        "types": "./dist/typings/node/index.d.ts",
+        "default": "./dist/node/index.js"
+      }
     }
   },
   "scripts": {
-    "build": "run-p build:only gen-doc",
+    "build": "run-p build:only",
     "build:only": "rollup -c && tsc-alias",
     "prepublishOnly": "npm run build",
     "------doc------": "",

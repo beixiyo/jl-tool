@@ -23,6 +23,7 @@
   },
   "include": [
     "src/**/*.ts",
+    "node/**/*.ts",
     "test/**/*.ts"
   ],
   "typedocOptions": {

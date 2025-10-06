@@ -7,6 +7,7 @@ import { defineConfig } from 'rollup'
 import clear from 'rollup-plugin-clear'
 
 export default defineConfig([
+  // 通用版本 (浏览器兼容)
   {
     input: 'src/index.ts',
     output: [
@@ -14,8 +15,7 @@ export default defineConfig([
       { file: 'dist/index.js', format: 'es' },
     ],
     plugins: [
-      nodeResolve(), // 开启`node_modules`查找模块功能
-      terser(),
+      ...getCommonPlugins(),
       typescript({
         compilerOptions: {
           rootDir: './src',
@@ -25,16 +25,22 @@ export default defineConfig([
         targets: ['dist'],
         watch: true,
       }),
+    ],
+  },
 
-      alias({
-        entries: [
-          {
-            find: '@',
-            replacement: fileURLToPath(
-              new URL('src', import.meta.url),
-            ),
-          },
-        ],
+  // Node.js 版本
+  {
+    input: 'node/index.ts',
+    output: [
+      { file: 'dist/node/index.cjs', format: 'cjs' },
+      { file: 'dist/node/index.js', format: 'es' },
+    ],
+    plugins: [
+      ...getCommonPlugins(),
+      typescript({
+        compilerOptions: {
+          rootDir: './',
+        },
       }),
     ],
   },
@@ -51,3 +57,20 @@ export default defineConfig([
     ],
   },
 ])
+
+function getCommonPlugins() {
+  return [
+    nodeResolve(), // 开启 node_modules 查找模块功能
+    terser(),
+    alias({
+      entries: [
+        {
+          find: '@',
+          replacement: fileURLToPath(
+            new URL('src', import.meta.url),
+          ),
+        },
+      ],
+    }),
+  ]
+}

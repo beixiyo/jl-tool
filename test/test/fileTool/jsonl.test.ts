@@ -2,17 +2,19 @@ import { promises as fs } from 'node:fs'
 import { join } from 'node:path'
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
+  jsonlToJson,
+  jsonToJsonl,
+} from '@/fileTool/jsonl'
+import {
   appendToJsonlFile,
   everyWithJsonlFile,
   filterJsonlFile,
   findIndexWithJsonlFile,
   findWithJsonlFile,
-  jsonlToJson,
-  jsonToJsonl,
   mapJsonlFile,
   readJsonlFile,
   someWithJsonlFile,
-} from '@/fileTool/jsonl'
+} from '../../../node/jsonl'
 
 /** 创建临时测试目录 */
 const testDir = join(__dirname, 'temp')

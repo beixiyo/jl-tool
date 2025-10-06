@@ -6,7 +6,7 @@
  */
 import fs from 'node:fs'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { getEnv, loadEnv } from '@/env'
+import { getEnv, loadEnv } from '../../../node/env'
 
 // Mock fs 模块
 vi.mock('node:fs')
