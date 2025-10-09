@@ -16,6 +16,9 @@ import {
   someWithJsonlFile,
 } from '../../../node/jsonl'
 
+// 设置测试环境为 node
+// @vitest-environment node
+
 /** 创建临时测试目录 */
 const testDir = join(__dirname, 'temp')
 const testFile = join(testDir, 'test.jsonl')

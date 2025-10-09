@@ -175,6 +175,13 @@ yarn add @jl-org/tool
 | [`doubleKeyDown`](./src/tools/eventTools.ts) | 双击键盘事件 |
 | [`typewriterEffect`](./src/tools/typewriterEffect.ts) | 模拟打字机效果 |
 
+### 🔧 环境变量管理 (Node.js)
+
+| 函数 | 说明 |
+|------|------|
+| [`loadEnv`](./node/env/loadEnv.ts) | 加载环境变量文件，支持多环境自动切换 |
+| [`getEnv`](./node/env/getEnv.ts) | 读取环境变量，支持默认值和必需检查 |
+
 ---
 
 ## 💼 使用示例

@@ -175,6 +175,13 @@ yarn add @jl-org/tool
 | [`doubleKeyDown`](./src/tools/eventTools.ts) | Double key press events |
 | [`typewriterEffect`](./src/tools/typewriterEffect.ts) | Simulate typewriter effect |
 
+### 🔧 Environment Variables (Node.js)
+
+| Function | Description |
+|----------|-------------|
+| [`loadEnv`](./node/env/loadEnv.ts) | Load environment files with multi-environment auto-switching |
+| [`getEnv`](./node/env/getEnv.ts) | Read environment variables with default values and required checks |
+
 ---
 
 ## 💼 Usage Examples
