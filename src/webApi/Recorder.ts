@@ -1,3 +1,5 @@
+import { downloadByData } from '@/fileTool/tools'
+
 /**
  * 录音机类，提供录音、播放、音频分析等功能
  * @example
@@ -27,7 +29,7 @@ export class Recorder {
   stream: MediaStream | null = null
   /** MediaRecorder 实例，用于录制媒体 */
   mediaRecorder: MediaRecorder | null = null
-  /** 录制的音频 MIME 类型 */
+  /** 初始化时实际选用的录制 MIME 类型 */
   mimeType = 'audio/webm'
   /** AudioContext 实例，用于处理和合成音频 */
   audioContext: AudioContext | null = null
@@ -36,6 +38,15 @@ export class Recorder {
 
   /** 录音器的配置选项 */
   private options: RecorderOptions
+
+  /**
+   * 优先选用的录制 MIME 类型顺序，可外部覆盖以自定义优先级
+   */
+  static preferredMimeTypes = [
+    'audio/mp4;codecs=mp4a.40.2', // AAC/M4A
+    'audio/webm;codecs=opus', // OGG/Opus
+    'audio/webm',
+  ]
 
   /**
    * @param options 录音器配置选项
@@ -73,7 +84,16 @@ export class Recorder {
           }
 
       this.stream = await navigator.mediaDevices.getUserMedia({ audio: audioConstraints })
-      this.mediaRecorder = new MediaRecorder(this.stream)
+
+      /** 动态选择最优录制 MIME（按 Recorder.preferredMimeTypes 顺序） */
+      const supportedMimeType = Recorder.preferredMimeTypes.find((t) => {
+        try { return MediaRecorder.isTypeSupported?.(t) }
+        catch { return false }
+      }) || ''
+
+      this.mediaRecorder = new MediaRecorder(this.stream, supportedMimeType
+        ? { mimeType: supportedMimeType }
+        : {})
       /** 存储 MIME 类型 */
       this.mimeType = this.mediaRecorder.mimeType || 'audio/webm'
 
@@ -181,6 +201,22 @@ export class Recorder {
 
     const audio = new Audio(targetUrl)
     audio.play()
+    return this
+  }
+
+  /**
+   * 下载录音文件，支持指定目标格式（扩展名），优先按后端支持格式命名
+   * @param format 目标格式，支持：'wav'|'mp3'|'ogg'|'aac'|'m4a'|'webm'|'mp4'，默认按录制格式
+   * @param filename 文件名（不含扩展名），默认为时间戳
+   */
+  download(filename?: string) {
+    if (!this.audioUrl) {
+      console.warn('无可用音频资源，请在录音完成后或在`onFinish`回调中调用')
+      return this
+    }
+    const baseName = filename || new Date().toISOString().replace(/[:.]/g, '-')
+    const audioBlob = new Blob(this.chunks, { type: this.mimeType })
+    downloadByData(audioBlob, baseName)
     return this
   }
 

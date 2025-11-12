@@ -92,6 +92,7 @@ yarn add @jl-org/tool
 - [`mapRange`](./src/math/mapRange.ts) - Map value from one range to another
 - [`calcAspectRatio`](./src/math/ratio.ts) - Calculate aspect ratio based on area
 - [`clamp`](./src/math/tools.ts) - Clamp value within range
+- [`formatFileSize`](./src/math/tools.ts) - Convert between file size units (bit/byte/kb/mb/gb/tb), returns object with values in all units
 - [`calcCoord`](./src/math/coord.ts) - Get coordinates based on radius and angle
 
 ### 🎨 Animation Processing

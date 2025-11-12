@@ -92,6 +92,7 @@ yarn add @jl-org/tool
 - [`mapRange`](./src/math/mapRange.ts) - 将数值从一个范围映射到另一个范围
 - [`calcAspectRatio`](./src/math/ratio.ts) - 根据面积计算宽高比
 - [`clamp`](./src/math/tools.ts) - 限制值在指定范围内
+- [`formatFileSize`](./src/math/tools.ts) - 文件大小单位换算，支持 bit/byte/kb/mb/gb/tb 互相转换，返回包含各单位数值的对象
 - [`calcCoord`](./src/math/coord.ts) - 根据半径和角度获取坐标
 
 ### 🎨 动画处理
