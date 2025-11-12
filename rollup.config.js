@@ -20,6 +20,7 @@ export default defineConfig([
         compilerOptions: {
           rootDir: './src',
         },
+        exclude: ['test/**']
       }),
       clear({
         targets: ['dist'],
@@ -41,6 +42,7 @@ export default defineConfig([
         compilerOptions: {
           rootDir: './',
         },
+        exclude: ['test/**']
       }),
     ],
   },
