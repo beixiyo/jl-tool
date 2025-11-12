@@ -2,28 +2,40 @@
  * 语音播放
  * @example
  * ```ts
- * const speaker = new Speaker('你好')
+ * const speaker = new Speaker({ txt: '你好' })
  * speaker.play()
  * ```
  */
 export class Speaker {
-  /** 默认播放语音名称 */
-  voiceName = 'Microsoft Kangkang - Chinese (Simplified, PRC)'
   /** 可播放语音列表 */
   voiceArr: SpeechSynthesisVoice[] = []
   /** 内部操作的实例对象 */
   speak = new SpeechSynthesisUtterance()
+  /** 语音播放器的配置选项 */
+  options: SpeakerOptions
 
   private initVoice = () => {
     this.voiceArr = speechSynthesis.getVoices()
-    const index = this.voiceArr.findIndex(i => i.name === this.voiceName)
+    const index = this.voiceArr.findIndex(i => i.name === this.options.voiceName)
     index !== -1 && this.setVoice(index)
   }
 
-  constructor(txt = '', volume = 1, lang = 'zh-CN') {
-    this.speak.text = txt
-    this.speak.volume = volume
-    this.speak.lang = lang
+  constructor(options?: SpeakerOptions) {
+    const defaultOptions: Partial<SpeakerOptions> = {
+      txt: '',
+      volume: 1,
+      lang: 'zh-CN',
+      voiceName: 'Microsoft Kangkang - Chinese (Simplified, PRC)',
+      rate: 1,
+      pitch: 1,
+    }
+    this.options = { ...defaultOptions, ...options } as SpeakerOptions
+
+    this.speak.text = this.options.txt
+    this.speak.volume = this.options.volume
+    this.speak.lang = this.options.lang
+    this.speak.rate = this.options.rate
+    this.speak.pitch = this.options.pitch
 
     this.init()
   }
@@ -95,4 +107,37 @@ export class Speaker {
     this.speak.pitch = pitch
     return this
   }
+}
+
+export type SpeakerOptions = {
+  /**
+   * 播放的文本内容
+   * @default ''
+   */
+  txt: string
+  /**
+   * 音量，范围 0-1
+   * @default 1
+   */
+  volume: number
+  /**
+   * 语言代码
+   * @default 'zh-CN'
+   */
+  lang: string
+  /**
+   * 语音名称
+   * @default 'Microsoft Kangkang - Chinese (Simplified, PRC)'
+   */
+  voiceName: string
+  /**
+   * 语速，范围 0.1-10
+   * @default 1
+   */
+  rate: number
+  /**
+   * 音高，范围 0-2
+   * @default 1
+   */
+  pitch: number
 }

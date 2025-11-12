@@ -150,7 +150,10 @@ yarn add @jl-org/tool
 - [`Recorder`](./src/webApi/Recorder.ts) - 音频录制
 - [`Speaker`](./src/webApi/Speaker.ts) - 语音播放
 - [`SpeakToTxt`](./src/webApi/SpeakToTxt.ts) - 语音转文字
-- [`screenCAP`](./src/webApi/tools.ts) - 屏幕录制
+- [`openCamera`](./src/webApi/openCamera.ts) - 开启摄像头
+- [`ScreenRecorder`](./src/webApi/screenRecord/ScreenRecorder.ts) - 屏幕录制
+
+[查看测试用例](./test/__DOM_TEST__/webApi)
 
 ### 📦 数据结构
 

@@ -2,23 +2,24 @@
  * 语音转文字，默认中文识别
  * @example
  * ```ts
- * const speakToTxt = new SpeakToTxt((data) => {
+ * const speakToTxt = new SpeakToTxt({
+ *   onResult: (data) => {
  *     console.log(data)
+ *   }
  * })
  * speakTxtBtn.onclick = () => speakToTxt.start()
  * ```
  */
 export class SpeakToTxt {
-  private recognition: SpeechRecognition
-  private onResult: SpeakToTxtOnResult
-  private opts: SpeakToTxtOpts
+  recognition: SpeechRecognition
+  /** 语音识别器的配置选项 */
+  options: SpeakToTxtOptions
 
   /**
    * 调用 start 方法开始录音，默认中文识别
-   * @param onResult 返回结果的回调
-   * @param opts 配置项
+   * @param options 配置项
    */
-  constructor(onResult: SpeakToTxtOnResult, opts: SpeakToTxtOpts = {}) {
+  constructor(options: SpeakToTxtOptions) {
     if ('webkitSpeechRecognition' in window) {
       // eslint-disable-next-line new-cap
       this.recognition = new webkitSpeechRecognition()
@@ -30,8 +31,14 @@ export class SpeakToTxt {
       throw new Error('请使用最新版 Chrome 或者 Edge 浏览器')
     }
 
-    this.opts = opts
-    this.onResult = onResult
+    const defaultOptions: Partial<SpeakToTxtOptions> = {
+      continuous: false,
+      interimResults: false,
+      lang: 'zh-CN',
+      onstart: () => { },
+      onEnd: () => { },
+    }
+    this.options = { ...defaultOptions, ...options } as SpeakToTxtOptions
     this.init()
   }
 
@@ -55,29 +62,47 @@ export class SpeakToTxt {
       continuous,
       interimResults,
       lang,
-    }
-      = this.opts
+      onResult,
+    } = this.options
 
-    recognition.continuous = continuous ?? false
-    recognition.interimResults = interimResults ?? false
-    recognition.lang = lang || 'zh-CN'
+    recognition.continuous = continuous!
+    recognition.interimResults = interimResults!
+    recognition.lang = lang!
 
-    recognition.onstart = onstart || (() => { })
-    recognition.onend = onEnd || (() => { })
+    recognition.onstart = onstart!
+    recognition.onend = onEnd!
     recognition.onresult = (e) => {
-      this.onResult(e.results[0][0].transcript, e)
+      onResult(e.results[0][0].transcript, e)
     }
   }
 }
 
-export type SpeakToTxtOpts = {
+export type SpeakToTxtOptions = {
+  /** 返回结果的回调 */
+  onResult: (data: string, e: SpeechRecognitionEvent) => void
+  /**
+   * 识别开始的回调
+   * @default () => {}
+   */
   onstart?: (ev: Event) => void
+  /**
+   * 识别结束的回调
+   * @default () => {}
+   */
   onEnd?: (ev: Event) => void
-  /** 是否在用户停止说话后继续识别，默认 `false` */
+  /**
+   * 是否在用户停止说话后继续识别
+   * @default false
+   */
   continuous?: boolean
-  /** 是否返回临时结果，默认 `false` */
+  /**
+   * 是否返回临时结果
+   * @default false
+   */
   interimResults?: boolean
+  /**
+   * 语言代码
+   * @default 'zh-CN'
+   */
   lang?: string
 }
-
-export type SpeakToTxtOnResult = (data: string, e: SpeechRecognitionEvent) => void

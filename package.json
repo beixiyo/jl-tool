@@ -1,6 +1,6 @@
 {
   "name": "@jl-org/tool",
-  "version": "3.2.3",
+  "version": "3.3.0",
   "description": "JS的瑞士军刀",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
@@ -47,7 +47,7 @@
     "docs:preview": "vitepress preview ./docs",
     "------test------": "",
     "test": "vitest --run",
-    "test:dev": "vite",
+    "test:dom": "vite",
     "lint": "eslint --fix src"
   },
   "devDependencies": {

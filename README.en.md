@@ -150,7 +150,10 @@ yarn add @jl-org/tool
 - [`Recorder`](./src/webApi/Recorder.ts) - Audio recording
 - [`Speaker`](./src/webApi/Speaker.ts) - Speech playback
 - [`SpeakToTxt`](./src/webApi/SpeakToTxt.ts) - Speech to text
-- [`screenCAP`](./src/webApi/tools.ts) - Screen recording
+- [`openCamera`](./src/webApi/openCamera.ts) - Open camera
+- [`ScreenRecorder`](./src/webApi/screenRecord/ScreenRecorder.ts) - Screen recording
+
+[View test cases](./test/__DOM_TEST__/webApi)
 
 ### 📦 Data Structures
 

@@ -1,33 +1,81 @@
 /**
- * 录音
+ * 录音机类，提供录音、播放、音频分析等功能
  * @example
  * ```ts
- * const recorder = new Recorder()
+ * const recorder = new Recorder({
+ *   onFinish: (audioUrl, chunks) => {
+ *     console.log('录音完成:', audioUrl)
+ *     recorder.play()
+ *   }
+ * })
+ *
  * await recorder.init()
  * recorder.start()
+ *
+ * // 停止
+ * setTimeout(() => {
+ *   recorder.stop()
+ * }, 5000)
  * ```
  */
 export class Recorder {
-  /** 录制的音频的临时 `URL` 。录制完毕自动赋值，每次录制前都会清空 */
+  /** 录制的音频的临时 URL。录制完毕后自动赋值，每次开始录制前会清空 */
   audioUrl = ''
-  /** 录制的音频 `Blob`。录制完毕自动赋值 每次录制前都会清空 */
+  /** 录制的音频 Blob 数据块。录制完毕后自动赋值，每次开始录制前会清空 */
   chunks: Blob[] = []
-  private stream: MediaStream | null = null
-  private mediaRecorder: MediaRecorder | null = null
-  /** 录音完成回调 */
-  private onFinish: undefined | ((audioUrl: string, chunk: Blob[]) => void)
+  /** MediaStream 实例，代表一个媒体内容的流 */
+  stream: MediaStream | null = null
+  /** MediaRecorder 实例，用于录制媒体 */
+  mediaRecorder: MediaRecorder | null = null
+  /** 录制的音频 MIME 类型 */
+  mimeType = 'audio/webm'
+  /** AudioContext 实例，用于处理和合成音频 */
+  audioContext: AudioContext | null = null
+  /** AnalyserNode 实例，用于获取音频时间和频率数据，实现音频可视化 */
+  analyser: AnalyserNode | null = null
+
+  /** 录音器的配置选项 */
+  private options: RecorderOptions
 
   /**
-   * @param onFinish 录音完成的回调
+   * @param options 录音器配置选项
    */
-  constructor(onFinish?: (audioUrl: string, chunk: Blob[]) => void) {
-    this.onFinish = onFinish
+  constructor(options?: RecorderOptions) {
+    const defaultOptions: Partial<RecorderOptions> = {
+      echoCancellation: true,
+      noiseSuppression: true,
+      autoGainControl: true,
+      createAnalyser: false,
+      fftSize: 2048,
+      smoothingTimeConstant: 0.8,
+    }
+    this.options = { ...defaultOptions, ...options }
   }
 
-  async init(): Promise<string | undefined> {
+  /**
+   * 初始化录音机，获取用户媒体权限并设置好 MediaRecorder 和 AnalyserNode
+   * @returns Promise<void>
+   */
+  async init(): Promise<void> {
     try {
-      this.stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      const { deviceId, echoCancellation, noiseSuppression, autoGainControl } = this.options
+      const audioConstraints: MediaTrackConstraints = deviceId
+        ? {
+            deviceId: { exact: deviceId },
+            echoCancellation,
+            noiseSuppression,
+            autoGainControl,
+          }
+        : {
+            echoCancellation,
+            noiseSuppression,
+            autoGainControl,
+          }
+
+      this.stream = await navigator.mediaDevices.getUserMedia({ audio: audioConstraints })
       this.mediaRecorder = new MediaRecorder(this.stream)
+      /** 存储 MIME 类型 */
+      this.mimeType = this.mediaRecorder.mimeType || 'audio/webm'
 
       this.mediaRecorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
@@ -38,33 +86,72 @@ export class Recorder {
       this.mediaRecorder.onstop = () => {
         if (this.chunks.length === 0)
           return
-        /** audio/wav | audio/mpeg | audio/ogg | audio/aac | audio/mp3 */
-        const audioBlob = new Blob(this.chunks, { type: 'audio/mp3' })
+
+        const audioBlob = new Blob(this.chunks, { type: this.mimeType })
         this.audioUrl = URL.createObjectURL(audioBlob)
 
-        this.onFinish && this.onFinish(this.audioUrl, this.chunks)
+        this.options.onFinish?.(this.audioUrl, this.chunks)
+      }
+
+      /** 如果需要，创建音频分析器 */
+      if (this.options.createAnalyser) {
+        const AudioContextConstructor
+          = window.AudioContext
+            || (window as any).webkitAudioContext
+        this.audioContext = new AudioContextConstructor()
+        this.analyser = this.audioContext.createAnalyser()
+        this.analyser.fftSize = this.options.fftSize!
+        this.analyser.smoothingTimeConstant = this.options.smoothingTimeConstant!
+
+        const source = this.audioContext.createMediaStreamSource(this.stream)
+        source.connect(this.analyser)
       }
     }
     catch (error) {
       console.error('获取麦克风权限失败(Error accessing microphone):', error)
-      return '获取麦克风权限失败，请手动开启权限'
+      this.options.onError?.(error as Error)
     }
   }
 
-  /** 开始录音 */
+  /**
+   * 获取实时音频频域数据
+   * 如果 AnalyserNode 未创建，则返回 null
+   * @returns Uint8Array | null
+   */
+  getByteFrequencyData(): Uint8Array | null {
+    if (!this.analyser)
+      return null
+    const dataArray = new Uint8Array(this.analyser.frequencyBinCount)
+    this.analyser.getByteFrequencyData(dataArray)
+    return dataArray
+  }
+
+  /**
+   * 开始录音
+   * @returns this
+   */
   start() {
     if (!this.mediaRecorder) {
-      console.warn('请先调用`init`方法 等待初始化完成')
+      console.warn('请先调用`init`方法并等待初始化完成')
       return this
     }
 
+    /** 如果正在录音，则先停止上一次的录音 */
+    if (this.mediaRecorder.state === 'recording') {
+      this.mediaRecorder.stop()
+    }
+
     this.chunks = []
-    this.stop()
+    this.audioUrl = ''
     this.mediaRecorder.start()
     return this
   }
 
-  /** 停止录音，停止后，回调给构造器传递的 `onFinish` */
+  /**
+   * 停止录音
+   * 停止后，结果会通过构造器中传递的 `onFinish` 回调返回
+   * @returns this
+   */
   stop() {
     if (this.mediaRecorder && this.mediaRecorder.state === 'recording') {
       this.mediaRecorder.stop()
@@ -72,15 +159,102 @@ export class Recorder {
     return this
   }
 
-  /** 播放刚刚的录音，或者指定 base64 的录音 */
+  /**
+   * 检查是否正在录制
+   * @returns boolean
+   */
+  isRecording(): boolean {
+    return this.mediaRecorder?.state === 'recording' || false
+  }
+
+  /**
+   * 播放录音
+   * @param url 可选，要播放的音频 URL，如果未提供，则播放上一次录制的音频
+   * @returns this
+   */
   play(url?: string) {
-    if (!url && !this.audioUrl) {
-      console.warn('录音尚未完成，请使用`onFinish`回调')
+    const targetUrl = url ?? this.audioUrl
+    if (!targetUrl) {
+      console.warn('无可用音频资源，请在录音完成后或在`onFinish`回调中调用')
       return this
     }
 
-    const audio = new Audio(url ?? this.audioUrl)
+    const audio = new Audio(targetUrl)
     audio.play()
     return this
   }
+
+  /**
+   * 销毁实例，释放所有占用的媒体资源
+   */
+  destroy() {
+    this.stop()
+    if (this.stream) {
+      this.stream.getTracks().forEach(track => track.stop())
+      this.stream = null
+    }
+    if (this.audioContext && this.audioContext.state !== 'closed') {
+      this.audioContext.close()
+    }
+    this.mediaRecorder = null
+    this.audioContext = null
+    this.analyser = null
+    this.chunks = []
+    this.audioUrl = ''
+  }
+
+  /**
+   * 获取可用的音频输入设备列表
+   * @returns Promise<MediaDeviceInfo[]>
+   */
+  static async getAudioDevices(): Promise<MediaDeviceInfo[]> {
+    try {
+      /** 请求一次权限，以便获取完整的设备列表信息（特别是 label） */
+      await navigator.mediaDevices.getUserMedia({ audio: true })
+    }
+    catch (error) {
+      console.warn('请求麦克风权限失败，设备列表可能不完整:', error)
+    }
+    const devices = await navigator.mediaDevices.enumerateDevices()
+    return devices.filter(device => device.kind === 'audioinput')
+  }
+}
+
+export type RecorderOptions = {
+  /** 录音完成的回调 */
+  onFinish?: (audioUrl: string, chunks: Blob[]) => void
+  /** 发生错误时的回调 */
+  onError?: (error: Error) => void
+  /** 指定要使用的音频设备 ID */
+  deviceId?: string
+  /**
+   * 是否开启回声消除
+   * @default true
+   */
+  echoCancellation?: boolean
+  /**
+   * 是否开启噪声抑制
+   * @default true
+   */
+  noiseSuppression?: boolean
+  /**
+   * 是否开启自动增益控制
+   * @default true
+   */
+  autoGainControl?: boolean
+  /**
+   * 是否创建 AnalyserNode 用于音频分析
+   * @default false
+   */
+  createAnalyser?: boolean
+  /**
+   * AnalyserNode 的 FFT 大小
+   * @default 2048
+   */
+  fftSize?: number
+  /**
+   * AnalyserNode 的平滑时间常数
+   * @default 0.8
+   */
+  smoothingTimeConstant?: number
 }

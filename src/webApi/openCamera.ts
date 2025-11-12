@@ -29,22 +29,3 @@ export async function openCamera(callbackOrVideoEl: ((stream: MediaStream) => vo
     })
   })
 }
-
-/** 录屏 */
-export async function screenCAP(fileName?: string) {
-  const
-    stream = await navigator.mediaDevices.getDisplayMedia()
-  const recoder = new MediaRecorder(stream)
-  const [video] = stream.getVideoTracks()
-
-  recoder.start()
-  video.addEventListener('ended', () => {
-    recoder.stop()
-  })
-  recoder.addEventListener('dataavailable', (evt) => {
-    const a = document.createElement('a')
-    a.href = URL.createObjectURL(evt.data)
-    a.download = `${fileName || Date.now()}.webm`
-    a.click()
-  })
-}
