@@ -26,10 +26,10 @@ export class ScreenRecorder {
   /** 用于在 stop() 方法中等待最终 blob 的 Promise 解析器 */
   private stopResolver: ((blob: Blob | null) => void) | null = null
 
-  constructor(private readonly options: ScreenRecorderOptions = {}) { }
+  constructor(private readonly config: ScreenRecorderOptions = {}) { }
 
   updateConfig(config: Partial<ScreenRecorderOptions>) {
-    Object.assign(this.options, config)
+    Object.assign(this.config, config)
   }
 
   /** 当前状态 */
@@ -53,7 +53,7 @@ export class ScreenRecorder {
   /** 更新状态并触发回调 */
   private setState(next: RecorderState) {
     this._state = next
-    this.options.onStateChange?.(next)
+    this.config.onStateChange?.(next)
   }
 
   /**
@@ -126,7 +126,7 @@ export class ScreenRecorder {
     if (!ScreenRecorder.isSupported()) {
       const err = new Error('当前环境不支持屏幕录制')
       this.setState('error')
-      this.options.onError?.(err)
+      this.config.onError?.(err)
       throw err
     }
     if (this.mediaRecorder) {
@@ -134,7 +134,7 @@ export class ScreenRecorder {
     }
 
     try {
-      const { audioOnly = false, systemAudio, micAudio } = this.options
+      const { audioOnly = false, systemAudio, micAudio } = this.config
 
       if (audioOnly) {
         /** 仅音频模式 */
@@ -179,8 +179,8 @@ export class ScreenRecorder {
         /** 音视频模式 */
         // 1) 获取显示媒体（可能包含系统音频）
         const displayConstraints = {
-          video: this.options.video,
-          audio: this.options.systemAudio,
+          video: this.config.video,
+          audio: this.config.systemAudio,
         } as DisplayMediaStreamConstraintsLike
         this.displayStream = await navigator.mediaDevices.getDisplayMedia(displayConstraints)
         /** 添加流结束监听 */
@@ -222,14 +222,14 @@ export class ScreenRecorder {
       }
 
       // 4) 选择合适的 mimeType
-      const prefer = this.options.preferMimeTypes
-        ?? (this.options.audioOnly
+      const prefer = this.config.preferMimeTypes
+        ?? (this.config.audioOnly
           ? (['audio/webm;codecs=opus', 'audio/webm'])
           : undefined)
       this.selectedMimeType = pickSupportedMimeType(prefer)
       const init: MediaRecorderOptions = {
         mimeType: this.selectedMimeType,
-        bitsPerSecond: this.options.bitsPerSecond,
+        bitsPerSecond: this.config.bitsPerSecond,
       }
       this.mediaRecorder = new MediaRecorder(this.recordStream, init)
 
@@ -238,24 +238,24 @@ export class ScreenRecorder {
       this.mediaRecorder.ondataavailable = (evt: RecorderBlobEvent) => {
         if (evt.data && evt.data.size > 0) {
           this.chunks.push(evt.data)
-          this.options.onDataAvailable?.(evt)
+          this.config.onDataAvailable?.(evt)
         }
       }
       this.mediaRecorder.onstart = () => {
         this.setState('recording')
-        this.options.onStart?.()
+        this.config.onStart?.()
       }
       this.mediaRecorder.onpause = () => {
         this.setState('paused')
-        this.options.onPause?.()
+        this.config.onPause?.()
       }
       this.mediaRecorder.onresume = () => {
         this.setState('recording')
-        this.options.onResume?.()
+        this.config.onResume?.()
       }
       this.mediaRecorder.onerror = (e) => {
         this.setState('error')
-        this.options.onError?.(e)
+        this.config.onError?.(e)
       }
       this.mediaRecorder.onstop = () => {
         /**
@@ -270,7 +270,7 @@ export class ScreenRecorder {
             this.stopResolver(finalBlob)
             this.stopResolver = null
           }
-          this.options.onStop?.(finalBlob)
+          this.config.onStop?.(finalBlob)
         }
         if (typeof queueMicrotask === 'function') {
           queueMicrotask(finalize)
@@ -281,7 +281,7 @@ export class ScreenRecorder {
       }
 
       // 6) 开始录制
-      const timeslice = this.options.timesliceMs
+      const timeslice = this.config.timesliceMs
       if (timeslice != null && timeslice > 0) {
         this.mediaRecorder.start(timeslice)
       }
@@ -292,7 +292,7 @@ export class ScreenRecorder {
     catch (e) {
       this.setState('error')
       this.cleanupTracks()
-      this.options.onError?.(e)
+      this.config.onError?.(e)
       throw e
     }
   }

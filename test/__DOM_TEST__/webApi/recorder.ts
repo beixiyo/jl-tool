@@ -26,11 +26,13 @@ export function initRecorderTest() {
   audioInfo.className = 'mb-4 p-3 bg-blue-50 rounded text-sm hidden'
   audioInfo.id = 'audio-info'
 
-  // 创建按钮
+  // 初始化按钮
   const initBtn = document.createElement('button')
-  initBtn.className = 'px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors'
+  initBtn.className = 'px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed'
   initBtn.textContent = '初始化'
+  initBtn.disabled = false
 
+  // 创建按钮
   const startBtn = document.createElement('button')
   startBtn.className = 'px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed'
   startBtn.textContent = '开始录音'
@@ -70,27 +72,29 @@ export function initRecorderTest() {
   let animationFrameId: number | null = null
 
   const updateStatus = (text: string, color = 'text-gray-700') => {
-    const statusEl = document.getElementById('recorder-status')!
+    const statusEl = status.querySelector('#recorder-status') as HTMLSpanElement
+    if (!statusEl) return
     statusEl.textContent = text
     statusEl.className = color
   }
 
-  const updateButtons = (state: 'idle' | 'initialized' | 'recording' | 'paused') => {
+  const updateButtons = (state: 'initializing' | 'ready' | 'recording' | 'paused' | 'idle') => {
     switch (state) {
-      case 'idle':
-        initBtn.disabled = false
+      case 'initializing':
+        initBtn.disabled = true
         startBtn.disabled = true
         pauseResumeBtn.disabled = true
         stopBtn.disabled = true
         playBtn.disabled = true
         destroyBtn.disabled = true
         break
-      case 'initialized':
+      case 'ready':
         initBtn.disabled = true
         startBtn.disabled = false
         pauseResumeBtn.disabled = true
         stopBtn.disabled = true
-        playBtn.disabled = false
+        // 初始化完成但尚未有录音，播放禁用，待 onFinish 启用
+        playBtn.disabled = true
         destroyBtn.disabled = false
         pauseResumeBtn.textContent = '暂停'
         break
@@ -109,6 +113,14 @@ export function initRecorderTest() {
         pauseResumeBtn.disabled = false
         pauseResumeBtn.textContent = '继续'
         stopBtn.disabled = false
+        playBtn.disabled = true
+        destroyBtn.disabled = true
+        break
+      case 'idle':
+        initBtn.disabled = false
+        startBtn.disabled = true
+        pauseResumeBtn.disabled = true
+        stopBtn.disabled = true
         playBtn.disabled = true
         destroyBtn.disabled = true
         break
@@ -149,18 +161,59 @@ export function initRecorderTest() {
     animationFrameId = requestAnimationFrame(drawVisualization)
   }
 
-  // 初始化
-  initBtn.onclick = async () => {
+  // 自动初始化（页面加载后立即初始化）
+  try {
+    updateStatus('正在初始化...', 'text-blue-600')
+    updateButtons('initializing')
+    recorder = new Recorder({
+      createAnalyser: true,
+      onFinish: (url, chunks) => {
+        updateStatus('录音完成', 'text-green-600')
+        updateButtons('ready')
+        audioInfo.classList.remove('hidden')
+        audioInfo.innerHTML = `
+          <span class="font-semibold">音频信息：</span><br>
+          URL: ${url.substring(0, 50)}...<br>
+          数据块数量: ${chunks.length}<br>
+          MIME类型: ${recorder?.mimeType || 'unknown'}
+        `
+        playBtn.disabled = false
+      },
+      onError: (error) => {
+        updateStatus(`错误: ${error.message}`, 'text-red-600')
+      },
+    })
+
+    const waitReady = () => {
+      if (recorder && recorder.mediaRecorder) {
+        updateStatus('已初始化，可以开始录音', 'text-green-600')
+        updateButtons('ready')
+        drawVisualization()
+      }
+      else {
+        setTimeout(waitReady, 200)
+      }
+    }
+    waitReady()
+  }
+  catch (error: any) {
+    updateStatus(`初始化失败: ${error.message}`, 'text-red-600')
+    updateButtons('idle')
+  }
+
+  // 点击初始化（销毁后可再次初始化）
+  initBtn.onclick = () => {
+    if (recorder) return
+    updateStatus('正在初始化...', 'text-blue-600')
+    updateButtons('initializing')
     try {
-      updateStatus('正在初始化...', 'text-blue-600')
       recorder = new Recorder({
         createAnalyser: true,
         onFinish: (url, chunks) => {
           updateStatus('录音完成', 'text-green-600')
-          updateButtons('initialized')
-          const audioInfoEl = document.getElementById('audio-info')!
-          audioInfoEl.classList.remove('hidden')
-          audioInfoEl.innerHTML = `
+          updateButtons('ready')
+          audioInfo.classList.remove('hidden')
+          audioInfo.innerHTML = `
             <span class="font-semibold">音频信息：</span><br>
             URL: ${url.substring(0, 50)}...<br>
             数据块数量: ${chunks.length}<br>
@@ -173,13 +226,21 @@ export function initRecorderTest() {
         },
       })
 
-      await recorder.init()
-      updateStatus('已初始化，可以开始录音', 'text-green-600')
-      updateButtons('initialized')
-      drawVisualization()
+      const waitReady = () => {
+        if (recorder && recorder.mediaRecorder) {
+          updateStatus('已初始化，可以开始录音', 'text-green-600')
+          updateButtons('ready')
+          drawVisualization()
+        }
+        else {
+          setTimeout(waitReady, 200)
+        }
+      }
+      waitReady()
     }
     catch (error: any) {
       updateStatus(`初始化失败: ${error.message}`, 'text-red-600')
+      updateButtons('idle')
     }
   }
 

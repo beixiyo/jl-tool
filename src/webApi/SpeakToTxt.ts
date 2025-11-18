@@ -13,7 +13,7 @@
 export class SpeakToTxt {
   recognition: SpeechRecognition
   /** 语音识别器的配置选项 */
-  options: SpeakToTxtOptions
+  private config: SpeakToTxtOptions
 
   /**
    * 调用 start 方法开始录音，默认中文识别
@@ -38,7 +38,7 @@ export class SpeakToTxt {
       onstart: () => { },
       onEnd: () => { },
     }
-    this.options = { ...defaultOptions, ...options } as SpeakToTxtOptions
+    this.config = { ...defaultOptions, ...options } as SpeakToTxtOptions
     this.init()
   }
 
@@ -63,7 +63,7 @@ export class SpeakToTxt {
       interimResults,
       lang,
       onResult,
-    } = this.options
+    } = this.config
 
     recognition.continuous = continuous!
     recognition.interimResults = interimResults!

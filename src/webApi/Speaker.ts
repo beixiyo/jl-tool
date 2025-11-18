@@ -12,11 +12,11 @@ export class Speaker {
   /** 内部操作的实例对象 */
   speak = new SpeechSynthesisUtterance()
   /** 语音播放器的配置选项 */
-  options: SpeakerOptions
+  private config: SpeakerOptions
 
   private initVoice = () => {
     this.voiceArr = speechSynthesis.getVoices()
-    const index = this.voiceArr.findIndex(i => i.name === this.options.voiceName)
+    const index = this.voiceArr.findIndex(i => i.name === this.config.voiceName)
     index !== -1 && this.setVoice(index)
   }
 
@@ -29,13 +29,13 @@ export class Speaker {
       rate: 1,
       pitch: 1,
     }
-    this.options = { ...defaultOptions, ...options } as SpeakerOptions
+    this.config = { ...defaultOptions, ...options } as SpeakerOptions
 
-    this.speak.text = this.options.txt
-    this.speak.volume = this.options.volume
-    this.speak.lang = this.options.lang
-    this.speak.rate = this.options.rate
-    this.speak.pitch = this.options.pitch
+    this.speak.text = this.config.txt
+    this.speak.volume = this.config.volume
+    this.speak.lang = this.config.lang
+    this.speak.rate = this.config.rate
+    this.speak.pitch = this.config.pitch
 
     this.init()
   }
