@@ -93,7 +93,7 @@ export class Recorder {
   }
 
   /** 判定是否已完成所需初始化（采集 + 可选分析） */
-  private isReady() {
+  private get isReady() {
     if (!this.capture.mediaRecorder) return false
     if (this.config.createAnalyser && !this.analysis.analyser) return false
     return true
@@ -101,7 +101,7 @@ export class Recorder {
 
   /** 开始录音 */
   async start() {
-    if (!this.isReady()) {
+    if (!this.isReady) {
       await this.init()
     }
     await this.capture.start()
@@ -114,18 +114,23 @@ export class Recorder {
   }
 
   /** 暂停录音 */
-  pause() {
-    this.capture.pause()
+  async pause() {
+    await this.capture.pause()
   }
 
   /** 继续录音 */
-  resume() {
-    this.capture.resume()
+  async resume() {
+    await this.capture.resume()
   }
 
   /** 是否在录制 */
-  isRecording() {
-    return this.capture.isRecording()
+  get isRecording() {
+    return this.capture.isRecording
+  }
+
+  /** 是否暂停 */
+  get isPaused() {
+    return this.capture.isPaused
   }
 
   /** 获取频域数据 */

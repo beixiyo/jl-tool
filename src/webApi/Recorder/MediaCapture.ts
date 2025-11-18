@@ -56,7 +56,7 @@ export class MediaCapture {
         if (this.chunks.length === 0) return
         const blob = new Blob(this.chunks, { type: this.mimeType })
         if (this.audioUrl && this.audioUrl.startsWith('blob:')) {
-          try { URL.revokeObjectURL(this.audioUrl) } catch {}
+          try { URL.revokeObjectURL(this.audioUrl) } catch { }
         }
         this.audioUrl = URL.createObjectURL(blob)
         this.onFinish?.(this.audioUrl, this.chunks)
@@ -78,7 +78,7 @@ export class MediaCapture {
     for (const t of preferred) {
       try {
         if ((MediaRecorder as any).isTypeSupported?.(t)) return t
-      } catch {}
+      } catch { }
     }
     return ''
   }
@@ -122,28 +122,32 @@ export class MediaCapture {
     await once
   }
 
-  pause() {
+  async pause() {
     if (!this.mediaRecorder) return
     if (this.mediaRecorder.state === 'recording') {
       try { this.mediaRecorder.pause() } catch (e) { this.onError?.(e as Error) }
     }
   }
 
-  resume() {
+  async resume() {
     if (!this.mediaRecorder) return
     if (this.mediaRecorder.state === 'paused') {
       try { this.mediaRecorder.resume() } catch (e) { this.onError?.(e as Error) }
     }
   }
 
-  isRecording() {
+  get isRecording() {
     return this.mediaRecorder?.state === 'recording' || false
+  }
+
+  get isPaused() {
+    return this.mediaRecorder?.state === 'paused' || false
   }
 
   /** 释放媒体资源 */
   async release() {
     if (this.stream) {
-      try { this.stream.getTracks().forEach(t => t.stop()) } catch {}
+      try { this.stream.getTracks().forEach(t => t.stop()) } catch { }
       this.stream = null
     }
     if (this.mediaRecorder) {
@@ -151,11 +155,11 @@ export class MediaCapture {
         // 清理事件，避免销毁后触发
         this.mediaRecorder.ondataavailable = null as any
         this.mediaRecorder.onstop = null as any
-      } catch {}
+      } catch { }
       this.mediaRecorder = null
     }
     if (this.audioUrl && this.audioUrl.startsWith('blob:')) {
-      try { URL.revokeObjectURL(this.audioUrl) } catch {}
+      try { URL.revokeObjectURL(this.audioUrl) } catch { }
     }
     this.audioUrl = ''
     this.chunks = []
