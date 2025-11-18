@@ -36,6 +36,12 @@ export function initRecorderTest() {
   startBtn.textContent = '开始录音'
   startBtn.disabled = true
 
+  // 暂停/继续 按钮
+  const pauseResumeBtn = document.createElement('button')
+  pauseResumeBtn.className = 'px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed'
+  pauseResumeBtn.textContent = '暂停'
+  pauseResumeBtn.disabled = true
+
   const stopBtn = document.createElement('button')
   stopBtn.className = 'px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed'
   stopBtn.textContent = '停止录音'
@@ -57,7 +63,7 @@ export function initRecorderTest() {
   canvas.id = 'audio-visualizer'
   const ctx = canvas.getContext('2d')!
 
-  controls.append(initBtn, startBtn, stopBtn, playBtn, destroyBtn)
+  controls.append(initBtn, startBtn, pauseResumeBtn, stopBtn, playBtn, destroyBtn)
   container.append(title, description, status, audioInfo, controls, canvas)
 
   let recorder: Recorder | null = null
@@ -69,11 +75,12 @@ export function initRecorderTest() {
     statusEl.className = color
   }
 
-  const updateButtons = (state: 'idle' | 'initialized' | 'recording') => {
+  const updateButtons = (state: 'idle' | 'initialized' | 'recording' | 'paused') => {
     switch (state) {
       case 'idle':
         initBtn.disabled = false
         startBtn.disabled = true
+        pauseResumeBtn.disabled = true
         stopBtn.disabled = true
         playBtn.disabled = true
         destroyBtn.disabled = true
@@ -81,13 +88,26 @@ export function initRecorderTest() {
       case 'initialized':
         initBtn.disabled = true
         startBtn.disabled = false
+        pauseResumeBtn.disabled = true
         stopBtn.disabled = true
         playBtn.disabled = false
         destroyBtn.disabled = false
+        pauseResumeBtn.textContent = '暂停'
         break
       case 'recording':
         initBtn.disabled = true
         startBtn.disabled = true
+        pauseResumeBtn.disabled = false
+        pauseResumeBtn.textContent = '暂停'
+        stopBtn.disabled = false
+        playBtn.disabled = true
+        destroyBtn.disabled = true
+        break
+      case 'paused':
+        initBtn.disabled = true
+        startBtn.disabled = true
+        pauseResumeBtn.disabled = false
+        pauseResumeBtn.textContent = '继续'
         stopBtn.disabled = false
         playBtn.disabled = true
         destroyBtn.disabled = true
@@ -164,11 +184,14 @@ export function initRecorderTest() {
   }
 
   // 开始录音
+  let isPaused = false
+
   startBtn.onclick = () => {
     if (recorder) {
       recorder.start()
       updateStatus('正在录音...', 'text-red-600')
       updateButtons('recording')
+      isPaused = false
     }
   }
 
@@ -177,6 +200,24 @@ export function initRecorderTest() {
     if (recorder) {
       recorder.stop()
       updateStatus('正在处理录音...', 'text-yellow-600')
+      isPaused = false
+    }
+  }
+
+  // 暂停/继续
+  pauseResumeBtn.onclick = () => {
+    if (!recorder) return
+    if (isPaused) {
+      recorder.resume()
+      updateStatus('继续录音中...', 'text-orange-600')
+      updateButtons('recording')
+      isPaused = false
+    }
+    else {
+      recorder.pause()
+      updateStatus('已暂停录音', 'text-yellow-600')
+      updateButtons('paused')
+      isPaused = true
     }
   }
 
@@ -201,6 +242,7 @@ export function initRecorderTest() {
       updateButtons('idle')
       canvas.classList.add('hidden')
       audioInfo.classList.add('hidden')
+      isPaused = false
     }
   }
 

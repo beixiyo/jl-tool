@@ -173,7 +173,7 @@ export class Recorder {
    * @returns this
    */
   stop() {
-    if (this.mediaRecorder && this.mediaRecorder.state === 'recording') {
+    if (this.mediaRecorder && (this.mediaRecorder.state === 'recording' || this.mediaRecorder.state === 'paused')) {
       this.mediaRecorder.stop()
     }
     return this
@@ -185,6 +185,50 @@ export class Recorder {
    */
   isRecording(): boolean {
     return this.mediaRecorder?.state === 'recording' || false
+  }
+
+  /**
+   * 暂停录音
+   * 仅在正在录音时有效
+   * @returns this
+   */
+  pause() {
+    if (!this.mediaRecorder) {
+      console.warn('请先调用`init`方法并等待初始化完成')
+      return this
+    }
+    if (this.mediaRecorder.state === 'recording') {
+      try {
+        this.mediaRecorder.pause()
+      }
+      catch (error) {
+        console.warn('暂停录音失败:', error)
+        this.options.onError?.(error as Error)
+      }
+    }
+    return this
+  }
+
+  /**
+   * 继续录音
+   * 仅在暂停状态时有效
+   * @returns this
+   */
+  resume() {
+    if (!this.mediaRecorder) {
+      console.warn('请先调用`init`方法并等待初始化完成')
+      return this
+    }
+    if (this.mediaRecorder.state === 'paused') {
+      try {
+        this.mediaRecorder.resume()
+      }
+      catch (error) {
+        console.warn('继续录音失败:', error)
+        this.options.onError?.(error as Error)
+      }
+    }
+    return this
   }
 
   /**
