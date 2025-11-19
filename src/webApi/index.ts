@@ -1,5 +1,5 @@
 export * from './openCamera'
 export * from './Recorder/index'
-export * from './screenRecord'
+export * from './ScreenRecord'
 export * from './Speaker'
 export * from './SpeakToTxt'
