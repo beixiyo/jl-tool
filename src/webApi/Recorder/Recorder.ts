@@ -1,7 +1,8 @@
+import type { AnalysisConfig, CaptureConfig, RecorderOptions } from './types'
 import { AudioAnalysis } from './AudioAnalysis'
+import { COMMON_FORMATS } from './constants'
 import { MediaCapture } from './MediaCapture'
 import * as output from './output'
-import type { RecorderOptions, AnalysisConfig, CaptureConfig } from './types'
 
 /**
  * 录音门面：组合采集/分析/输出
@@ -53,6 +54,28 @@ export class Recorder {
     }
   }
 
+  /**
+   * 检测浏览器支持的音频格式
+   * @param formatList 要检测的格式列表，默认使用常见格式列表
+   * @returns 返回支持的格式数组，按检测顺序排序
+   */
+  static getSupportedFormats(formatList: string[] = COMMON_FORMATS): string[] {
+    const supported: string[] = []
+
+    for (const format of formatList) {
+      try {
+        if ((MediaRecorder as any).isTypeSupported?.(format)) {
+          supported.push(format)
+        }
+      }
+      catch {
+        /** 忽略不支持的格式，继续检测下一个 */
+      }
+    }
+
+    return supported
+  }
+
   private pickCapture(c: RecorderOptions): CaptureConfig {
     return {
       deviceId: c.deviceId,
@@ -73,7 +96,8 @@ export class Recorder {
 
   /** 显式初始化，可重入（合流避免并发） */
   async init() {
-    if (this.initPromise) return this.initPromise
+    if (this.initPromise)
+      return this.initPromise
     this.initPromise = (async () => {
       await this.capture.init()
       this.mediaRecorder = this.capture.mediaRecorder
@@ -94,8 +118,10 @@ export class Recorder {
 
   /** 判定是否已完成所需初始化（采集 + 可选分析） */
   private get isReady() {
-    if (!this.capture.mediaRecorder) return false
-    if (this.config.createAnalyser && !this.analysis.analyser) return false
+    if (!this.capture.mediaRecorder)
+      return false
+    if (this.config.createAnalyser && !this.analysis.analyser)
+      return false
     return true
   }
 
@@ -140,7 +166,8 @@ export class Recorder {
 
   /** 下载录音 */
   download(fileName?: string) {
-    if (!this.chunks.length) return this
+    if (!this.chunks.length)
+      return this
     const blob = new Blob(this.chunks, { type: this.mimeType })
     output.download(blob, fileName || '', this.mimeType)
     return this
@@ -149,7 +176,8 @@ export class Recorder {
   /** 播放录音 */
   play(url?: string) {
     const target = url ?? this.audioUrl
-    if (!target) return this
+    if (!target)
+      return this
     output.play(target)
     return this
   }
@@ -159,18 +187,23 @@ export class Recorder {
     const before = this.config
     this.config = { ...before, ...options }
 
-    // 分析参数即时更新
+    /** 分析参数即时更新 */
     this.analysis.updateConfig(this.pickAnalysis(this.config))
 
-    // 采集相关变化需要重建
+    /** 采集相关变化需要重建 */
     const reinitRelated: (keyof RecorderOptions)[] = [
-      'deviceId', 'echoCancellation', 'noiseSuppression', 'autoGainControl', 'preferredMimeTypes', 'createAnalyser'
+      'deviceId',
+      'echoCancellation',
+      'noiseSuppression',
+      'autoGainControl',
+      'preferredMimeTypes',
+      'createAnalyser',
     ]
     const anyOpts = options as any
     const willReinit = reinitRelated.some(k => anyOpts[k] !== undefined && anyOpts[k] !== (before as any)[k])
 
     if (willReinit && this.mediaRecorder && (this.mediaRecorder.state === 'recording' || this.mediaRecorder.state === 'paused')) {
-      // 录制/暂停中不重建，交由调用方在停止后再改
+      /** 录制/暂停中不重建，交由调用方在停止后再改 */
       return this
     }
 

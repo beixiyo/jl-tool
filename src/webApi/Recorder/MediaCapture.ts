@@ -23,7 +23,8 @@ export class MediaCapture {
 
   /** 初始化媒体流与 MediaRecorder */
   async init() {
-    if (this.initPromise) return this.initPromise
+    if (this.initPromise)
+      return this.initPromise
 
     this.initPromise = (async () => {
       await this.release()
@@ -36,7 +37,8 @@ export class MediaCapture {
 
       try {
         this.stream = await navigator.mediaDevices.getUserMedia({ audio: audioConstraints })
-      } catch (error) {
+      }
+      catch (error) {
         this.onError?.(error as Error)
         throw error
       }
@@ -47,16 +49,23 @@ export class MediaCapture {
         'audio/webm',
       ])
 
-      this.mediaRecorder = new MediaRecorder(this.stream, mime ? { mimeType: mime } : {})
+      this.mediaRecorder = new MediaRecorder(this.stream, mime
+        ? { mimeType: mime }
+        : {})
       this.mimeType = this.mediaRecorder.mimeType || mime || 'audio/webm'
 
-      this.mediaRecorder.ondataavailable = e => { if (e.data.size > 0) this.chunks.push(e.data) }
+      this.mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0)
+          this.chunks.push(e.data)
+      }
 
       this.mediaRecorder.onstop = () => {
-        if (this.chunks.length === 0) return
+        if (this.chunks.length === 0)
+          return
         const blob = new Blob(this.chunks, { type: this.mimeType })
         if (this.audioUrl && this.audioUrl.startsWith('blob:')) {
-          try { URL.revokeObjectURL(this.audioUrl) } catch { }
+          try { URL.revokeObjectURL(this.audioUrl) }
+          catch { }
         }
         this.audioUrl = URL.createObjectURL(blob)
         this.onFinish?.(this.audioUrl, this.chunks)
@@ -77,16 +86,20 @@ export class MediaCapture {
   private pickSupportedMime(preferred: string[]) {
     for (const t of preferred) {
       try {
-        if ((MediaRecorder as any).isTypeSupported?.(t)) return t
-      } catch { }
+        if ((MediaRecorder as any).isTypeSupported?.(t))
+          return t
+      }
+      catch { }
     }
     return ''
   }
 
   /** 启动录制：若已在录制，则先等待停止后再启动 */
   async start() {
-    if (!this.mediaRecorder) await this.init()
-    if (!this.mediaRecorder) return
+    if (!this.mediaRecorder)
+      await this.init()
+    if (!this.mediaRecorder)
+      return
 
     if (this.mediaRecorder.state === 'recording') {
       await this.stop()
@@ -96,7 +109,8 @@ export class MediaCapture {
     this.audioUrl = ''
     try {
       this.mediaRecorder.start()
-    } catch (error) {
+    }
+    catch (error) {
       this.onError?.(error as Error)
       throw error
     }
@@ -104,10 +118,12 @@ export class MediaCapture {
 
   /** 停止录制（等待 onstop） */
   async stop() {
-    if (!this.mediaRecorder) return
-    if (this.mediaRecorder.state === 'inactive') return
+    if (!this.mediaRecorder)
+      return
+    if (this.mediaRecorder.state === 'inactive')
+      return
 
-    const once = new Promise<void>(resolve => {
+    const once = new Promise<void>((resolve) => {
       const handler = () => {
         this.mediaRecorder?.removeEventListener('stop', handler as any)
         resolve()
@@ -115,7 +131,8 @@ export class MediaCapture {
       this.mediaRecorder?.addEventListener('stop', handler as any, { once: true })
     })
 
-    try { this.mediaRecorder.stop() } catch (error) {
+    try { this.mediaRecorder.stop() }
+    catch (error) {
       this.onError?.(error as Error)
     }
 
@@ -123,16 +140,20 @@ export class MediaCapture {
   }
 
   async pause() {
-    if (!this.mediaRecorder) return
+    if (!this.mediaRecorder)
+      return
     if (this.mediaRecorder.state === 'recording') {
-      try { this.mediaRecorder.pause() } catch (e) { this.onError?.(e as Error) }
+      try { this.mediaRecorder.pause() }
+      catch (e) { this.onError?.(e as Error) }
     }
   }
 
   async resume() {
-    if (!this.mediaRecorder) return
+    if (!this.mediaRecorder)
+      return
     if (this.mediaRecorder.state === 'paused') {
-      try { this.mediaRecorder.resume() } catch (e) { this.onError?.(e as Error) }
+      try { this.mediaRecorder.resume() }
+      catch (e) { this.onError?.(e as Error) }
     }
   }
 
@@ -147,19 +168,22 @@ export class MediaCapture {
   /** 释放媒体资源 */
   async release() {
     if (this.stream) {
-      try { this.stream.getTracks().forEach(t => t.stop()) } catch { }
+      try { this.stream.getTracks().forEach(t => t.stop()) }
+      catch { }
       this.stream = null
     }
     if (this.mediaRecorder) {
       try {
-        // 清理事件，避免销毁后触发
+        /** 清理事件，避免销毁后触发 */
         this.mediaRecorder.ondataavailable = null as any
         this.mediaRecorder.onstop = null as any
-      } catch { }
+      }
+      catch { }
       this.mediaRecorder = null
     }
     if (this.audioUrl && this.audioUrl.startsWith('blob:')) {
-      try { URL.revokeObjectURL(this.audioUrl) } catch { }
+      try { URL.revokeObjectURL(this.audioUrl) }
+      catch { }
     }
     this.audioUrl = ''
     this.chunks = []

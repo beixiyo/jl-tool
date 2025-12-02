@@ -15,10 +15,11 @@ export class AudioAnalysis {
 
   /** 附加媒体流，按配置创建 Analyser */
   attach(stream: MediaStream) {
-    if (!this.config.createAnalyser) return
+    if (!this.config.createAnalyser)
+      return
 
-    const AudioContextCtor =
-      window.AudioContext || (window as any).webkitAudioContext
+    const AudioContextCtor
+      = window.AudioContext || (window as any).webkitAudioContext
 
     this.audioContext = new AudioContextCtor()
     const analyser = this.audioContext.createAnalyser()
@@ -41,14 +42,16 @@ export class AudioAnalysis {
     this.analyser = null
     this.sourceNode = null
     if (this.audioContext && this.audioContext.state !== 'closed') {
-      try { await this.audioContext.close() } catch {}
+      try { await this.audioContext.close() }
+      catch {}
     }
     this.audioContext = null
   }
 
   /** 获取频域数据，支持外部传入缓冲复用 */
   getByteFrequencyData(out?: Uint8Array<ArrayBuffer>) {
-    if (!this.analyser) return null
+    if (!this.analyser)
+      return null
     const data = out ?? new Uint8Array(this.analyser.frequencyBinCount)
     this.analyser.getByteFrequencyData(data)
     return data
@@ -68,15 +71,16 @@ export class AudioAnalysis {
   }
 
   private safeFftSize(v: number) {
-    const min = 32, max = 32768
+    const min = 32; const max = 32768
     let n = Math.max(min, Math.min(max, v | 0))
-    // 向最近的 2 的幂取整
+    /** 向最近的 2 的幂取整 */
     n = 1 << Math.round(Math.log2(n))
     return n
   }
 
   private safeSmoothing(v: number) {
-    if (Number.isNaN(v)) return 0.8
+    if (Number.isNaN(v))
+      return 0.8
     return Math.max(0, Math.min(1, v))
   }
 }

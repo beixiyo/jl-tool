@@ -15,7 +15,7 @@ export async function play(url: string) {
 export async function download(blob: Blob, baseName: string, mimeType: string) {
   let name = baseName || new Date().toISOString().replace(/[:.]/g, '-')
   const ext = extFromMime(mimeType)
-  if (ext && !name.toLowerCase().endsWith('.' + ext)) {
+  if (ext && !name.toLowerCase().endsWith(`.${ext}`)) {
     name = `${name}.${ext}`
   }
   await downloadByData(blob, name, { mimeType })
