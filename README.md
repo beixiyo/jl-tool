@@ -126,6 +126,7 @@ yarn add @jl-org/tool
 - [`downloadByData`](./src/fileTool/tools.ts) / [`downloadByUrl`](./src/fileTool/tools.ts) - 下载文件
 - [`blobToBase64`](./src/fileTool/tools.ts) / [`base64ToBlob`](./src/fileTool/tools.ts) - 格式转换
 - [`checkFileSize`](./src/fileTool/tools.ts) - 检查文件大小
+- [`convertToWav`](./src/convert/audioToWav.ts) - 将 MediaRecorder/WebM/OGG 音频转换成 WAV，支持重采样和声道混合
 - [`FileChunker`](./src/fileTool/FileChunker.ts) - 文件分块处理器
 - [`BinaryMetadataEncoder`](./src/fileTool/BinaryMetadataEncoder.ts) - 元数据与二进制数据混合编码工具
 - [`createStreamDownloader`](./src/fileTool/streamDownloader.ts) - 流式下载（无内存限制）
@@ -225,6 +226,23 @@ async function processImage(file) {
   return resized
 }
 ```
+
+### 🎧 WebM 音频转换为 WAV
+
+```ts
+import { convertToWav } from '@jl-org/tool'
+
+async function toWav(webmBlob: Blob) {
+  const wavBlob = await convertToWav(webmBlob, {
+    sampleRate: 16000, // 语音识别常用采样率
+    channels: 1, // 混合为单声道
+  })
+
+  return URL.createObjectURL(wavBlob)
+}
+```
+
+> `convertToWav` 基于浏览器的 `AudioContext`，可在录音结束后立即完成重采样与格式化，避免后端再做二次处理。
 
 ### 🔄 分时渲染调度器
 

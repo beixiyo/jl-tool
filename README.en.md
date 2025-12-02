@@ -126,6 +126,7 @@ yarn add @jl-org/tool
 - [`downloadByData`](./src/fileTool/tools.ts) / [`downloadByUrl`](./src/fileTool/tools.ts) - Download files
 - [`blobToBase64`](./src/fileTool/tools.ts) / [`base64ToBlob`](./src/fileTool/tools.ts) - Format conversion
 - [`checkFileSize`](./src/fileTool/tools.ts) - Check file size
+- [`convertToWav`](./src/convert/audioToWav.ts) - Convert MediaRecorder/WebM/OGG audio to WAV, with resampling and channel mixing support
 - [`FileChunker`](./src/fileTool/FileChunker.ts) - File chunking processor
 - [`BinaryMetadataEncoder`](./src/fileTool/BinaryMetadataEncoder.ts) - Metadata and binary data encoding tool
 - [`createStreamDownloader`](./src/fileTool/streamDownloader.ts) - Stream download (memory unlimited)
@@ -225,6 +226,23 @@ async function processImage(file) {
   return resized
 }
 ```
+
+### 🎧 WebM Audio to WAV Conversion
+
+```ts
+import { convertToWav } from '@jl-org/tool'
+
+async function toWav(webmBlob: Blob) {
+  const wavBlob = await convertToWav(webmBlob, {
+    sampleRate: 16000, // Common sampling rate for speech recognition
+    channels: 1, // Mix to mono channel
+  })
+
+  return URL.createObjectURL(wavBlob)
+}
+```
+
+> `convertToWav` uses browser's `AudioContext` for resampling and formatting, completing conversion immediately after recording to avoid backend secondary processing.
 
 ### 🔄 Time-Slicing Scheduler
 
