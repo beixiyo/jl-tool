@@ -20,16 +20,16 @@ export class SpeakToTxt {
    * @param options 配置项
    */
   constructor(options: SpeakToTxtOptions) {
-    if ('webkitSpeechRecognition' in window) {
-      // eslint-disable-next-line new-cap
-      this.recognition = new webkitSpeechRecognition()
-    }
-    else if ('SpeechRecognition' in window) {
-      this.recognition = new SpeechRecognition()
-    }
-    else {
+    const SpeechRecognitionCtor = 'webkitSpeechRecognition' in window
+      ? webkitSpeechRecognition
+      : (typeof SpeechRecognition !== 'undefined'
+          ? SpeechRecognition
+          : undefined)
+    if (!SpeechRecognitionCtor) {
       throw new Error('请使用最新版 Chrome 或者 Edge 浏览器')
     }
+
+    this.recognition = new SpeechRecognitionCtor()
 
     const defaultOptions: Partial<SpeakToTxtOptions> = {
       continuous: false,

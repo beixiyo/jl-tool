@@ -1,4 +1,5 @@
-import type { MicrophoneConfig, RecorderMimeType } from './type'
+import type { ChromeDesktopTrackConstraints, DesktopStreamRequest, MicrophoneConfig, RecorderMimeType } from './type'
+
 
 /**
  * 运行时检测：类型是否被支持
@@ -20,17 +21,16 @@ export function isMimeTypeSupported(mimeType: RecorderMimeType): boolean {
 export function pickSupportedMimeType(
   prefer: RecorderMimeType[] = [],
 ): RecorderMimeType | undefined {
-  const candidates: RecorderMimeType[]
-    = prefer.length > 0
-      ? prefer
-      : [
-          'video/webm;codecs=vp9,opus',
-          'video/webm;codecs=vp8,opus',
-          'video/webm',
-          /** 某些浏览器对 mp4 支持受限 */
-          'video/mp4;codecs=h264,aac',
-          'video/mp4',
-        ]
+  const candidates: RecorderMimeType[] = prefer.length > 0
+    ? prefer
+    : [
+      'video/webm;codecs=vp9,opus',
+      'video/webm;codecs=vp8,opus',
+      'video/webm',
+      /** 某些浏览器对 mp4 支持受限 */
+      'video/mp4;codecs=h264,aac',
+      'video/mp4',
+    ]
   return candidates.find(isMimeTypeSupported)
 }
 
@@ -48,15 +48,19 @@ export async function mixAudioStreams(
   if (a && !b) {
     /** 返回新的 MediaStream 实例，避免直接返回原始流 */
     const tracks = a.getAudioTracks()
-    return { stream: tracks.length > 0
-      ? new MediaStream(tracks)
-      : undefined }
+    return {
+      stream: tracks.length > 0
+        ? new MediaStream(tracks)
+        : undefined
+    }
   }
   if (!a && b) {
     const tracks = b.getAudioTracks()
-    return { stream: tracks.length > 0
-      ? new MediaStream(tracks)
-      : undefined }
+    return {
+      stream: tracks.length > 0
+        ? new MediaStream(tracks)
+        : undefined
+    }
   }
   /**
    * 两者都存在时混音
@@ -92,4 +96,49 @@ export function buildMicConstraints(mic: MicrophoneConfig): MediaStreamConstrain
     audio: mic,
     video: false,
   }
+}
+
+/**
+ * 使用 desktopCapturer 源创建 MediaStream
+ */
+export async function createDesktopCaptureStream(request: DesktopStreamRequest) {
+  if (!navigator.mediaDevices?.getUserMedia) {
+    throw new Error('当前环境不支持桌面捕获')
+  }
+  const { source, withAudio, withVideo } = request
+  const frameRate = source.frameRate ?? 30
+
+  const audioConstraint: false | ChromeDesktopTrackConstraints = withAudio
+    ? {
+      mandatory: {
+        chromeMediaSource: 'desktop',
+        chromeMediaSourceId: source.id,
+      },
+    }
+    : false
+
+  const videoConstraint: false | ChromeDesktopTrackConstraints = withVideo
+    ? {
+      mandatory: {
+        chromeMediaSource: 'desktop',
+        chromeMediaSourceId: source.id,
+        maxFrameRate: frameRate,
+        ...(source.width
+          ? { maxWidth: source.width }
+          : {}),
+        ...(source.height
+          ? { maxHeight: source.height }
+          : {}),
+      },
+      optional: [
+        { maxFrameRate: frameRate },
+      ],
+    }
+    : false
+
+  const constraints = {
+    audio: audioConstraint,
+    video: videoConstraint,
+  } as MediaStreamConstraints
+  return navigator.mediaDevices.getUserMedia(constraints)
 }

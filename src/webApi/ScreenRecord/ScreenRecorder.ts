@@ -1,5 +1,5 @@
 import type { DisplayMediaStreamConstraintsLike, RecorderBlobEvent, RecorderMimeType, RecorderState, ScreenRecorderOptions } from './type'
-import { buildMicConstraints, mixAudioStreams, pickSupportedMimeType } from './utils'
+import { buildMicConstraints, createDesktopCaptureStream, mixAudioStreams, pickSupportedMimeType } from './utils'
 
 /**
  * 屏幕录制器
@@ -132,28 +132,52 @@ export class ScreenRecorder {
     if (this.mediaRecorder) {
       await this.stop()
     }
+    else {
+      /**
+       * 如果上一次录制流程在创建 MediaRecorder 之前异常中断，
+       * 此时可能还持有旧的 MediaStream，需要先主动停止以避免
+       * 浏览器抛出「Could not start video source」之类的错误
+       */
+      this.cleanupTracks()
+    }
 
     try {
       const { audioOnly = false, systemAudio, micAudio } = this.config
+      const desktopSource = this.config.desktopSource
+      const wantSystemAudio = !!systemAudio
 
       if (audioOnly) {
-        /** 仅音频模式 */
-        // 1) 获取系统音频（部分浏览器要求通过 getDisplayMedia 才能拿到系统音）
+        /**
+         * 仅音频模式
+         * 1. 获取系统音频（部分浏览器要求通过 getDisplayMedia 才能拿到系统音）
+         */
         if (systemAudio) {
-          this.displayStream = await navigator.mediaDevices.getDisplayMedia({
-            video: true,
-            audio: systemAudio,
-          })
+          if (desktopSource) {
+            this.displayStream = await createDesktopCaptureStream({
+              source: desktopSource,
+              withAudio: true,
+              withVideo: true,
+            })
+          }
+          else {
+            this.displayStream = await navigator.mediaDevices.getDisplayMedia({
+              video: true,
+              audio: systemAudio,
+            })
+          }
           /** 添加流结束监听 */
-          this.addStreamStopListener(this.displayStream, () => {
-            if (this._state === 'recording' || this._state === 'paused') {
-              this.stop().catch(() => { })
-            }
-          })
+          if (this.displayStream) {
+            this.addStreamStopListener(this.displayStream, () => {
+              if (this._state === 'recording' || this._state === 'paused') {
+                this.stop().catch(() => { })
+              }
+            })
+            /** 立刻停止并移除视频轨道，避免录制中包含视频 */
+            this.removeVideoTracks(this.displayStream)
+          }
           /** 立刻停止并移除视频轨道，避免录制中包含视频 */
-          this.removeVideoTracks(this.displayStream)
         }
-        // 2) 获取麦克风（可选）
+        // 2. 获取麦克风（可选）
         if (micAudio) {
           const micConstraints = buildMicConstraints(micAudio)
           this.micStream = await navigator.mediaDevices.getUserMedia(micConstraints)
@@ -167,7 +191,7 @@ export class ScreenRecorder {
           }
         }
 
-        // 3) 混音音频流
+        // 3. 混音音频流
         const mixedAudio = await this.prepareAudioStream()
         const audioTrack = mixedAudio?.getAudioTracks()[0]
         if (!audioTrack) {
@@ -176,21 +200,34 @@ export class ScreenRecorder {
         this.recordStream = new MediaStream([audioTrack])
       }
       else {
-        /** 音视频模式 */
-        // 1) 获取显示媒体（可能包含系统音频）
-        const displayConstraints = {
-          video: this.config.video,
-          audio: this.config.systemAudio,
-        } as DisplayMediaStreamConstraintsLike
-        this.displayStream = await navigator.mediaDevices.getDisplayMedia(displayConstraints)
+        /**
+         * 音视频模式
+         * 1. 获取显示媒体（可能包含系统音频）
+         */
+        if (desktopSource) {
+          this.displayStream = await createDesktopCaptureStream({
+            source: desktopSource,
+            withAudio: wantSystemAudio,
+            withVideo: true,
+          })
+        }
+        else {
+          const displayConstraints = {
+            video: this.config.video,
+            audio: this.config.systemAudio,
+          } as DisplayMediaStreamConstraintsLike
+          this.displayStream = await navigator.mediaDevices.getDisplayMedia(displayConstraints)
+        }
         /** 添加流结束监听 */
-        this.addStreamStopListener(this.displayStream, () => {
-          if (this._state === 'recording' || this._state === 'paused') {
-            this.stop().catch(() => { })
-          }
-        })
+        if (this.displayStream) {
+          this.addStreamStopListener(this.displayStream, () => {
+            if (this._state === 'recording' || this._state === 'paused') {
+              this.stop().catch(() => { })
+            }
+          })
+        }
 
-        // 2) 根据需要获取麦克风
+        // 2. 根据需要获取麦克风
         if (micAudio) {
           const micConstraints = buildMicConstraints(micAudio)
           this.micStream = await navigator.mediaDevices.getUserMedia(micConstraints)
@@ -204,7 +241,7 @@ export class ScreenRecorder {
           }
         }
 
-        // 3) 组装最终录制流：视频 track 来自 display；音频 track 来自混音结果
+        // 3. 组装最终录制流：视频 track 来自 display；音频 track 来自混音结果
         const videoTrack = this.displayStream.getVideoTracks()[0]
         if (!videoTrack) {
           throw new Error('未获取到视频轨道')
@@ -221,7 +258,7 @@ export class ScreenRecorder {
         this.recordStream = new MediaStream(tracks)
       }
 
-      // 4) 选择合适的 mimeType
+      // 4. 选择合适的 mimeType
       const prefer = this.config.preferMimeTypes
         ?? (this.config.audioOnly
           ? (['audio/webm;codecs=opus', 'audio/webm'])
@@ -233,7 +270,7 @@ export class ScreenRecorder {
       }
       this.mediaRecorder = new MediaRecorder(this.recordStream, init)
 
-      // 5) 绑定事件
+      // 5. 绑定事件
       this.chunks = []
       this.mediaRecorder.ondataavailable = (evt: RecorderBlobEvent) => {
         if (evt.data && evt.data.size > 0) {
@@ -280,7 +317,7 @@ export class ScreenRecorder {
         }
       }
 
-      // 6) 开始录制
+      // 6. 开始录制
       const timeslice = this.config.timesliceMs
       if (timeslice != null && timeslice > 0) {
         this.mediaRecorder.start(timeslice)

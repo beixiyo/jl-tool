@@ -18,8 +18,7 @@ export class AudioAnalysis {
     if (!this.config.createAnalyser)
       return
 
-    const AudioContextCtor
-      = window.AudioContext || (window as any).webkitAudioContext
+    const AudioContextCtor = window.AudioContext || (window as any).webkitAudioContext
 
     this.audioContext = new AudioContextCtor()
     const analyser = this.audioContext.createAnalyser()
@@ -39,11 +38,19 @@ export class AudioAnalysis {
 
   /** 分离媒体流并关闭上下文 */
   async detach() {
+    if (this.sourceNode) {
+      try {
+        this.sourceNode.disconnect()
+      }
+      catch {
+        // ignore
+      }
+    }
     this.analyser = null
     this.sourceNode = null
     if (this.audioContext && this.audioContext.state !== 'closed') {
       try { await this.audioContext.close() }
-      catch {}
+      catch { }
     }
     this.audioContext = null
   }

@@ -1,9 +1,9 @@
 export type RecorderState
   = | 'idle'
-    | 'recording'
-    | 'paused'
-    | 'stopped'
-    | 'error'
+  | 'recording'
+  | 'paused'
+  | 'stopped'
+  | 'error'
 
 /**
  * 录制类型
@@ -27,12 +27,12 @@ export type RecorderBlobEvent = {
  */
 export type RecorderMimeType
   = | 'video/webm;codecs=vp9,opus'
-    | 'video/webm;codecs=vp8,opus'
-    | 'video/webm;codecs=h264,opus'
-    | 'video/webm'
-    | 'video/mp4;codecs=h264,aac'
-    | 'video/mp4'
-    | string
+  | 'video/webm;codecs=vp8,opus'
+  | 'video/webm;codecs=h264,opus'
+  | 'video/webm'
+  | 'video/mp4;codecs=h264,aac'
+  | 'video/mp4'
+  | string
 
 /**
  * 屏幕录制回调
@@ -83,6 +83,29 @@ export type DisplayMediaConfig = {
 export type MicrophoneConfig = boolean | MediaTrackConstraints
 
 /**
+ * Electron 桌面捕获配置
+ */
+export type DesktopSourceConfig = {
+  /**
+   * desktopCapturer 返回的 source id
+   */
+  id: string
+  /**
+   * 录制帧率上限
+   * @default 30
+   */
+  frameRate?: number
+  /**
+   * 期望宽度
+   */
+  width?: number
+  /**
+   * 期望高度
+   */
+  height?: number
+}
+
+/**
  * ScreenRecorder 初始化选项
  */
 export type ScreenRecorderOptions = DisplayMediaConfig
@@ -114,4 +137,28 @@ export type ScreenRecorderOptions = DisplayMediaConfig
      * 如果不设置，`ondataavailable` 仅在 `stop()` 时触发一次
      */
     timesliceMs?: number
+    /**
+     * 指定 desktopCapturer 源，提供后将跳过浏览器弹窗，直接按该 source 捕获
+     */
+    desktopSource?: DesktopSourceConfig
   }
+
+
+export type ChromeDesktopMandatory = {
+  chromeMediaSource: 'desktop'
+  chromeMediaSourceId: string
+  maxFrameRate?: number
+  maxWidth?: number
+  maxHeight?: number
+}
+
+export type ChromeDesktopTrackConstraints = MediaTrackConstraints & {
+  mandatory?: ChromeDesktopMandatory
+  optional?: Array<Record<string, number>>
+}
+
+export type DesktopStreamRequest = {
+  source: DesktopSourceConfig
+  withAudio: boolean
+  withVideo: boolean
+}
