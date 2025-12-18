@@ -210,60 +210,6 @@ export function isLtYear(curDate: Date | string | number, yearLen = -1) {
 }
 
 /**
- * 描述传入日期相对于当前时间的口头说法
- * 例如：刚刚、1分钟前、1小时前、1天前、1个月前、1年前...
- * @param date 需要计算时间间隔的日期
- * @example
- * ```ts
- * console.log(timeGap()) // 刚刚
- * ```
- */
-export function timeGap(date?: TimeType, opts: TimeGapOpts = {}) {
-  const { afterFn, beforeFn, fallback = '--' } = opts
-  let isFuture = false
-  let time = Date.now() - new Date(date ?? Date.now()).getTime()
-
-  const detailMap = [
-    { desc: '年', gap: 3600 * 24 * 365 * 1e3 },
-    { desc: '个月', gap: 3600 * 24 * 30 * 1e3 },
-    { desc: '天', gap: 3600 * 24 * 1e3 },
-    { desc: '小时', gap: 3600 * 1e3 },
-    { desc: '分钟', gap: 60 * 1e3 },
-    { desc: '秒', gap: 1 * 1e3 },
-    { desc: '刚刚', gap: 0 },
-  ]
-
-  if (Number.isNaN(time))
-    return fallback
-  if (Math.abs(time) < 1e3)
-    return detailMap[detailMap.length - 1].desc // 小于1秒都返回 "刚刚"
-
-  if (time < 0) {
-    isFuture = true
-    time = -time
-  }
-
-  for (let i = 0; i < detailMap.length; i++) {
-    const { desc, gap } = detailMap[i]
-    if (time >= gap) {
-      const v = Math.floor(time / gap)
-      const str = v + desc
-      if (isFuture) {
-        return afterFn
-          ? afterFn(str)
-          : `${str}后`
-      }
-      return beforeFn
-        ? beforeFn(str)
-        : `${str}前`
-    }
-  }
-
-  /** 这行实际上不会执行到，但为了类型安全保留 */
-  return fallback
-}
-
-/**
  * 格式化时间，你也可以放在 Date.prototype 上，然后 new Date().formatDate()
  *
  * @example
@@ -439,13 +385,4 @@ export interface DateInfo {
   mm: string
   ss: string
   ms: string
-}
-
-export type TimeGapOpts = {
-  /** 兜底替代字符串，默认 -- */
-  fallback?: string
-  /** 以前日期格式化 */
-  beforeFn?: (dateStr: string) => string
-  /** 以后日期格式化 */
-  afterFn?: (dateStr: string) => string
 }

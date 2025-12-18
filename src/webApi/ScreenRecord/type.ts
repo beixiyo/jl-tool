@@ -1,9 +1,9 @@
 export type RecorderState
   = | 'idle'
-  | 'recording'
-  | 'paused'
-  | 'stopped'
-  | 'error'
+    | 'recording'
+    | 'paused'
+    | 'stopped'
+    | 'error'
 
 /**
  * 录制类型
@@ -27,12 +27,12 @@ export type RecorderBlobEvent = {
  */
 export type RecorderMimeType
   = | 'video/webm;codecs=vp9,opus'
-  | 'video/webm;codecs=vp8,opus'
-  | 'video/webm;codecs=h264,opus'
-  | 'video/webm'
-  | 'video/mp4;codecs=h264,aac'
-  | 'video/mp4'
-  | string
+    | 'video/webm;codecs=vp8,opus'
+    | 'video/webm;codecs=h264,opus'
+    | 'video/webm'
+    | 'video/mp4;codecs=h264,aac'
+    | 'video/mp4'
+    | string
 
 /**
  * 屏幕录制回调
@@ -142,7 +142,6 @@ export type ScreenRecorderOptions = DisplayMediaConfig
      */
     desktopSource?: DesktopSourceConfig
   }
-
 
 export type ChromeDesktopMandatory = {
   chromeMediaSource: 'desktop'

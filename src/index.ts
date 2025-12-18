@@ -26,6 +26,7 @@ export * from '@/tools/dateTools'
 export * from '@/tools/disableDebug'
 
 export * from '@/tools/FakeProgress'
+export * from '@/tools/formatTimeFromNow'
 
 export * from '@/tools/preload'
 export * from '@/tools/scheduleTask'

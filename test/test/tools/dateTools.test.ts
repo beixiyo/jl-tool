@@ -1,22 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import { formatDate, getQuarter, getValidDate, isLtYear, padDate, timeGap } from '@/tools/dateTools'
+import { formatDate, getQuarter, getValidDate, isLtYear, padDate } from '@/tools/dateTools'
 
 const timeStr = '2020-10-02 10:02:55'
-
-describe('语义化时间测试', () => {
-  it('刚刚', () => {
-    expect(timeGap()).toBe('刚刚')
-  })
-  it('多久前', () => {
-    expect(timeGap(Date.now() + 100)).toBe('刚刚')
-
-    expect(timeGap(Date.now() - 1001)).toBe('1秒前')
-    expect(timeGap(Date.now() - 1000 * 60.1)).toBe('1分钟前')
-    expect(timeGap(Date.now() - 1000 * 60.1 * 60)).toBe('1小时前')
-    expect(timeGap(Date.now() - 1000 * 60.1 * 60 * 24)).toBe('1天前')
-    expect(timeGap(Date.now() - 1000 * 60.1 * 60 * 24 * 365)).toBe('1年前')
-  })
-})
 
 describe('formatDate', () => {
   it('格式化时间测试', () => {
