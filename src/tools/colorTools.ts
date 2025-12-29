@@ -1,5 +1,5 @@
+import { numFixed } from '@/math/tools'
 import { Reg } from '@/shared'
-import { numFixed } from './tools'
 
 /**
  * 把颜色提取出 RGBA

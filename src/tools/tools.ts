@@ -424,33 +424,43 @@ export function deepCompare(o1: any, o2: any, seen = new WeakMap()) {
 export function truncate<T = string>(
   strOrArr: string | T[],
   len: number,
-  suffixOrOptions: string | TruncateOptions<T> = '...'
+  suffixOrOptions: string | TruncateOptions<T> = '...',
 ): string {
-  // 解析配置
+  /** 解析配置 */
   const isStringConfig = isStr(suffixOrOptions)
-  const suffix = isStringConfig ? suffixOrOptions : (suffixOrOptions.suffix ?? '...')
-  const separator = isStringConfig ? ',' : (suffixOrOptions.separator ?? ',')
-  const customJoin = isStringConfig ? undefined : suffixOrOptions.join
+  const suffix = isStringConfig
+    ? suffixOrOptions
+    : suffixOrOptions.suffix ?? '...'
+  const separator = isStringConfig
+    ? ','
+    : suffixOrOptions.separator ?? ','
+  const customJoin = isStringConfig
+    ? undefined
+    : suffixOrOptions.join
 
-  // 数组处理
+  /** 数组处理 */
   if (isArr(strOrArr)) {
     if (len <= 0) {
       return ''
     }
 
-    // 如果数组长度超过 len，需要截取并添加后缀
+    /** 如果数组长度超过 len，需要截取并添加后缀 */
     if (strOrArr.length > len) {
-      // 取前 len-1 个元素（为后缀留出空间），然后添加后缀
+      /** 取前 len-1 个元素（为后缀留出空间），然后添加后缀 */
       const sliced = strOrArr.slice(0, len - 1)
-      const joined = customJoin ? customJoin(sliced, separator) : sliced.join(separator)
+      const joined = customJoin
+        ? customJoin(sliced, separator)
+        : sliced.join(separator)
       return joined + suffix
     }
 
-    // 数组长度未超过 len，直接拼接返回
-    return customJoin ? customJoin(strOrArr, separator) : strOrArr.join(separator)
+    /** 数组长度未超过 len，直接拼接返回 */
+    return customJoin
+      ? customJoin(strOrArr, separator)
+      : strOrArr.join(separator)
   }
 
-  // 字符串处理
+  /** 字符串处理 */
   const suffixLen = suffix.length
   if (len <= suffixLen) {
     return strOrArr.slice(0, len)
@@ -645,23 +655,6 @@ export function padNum(num: string | number, precision = 2, placeholder = '0') {
 }
 
 /**
- * 解决 Number.toFixed 计算错误
- * @example
- * ```ts
- * 1.335.toFixed(2) => '1.33'
- * numFixed(1.335) => 1.34
- * ```
- *
- * @param num 数值
- * @param precision 精度，默认 2
- */
-export function numFixed(num: number | string, precision = 2) {
-  num = Number(num)
-  const scale = 10 ** precision
-  return Math.round(num * scale) / scale
-}
-
-/**
  * - 提取值在 extractArr 中的元素，返回一个对象
  * - 例如提取对象中所有空字符串
  *
@@ -815,7 +808,6 @@ export interface TruncateOptions<T> {
   /** 自定义数组拼接函数，接收截取后的数组和分隔符，返回拼接后的字符串 */
   join?: (arr: T[], separator: string) => string
 }
-
 
 /** 递归树拍平简易写法 */
 // export function dataToTree(data: TreeData[]) {

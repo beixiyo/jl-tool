@@ -1,4 +1,4 @@
-import { numFixed } from '../tools/tools'
+import { numFixed } from '@/math/tools'
 
 /**
  * 文件分块处理器

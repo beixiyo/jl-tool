@@ -1,5 +1,5 @@
+import { numFixed } from '@/math/tools'
 import { isStr } from '@/shared'
-import { numFixed } from './tools'
 
 /**
  * 调度将指定数量的处理任务分配给多个 Web Worker，并按原始顺序收集它们的结果。

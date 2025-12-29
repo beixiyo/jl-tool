@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { celsiusToFahrenheit, truncate, TruncateOptions, excludeKeys, excludeVals, fahrenheitToCelsius, filterKeys, filterVals, getRandomNum, getType, numFixed, padEmptyObj, padNum, randomStr, toCamel } from '@/tools/tools'
+import { celsiusToFahrenheit, truncate, TruncateOptions, excludeKeys, excludeVals, fahrenheitToCelsius, filterKeys, filterVals, getRandomNum, getType, padEmptyObj, padNum, randomStr, toCamel } from '@/tools/tools'
 
 it('获取类型', () => {
   expect(getType(undefined)).toBe('undefined')
@@ -201,12 +201,6 @@ it('数字补齐精度', () => {
 
   expect(padNum(1, 3, '1')).toBe('1.111')
   expect(padNum(3.59, 4)).toBe('3.5900')
-})
-
-it('解决 Number.toFixed 计算错误', () => {
-  /** 反面教材 */
-  expect(1.335.toFixed(2)).toBe('1.33')
-  expect(numFixed(1.335, 2)).toBe(1.34)
 })
 
 // ==========================================================
