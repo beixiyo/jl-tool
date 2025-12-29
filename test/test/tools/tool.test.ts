@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { celsiusToFahrenheit, cutStr, excludeKeys, excludeVals, fahrenheitToCelsius, filterKeys, filterVals, getRandomNum, getType, numFixed, padEmptyObj, padNum, randomStr, toCamel } from '@/tools/tools'
+import { celsiusToFahrenheit, truncate, TruncateOptions, excludeKeys, excludeVals, fahrenheitToCelsius, filterKeys, filterVals, getRandomNum, getType, numFixed, padEmptyObj, padNum, randomStr, toCamel } from '@/tools/tools'
 
 it('获取类型', () => {
   expect(getType(undefined)).toBe('undefined')
@@ -48,17 +48,82 @@ describe('随机数字', () => {
   })
 })
 
-it('截取字符串', () => {
-  const str = '123456789'
-  expect(cutStr(str, 6)).toBe('123...')
-  expect(cutStr(str, 7)).toBe('1234...')
+describe('截取字符串', () => {
+  it('基础用法', () => {
+    const str = '123456789'
+    expect(truncate(str, 6)).toBe('123...')
+    expect(truncate(str, 7)).toBe('1234...')
 
-  expect(cutStr(str, 3)).toBe('123')
-  expect(cutStr(str, 0)).toBe('')
-  expect(cutStr(str, -1)).toBe('12345678')
+    expect(truncate(str, 3)).toBe('123')
+    expect(truncate(str, 0)).toBe('')
+    expect(truncate(str, -1)).toBe('12345678')
 
-  expect(cutStr(str, 6, '---')).toBe('123---')
-  expect(cutStr(str, 6, '--')).toBe('1234--')
+    expect(truncate(str, 6, '---')).toBe('123---')
+    expect(truncate(str, 6, '--')).toBe('1234--')
+  })
+
+  it('数组支持 - 默认分隔符', () => {
+    expect(truncate([1, 2, 3, 4, 5], 3)).toBe('1,2...')
+    expect(truncate(['a', 'b', 'c'], 5)).toBe('a,b,c')
+    expect(truncate([1, 2, 3, 4, 5], 3, 'more')).toBe('1,2more')
+    expect(truncate([1, 2, 3], 5)).toBe('1,2,3')
+    expect(truncate([1, 2, 3], 0)).toBe('')
+  })
+
+  it('数组支持 - 自定义分隔符和后缀', () => {
+    expect(truncate([1, 2, 3, 4, 5], 3, { separator: ' | ', suffix: '...' })).toBe('1 | 2...')
+    expect(truncate(['a', 'b', 'c', 'd'], 2, { separator: '-', suffix: '等' })).toBe('a等')
+    expect(truncate([1, 2, 3], 5, { separator: ' | ' })).toBe('1 | 2 | 3')
+    expect(truncate([1, 2, 3, 4], 3, { separator: ',', suffix: ' 等' })).toBe('1,2 等')
+  })
+
+  it('数组支持 - 自定义拼接函数', () => {
+    // 使用自定义 join 函数添加括号
+    expect(truncate([1, 2, 3, 4, 5], 3, {
+      join: (arr, sep) => arr.map(x => `[${x}]`).join(sep)
+    })).toBe('[1],[2]...')
+
+    // 自定义 join 函数，忽略 separator 参数
+    expect(truncate(['apple', 'banana', 'cherry'], 2, {
+      separator: ' | ',
+      suffix: ' 等',
+      join: (arr) => arr.join('、')
+    })).toBe('apple 等')
+
+    // 自定义 join 函数处理对象数组
+    expect(truncate([{ name: 'a' }, { name: 'b' }, { name: 'c' }], 2, {
+      join: (arr) => arr.map(item => item.name).join(', ')
+    })).toBe('a...')
+
+    // 自定义 join 函数，使用 separator 参数
+    expect(truncate([1, 2, 3, 4], 3, {
+      separator: ' | ',
+      join: (arr, sep) => arr.join(sep)
+    })).toBe('1 | 2...')
+
+    // 数组未超过长度时也使用自定义 join
+    expect(truncate([1, 2, 3], 5, {
+      join: (arr) => arr.map(x => `(${x})`).join(' + ')
+    })).toBe('(1) + (2) + (3)')
+  })
+
+  it('配置项类型导出', () => {
+    // 验证 CutStrOptions 类型可以正常使用
+    const options: TruncateOptions<number> = {
+      separator: ',',
+      suffix: '...',
+      join: (arr) => arr.join(',')
+    }
+    expect(truncate([1, 2, 3], 2, options)).toBe('1...')
+
+    // 测试自定义 join 函数
+    const optionsWithJoin: TruncateOptions<string> = {
+      separator: ',',
+      suffix: '...',
+      join: (arr) => arr.map(s => s.toUpperCase()).join(' | ')
+    }
+    expect(truncate(['a', 'b', 'c', 'd'], 3, optionsWithJoin)).toBe('A | B...')
+  })
 })
 
 // ==========================================================

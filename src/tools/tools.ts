@@ -1,4 +1,4 @@
-import { isObj, isStr } from '@/shared/is'
+import { isArr, isObj, isStr } from '@/shared/is'
 
 let id = 0
 
@@ -369,46 +369,104 @@ export function deepCompare(o1: any, o2: any, seen = new WeakMap()) {
 }
 
 /**
- * 截取字符串并添加占位符
- * @param str 需要截取的字符串
+ * 截取字符串或数组并添加后缀
+ * @param strOrArr 需要截取的字符串或数组
  * @param len 需要截取的长度
- * @param placeholder 补在后面的字符串，默认 '...'
+ * @param suffixOrOptions 后缀字符串或配置项，默认 '...'
+ * @param suffixOrOptions.suffix 数组或字符串截取后添加的后缀，默认 '...'
+ * @param suffixOrOptions.separator 数组元素之间的分隔符，默认 ','
+ * @param suffixOrOptions.join 自定义数组拼接函数
  * @returns 截取后的字符串
  *
  * @example
  * ```ts
- * // 基础用法
+ * // 基础用法 - 字符串
  * cutStr('这是一个很长的字符串', 5) // '这是一个...'
  * cutStr('短字符串', 10) // '短字符串' - 未超过长度
  * ```
  *
  * @example
  * ```ts
- * // 自定义占位符
+ * // 自定义后缀 - 字符串
  * cutStr('Hello World', 8, '...') // 'Hello...'
  * cutStr('测试文本', 3, '...') // '测试...'
  * ```
  *
  * @example
  * ```ts
- * // 实际应用 - 文本预览
- * const longText = '这是一篇很长的文章内容，需要截取显示'
- * const preview = cutStr(longText, 20)
- * console.log(preview) // '这是一篇很长的文章内容，需要截取显示'
+ * // 数组支持 - 默认使用逗号分隔
+ * cutStr([1, 2, 3, 4, 5], 3) // '1,2...'
+ * cutStr(['a', 'b', 'c'], 5) // 'a,b,c' - 未超过长度
+ * cutStr([1, 2, 3, 4, 5], 3, 'more') // '1,2more'
+ * ```
+ *
+ * @example
+ * ```ts
+ * // 数组支持 - 自定义分隔符和后缀
+ * cutStr([1, 2, 3, 4, 5], 3, { separator: ' | ', suffix: '...' }) // '1 | 2...'
+ * cutStr(['a', 'b', 'c', 'd'], 2, { separator: '-', suffix: '等' }) // 'a等'
+ * ```
+ *
+ * @example
+ * ```ts
+ * // 数组支持 - 自定义拼接函数
+ * cutStr([1, 2, 3, 4, 5], 3, {
+ *   join: (arr, sep) => arr.map(x => `[${x}]`).join(sep)
+ * }) // '[1],[2]...'
+ *
+ * cutStr(['apple', 'banana', 'cherry'], 2, {
+ *   separator: ' | ',
+ *   suffix: ' 等',
+ *   join: (arr) => arr.join('、')
+ * }) // 'apple 等'
  * ```
  */
-export function cutStr(str: string, len: number, placeholder = '...') {
-  const placeholderLen = placeholder.length
-  if (len <= placeholderLen) {
-    return str.slice(0, len)
+export function truncate<T = string>(
+  strOrArr: string | T[],
+  len: number,
+  suffixOrOptions: string | TruncateOptions<T> = '...'
+): string {
+  // 解析配置
+  const isStringConfig = isStr(suffixOrOptions)
+  const suffix = isStringConfig ? suffixOrOptions : (suffixOrOptions.suffix ?? '...')
+  const separator = isStringConfig ? ',' : (suffixOrOptions.separator ?? ',')
+  const customJoin = isStringConfig ? undefined : suffixOrOptions.join
+
+  // 数组处理
+  if (isArr(strOrArr)) {
+    if (len <= 0) {
+      return ''
+    }
+
+    // 如果数组长度超过 len，需要截取并添加后缀
+    if (strOrArr.length > len) {
+      // 取前 len-1 个元素（为后缀留出空间），然后添加后缀
+      const sliced = strOrArr.slice(0, len - 1)
+      const joined = customJoin ? customJoin(sliced, separator) : sliced.join(separator)
+      return joined + suffix
+    }
+
+    // 数组长度未超过 len，直接拼接返回
+    return customJoin ? customJoin(strOrArr, separator) : strOrArr.join(separator)
   }
 
-  const newStr = str.slice(0, len)
+  // 字符串处理
+  const suffixLen = suffix.length
+  if (len <= suffixLen) {
+    return strOrArr.slice(0, len)
+  }
 
-  return str.length > len
-    ? str.slice(0, len - placeholderLen) + placeholder
+  const newStr = strOrArr.slice(0, len)
+
+  return strOrArr.length > len
+    ? strOrArr.slice(0, len - suffixLen) + suffix
     : newStr
 }
+
+/**
+ * @deprecated 请使用 truncate 代替
+ */
+export const cutStr = truncate
 
 /**
  * 将对象的空值填充为指定字符串
@@ -744,6 +802,20 @@ export type OnceOpts = {
    */
   returnLastResult?: boolean
 }
+
+/**
+ * cutStr 函数的配置项
+ * @template T 数组元素的类型
+ */
+export interface TruncateOptions<T> {
+  /** 数组或字符串截取后添加的后缀，默认 '...' */
+  suffix?: string
+  /** 数组元素之间的分隔符，默认 ',' */
+  separator?: string
+  /** 自定义数组拼接函数，接收截取后的数组和分隔符，返回拼接后的字符串 */
+  join?: (arr: T[], separator: string) => string
+}
+
 
 /** 递归树拍平简易写法 */
 // export function dataToTree(data: TreeData[]) {
