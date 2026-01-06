@@ -49,6 +49,7 @@ yarn add @jl-org/tool
 |----------|-------------|
 | [`uniqueId`](./src/tools/tools.ts) | Get auto-incrementing unique ID |
 | [`deepClone`](./src/tools/tools.ts) | Deep clone with circular reference support |
+| [`deepMerge`](./src/tools/tools.ts) | Deep merge objects, preserving properties not in source |
 | [`wait`](./src/tools/tools.ts) | Wait for specified time |
 | [`throttle`](./src/tools/domTools.ts) | Throttle function |
 | [`debounce`](./src/tools/domTools.ts) | Debounce function |
@@ -516,3 +517,5 @@ function animate() {
 
 animate()
 ```
+
+### And more ...

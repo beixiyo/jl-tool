@@ -49,6 +49,7 @@ yarn add @jl-org/tool
 |------|------|
 | [`uniqueId`](./src/tools/tools.ts) | 获取自增唯一ID |
 | [`deepClone`](./src/tools/tools.ts) | 深拷贝，支持循环引用 |
+| [`deepMerge`](./src/tools/tools.ts) | 深度合并对象，保留目标对象未包含的属性 |
 | [`wait`](./src/tools/tools.ts) | 等待指定时间 |
 | [`throttle`](./src/tools/domTools.ts) | 节流函数 |
 | [`debounce`](./src/tools/domTools.ts) | 防抖函数 |
@@ -516,3 +517,5 @@ function animate() {
 
 animate()
 ```
+
+### And more ...
