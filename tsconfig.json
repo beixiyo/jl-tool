@@ -12,7 +12,7 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "#/*": ["./node/*"],
+      "#/*": ["./node/*"]
     },
     "outDir": "dist",
     "declaration": true,
@@ -30,9 +30,16 @@
       "src/animation/index.ts",
       "src/canvas/index.ts",
       "src/channel/index.ts",
+      "src/convert/index.ts",
       "src/dataStructure/index.ts",
+      "src/deep/index.ts",
+      "src/domTools/index.ts",
+      "src/fileTool/index.ts",
+      "src/markdown/index.ts",
+      "src/math/index.ts",
       "src/net/index.ts",
       "src/plugins/index.ts",
+      "src/polyfill/index.ts",
       "src/shared/index.ts",
       "src/tools/arrTools.ts",
       "src/tools/Clock.ts",
@@ -45,12 +52,12 @@
       "src/tools/scheduleTask.ts",
       "src/tools/tools.ts",
       "src/tools/FakeProgress.ts",
-      "src/webApi/index.ts",
+      "src/webApi/index.ts"
     ],
     "out": "./docs/type-doc",
     "plugin": [
       "typedoc-plugin-markdown"
     ],
     "excludePrivate": true
-  },
+  }
 }

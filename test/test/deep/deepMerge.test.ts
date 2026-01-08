@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { deepMerge } from '@/tools/tools'
+import { deepMerge } from '@/deep'
 
 describe('deepMerge', () => {
   it('应该深度合并嵌套对象', () => {

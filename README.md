@@ -48,8 +48,9 @@ yarn add @jl-org/tool
 | 函数 | 说明 |
 |------|------|
 | [`uniqueId`](./src/tools/tools.ts) | 获取自增唯一ID |
-| [`deepClone`](./src/tools/tools.ts) | 深拷贝，支持循环引用 |
-| [`deepMerge`](./src/tools/tools.ts) | 深度合并对象，保留目标对象未包含的属性 |
+| [`deepClone`](./src/deep/deepClone.ts) | 深拷贝，支持循环引用 |
+| [`deepMerge`](./src/deep/deepMerge.ts) | 深度合并对象，保留目标对象未包含的属性 |
+| [`deepCompare`](./src/deep/deepCompare.ts) | 深度比较两个对象是否相等，支持自定义比较规则和忽略属性 |
 | [`wait`](./src/tools/tools.ts) | 等待指定时间 |
 | [`throttle`](./src/tools/domTools.ts) | 节流函数 |
 | [`debounce`](./src/tools/domTools.ts) | 防抖函数 |
@@ -193,6 +194,47 @@ yarn add @jl-org/tool
 ---
 
 ## 💼 使用示例
+
+### 深度操作（深拷贝、深度合并、深度比较）
+
+```ts
+import { deepClone, deepMerge, deepCompare } from '@jl-org/tool'
+
+/** 深拷贝对象 */
+const obj = { a: 1, b: { c: 2 } }
+const cloned = deepClone(obj)
+cloned.b.c = 3
+console.log(obj.b.c) // 2 - 原对象未改变
+
+/** 深度合并对象 */
+const target = { a: 1, b: { c: 2, d: 3 } }
+const source = { b: { c: 4 } }
+const merged = deepMerge(target, source)
+console.log(merged) // { a: 1, b: { c: 4, d: 3 } }
+
+/** 深度比较对象 */
+const obj1 = { user: { name: 'Alice', age: 30 }, tags: ['work', 'urgent'] }
+const obj2 = { user: { name: 'Alice', age: 30 }, tags: ['work', 'urgent'] }
+deepCompare(obj1, obj2) // true
+
+/** 使用自定义比较规则 */
+deepCompare(
+  { value: 'hello' },
+  { value: 'HELLO' },
+  {
+    customComparers: {
+      string: (a, b) => a.toLowerCase() === b.toLowerCase()
+    }
+  }
+) // true（忽略大小写）
+
+/** 忽略指定属性 */
+deepCompare(
+  { name: 'Alice', id: 1, timestamp: Date.now() },
+  { name: 'Alice', id: 2, timestamp: Date.now() + 1000 },
+  { ignores: ['id', 'timestamp'] }
+) // true（忽略 id 和 timestamp）
+```
 
 ### 主题色自动适配
 

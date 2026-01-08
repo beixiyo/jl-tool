@@ -48,8 +48,9 @@ yarn add @jl-org/tool
 | Function | Description |
 |----------|-------------|
 | [`uniqueId`](./src/tools/tools.ts) | Get auto-incrementing unique ID |
-| [`deepClone`](./src/tools/tools.ts) | Deep clone with circular reference support |
-| [`deepMerge`](./src/tools/tools.ts) | Deep merge objects, preserving properties not in source |
+| [`deepClone`](./src/deep/deepClone.ts) | Deep clone with circular reference support |
+| [`deepMerge`](./src/deep/deepMerge.ts) | Deep merge objects, preserving properties not in source |
+| [`deepCompare`](./src/deep/deepCompare.ts) | Deep compare two objects for equality, supports custom comparers and ignored properties |
 | [`wait`](./src/tools/tools.ts) | Wait for specified time |
 | [`throttle`](./src/tools/domTools.ts) | Throttle function |
 | [`debounce`](./src/tools/domTools.ts) | Debounce function |
@@ -193,6 +194,47 @@ yarn add @jl-org/tool
 ---
 
 ## 💼 Usage Examples
+
+### Deep Operations (Deep Clone, Deep Merge, Deep Compare)
+
+```ts
+import { deepClone, deepMerge, deepCompare } from '@jl-org/tool'
+
+/** Deep clone object */
+const obj = { a: 1, b: { c: 2 } }
+const cloned = deepClone(obj)
+cloned.b.c = 3
+console.log(obj.b.c) // 2 - Original object unchanged
+
+/** Deep merge objects */
+const target = { a: 1, b: { c: 2, d: 3 } }
+const source = { b: { c: 4 } }
+const merged = deepMerge(target, source)
+console.log(merged) // { a: 1, b: { c: 4, d: 3 } }
+
+/** Deep compare objects */
+const obj1 = { user: { name: 'Alice', age: 30 }, tags: ['work', 'urgent'] }
+const obj2 = { user: { name: 'Alice', age: 30 }, tags: ['work', 'urgent'] }
+deepCompare(obj1, obj2) // true
+
+/** Use custom comparers */
+deepCompare(
+  { value: 'hello' },
+  { value: 'HELLO' },
+  {
+    customComparers: {
+      string: (a, b) => a.toLowerCase() === b.toLowerCase()
+    }
+  }
+) // true (case-insensitive)
+
+/** Ignore specified properties */
+deepCompare(
+  { name: 'Alice', id: 1, timestamp: Date.now() },
+  { name: 'Alice', id: 2, timestamp: Date.now() + 1000 },
+  { ignores: ['id', 'timestamp'] }
+) // true (ignoring id and timestamp)
+```
 
 ### Theme Auto-Adaptation
 

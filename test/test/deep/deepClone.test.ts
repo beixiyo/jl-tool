@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { deepClone } from '@/tools/tools'
+import { deepClone } from '@/deep'
 
 describe('deepClone', () => {
   it('应该深克隆基本类型', () => {
@@ -104,3 +104,4 @@ describe('deepClone', () => {
     expect(cloned.emptyArr).not.toBe(original.emptyArr)
   })
 })
+

@@ -6,6 +6,8 @@ export * from '@/channel'
 export * from '@/convert'
 
 export * from '@/dataStructure'
+export * from '@/deep'
+
 export * from '@/domTools'
 export * from '@/fileTool'
 export * from '@/markdown'
