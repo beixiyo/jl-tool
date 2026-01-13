@@ -1,6 +1,6 @@
 import type { ArrToTreeOpts, BaseKey, BaseType, TreeData, TreeNode } from '@/types/base'
-import { isPureNum } from '@/shared/is'
 import { deepClone } from '@/deep'
+import { isPureNum } from '@/shared/is'
 
 /**
  * 计算分页的当前数据

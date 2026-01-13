@@ -1,4 +1,4 @@
-import type { DateInfo, DateFormat } from './formatDate.types'
+import type { DateFormat, DateInfo } from './formatDate.types'
 import { isFn } from '@/shared/is'
 
 /**

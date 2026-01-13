@@ -1,5 +1,5 @@
-import { getType } from '@/tools/tools'
 import { isObj } from '@/shared/is'
+import { getType } from '@/tools/tools'
 
 /**
  * 默认比较规则

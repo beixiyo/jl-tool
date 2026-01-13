@@ -1,5 +1,5 @@
 import type { DateFormat, FormatDateOpts } from './formatDate.types'
-import { normalizeFormatter, getDateInfo, getLocaleDateInfo } from './formatDate.helpers'
+import { getDateInfo, getLocaleDateInfo, normalizeFormatter } from './formatDate.helpers'
 
 /**
  * 格式化时间，你也可以放在 Date.prototype 上，然后 new Date().formatDate()
