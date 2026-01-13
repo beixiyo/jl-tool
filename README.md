@@ -75,10 +75,10 @@ yarn add @jl-org/tool
 
 ### 📆 日期处理
 
-- [`formatDate`](./src/tools/dateTools.ts) - 强大的日期格式化
-- [`timeGap`](./src/tools/dateTools.ts) - 获取类似"1分钟前"的相对时间
-- [`dayDiff`](./src/tools/dateTools.ts) - 计算日期差值，单位(天)
-- [`getQuarter`](./src/tools/dateTools.ts) - 获取季度
+- [`formatDate`](./src/date/dateTools.ts) - 强大的日期格式化
+- [`formatTimeFromNow`](./src/date/formatTimeFromNow.ts) - 获取类似"1分钟前"的相对时间
+- [`dayDiff`](./src/date/dateTools.ts) - 计算日期差值，单位(天)
+- [`getQuarter`](./src/date/dateTools.ts) - 获取季度
 
 ### 🌈 颜色处理
 

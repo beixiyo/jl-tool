@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatTimeFromNow, timeGap } from '@/tools/formatTimeFromNow'
+import { formatTimeFromNow, timeGap } from '@/date/formatTimeFromNow'
 
 describe('语义化时间测试', () => {
   it('刚刚', () => {

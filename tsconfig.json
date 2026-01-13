@@ -44,7 +44,7 @@
       "src/tools/arrTools.ts",
       "src/tools/Clock.ts",
       "src/tools/colorTools.ts",
-      "src/tools/dateTools.ts",
+      "src/date/index.ts",
       "src/tools/disableDebug.ts",
       "src/tools/domTools.ts",
       "src/tools/eventTools.ts",

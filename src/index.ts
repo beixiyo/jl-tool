@@ -6,6 +6,7 @@ export * from '@/channel'
 export * from '@/convert'
 
 export * from '@/dataStructure'
+export * from '@/date'
 export * from '@/deep'
 
 export * from '@/domTools'
@@ -24,11 +25,9 @@ export * from '@/tools/arrTools'
 export * from '@/tools/Clock'
 export * from '@/tools/colorTools'
 
-export * from '@/tools/dateTools'
 export * from '@/tools/disableDebug'
 
 export * from '@/tools/FakeProgress'
-export * from '@/tools/formatTimeFromNow'
 
 export * from '@/tools/preload'
 export * from '@/tools/scheduleTask'

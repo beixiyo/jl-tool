@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatDate, getQuarter, getValidDate, isLtYear, padDate } from '@/tools/dateTools'
+import { formatDate, getQuarter, getValidDate, isLtYear, padDate } from '@/date'
 
 const timeStr = '2020-10-02 10:02:55'
 

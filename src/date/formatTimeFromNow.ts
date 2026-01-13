@@ -141,10 +141,68 @@ function getTranslateByLanguage(language: FormatTimeFromNowLanguage, type: 'ago'
 /**
  * 描述传入日期相对于当前时间的口头说法
  * 例如：刚刚、1分钟前、1小时前、1天前、1个月前、1年前...
- * @param date 需要计算时间间隔的日期
+ *
+ * @zh 刚刚、1分钟前、1小时前、1天前、1个月前、1年前...
+ * @en just now, 1 minute ago, 1 hour ago, 1 day ago, 1 month ago, 1 year ago...
+ * @ja たった今、1分前、1時間前、1日前、1ヶ月前、1年前...
+ * @ko 방금 전, 1분 전, 1시간 전, 1일 전, 1개월 전, 1년 전...
+ * @es justo ahora, hace 1 minuto, hace 1 hora, hace 1 día, hace 1 mes, hace 1 año...
+ * @fr juste maintenant, il y a 1 minute, il y a 1 heure, il y a 1 jour, il y a 1 mois, il y a 1 an...
+ * @de gerade eben, vor 1 Minute, vor 1 Stunde, vor 1 Tag, vor 1 Monat, vor 1 Jahr...
+ *
+ * @returns 返回值类型为 `string | TimeType`，具体说明：
+ * - **string**: 正常情况下返回格式化后的相对时间字符串（如 "刚刚"、"1分钟前"、"in 1 day" 等）
+ * - **TimeType**: 当 `shouldFormat` 返回 `false` 时，直接返回原始日期值（`Date | number | string`）
+ * - **string (fallback)**: 当传入的日期无效（无法解析为有效时间）时，返回 `fallback` 选项的值（默认为 `'--'`）
+ *
+ * @param date 需要计算时间间隔的日期，默认为当前时间
+ * @param opts 格式化选项
  * @example
  * ```ts
- * console.log(formatTimeFromNow()) // 刚刚
+ * // 基本用法
+ * console.log(formatTimeFromNow()) // "刚刚"
+ * console.log(formatTimeFromNow(Date.now() - 60000)) // "1分钟前"
+ * console.log(formatTimeFromNow(Date.now() + 86400000)) // "1天后"
+ *
+ * // 处理非预期的返回值
+ * const result = formatTimeFromNow(someDate)
+ *
+ * // 1. 检查是否是 fallback 值（表示日期无效）
+ * if (result === '--') {
+ *   console.error('日期无效，无法计算时间间隔')
+ *   // 可以显示原始日期或其他处理
+ * }
+ *
+ * // 2. 当使用 shouldFormat 时，返回值可能是原始日期
+ * const result2 = formatTimeFromNow(someDate, {
+ *   shouldFormat: (diff) => diff <= 30 * 24 * 60 * 60 * 1000, // 只在30天内显示相对时间
+ * })
+ *
+ * // 需要判断返回值类型
+ * if (typeof result2 === 'string') {
+ *   // 是格式化后的相对时间字符串
+ *   console.log('相对时间:', result2)
+ * }
+ * else {
+ *   // 是原始日期，需要进一步格式化
+ *   const date = new Date(result2)
+ *   console.log('绝对时间:', date.toLocaleString())
+ * }
+ *
+ * // 3. 统一处理：确保始终得到字符串
+ * const safeResult = formatTimeFromNow(someDate, {
+ *   fallback: '未知时间',
+ *   shouldFormat: (diff, date) => {
+ *     // 如果时间差太大，返回 false 会得到原始日期
+ *     // 可以在这里统一处理，确保返回字符串
+ *     return diff <= 365 * 24 * 60 * 60 * 1000 // 只在1年内显示相对时间
+ *   },
+ * })
+ *
+ * // 如果结果是日期类型，转换为字符串
+ * const finalResult = typeof safeResult === 'string'
+ *   ? safeResult
+ *   : new Date(safeResult).toLocaleString()
  * ```
  */
 export function formatTimeFromNow(date?: TimeType, opts: FormatTimeFromNowOpts = {}) {

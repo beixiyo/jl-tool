@@ -75,10 +75,10 @@ yarn add @jl-org/tool
 
 ### 📆 Date Processing
 
-- [`formatDate`](./src/tools/dateTools.ts) - Powerful date formatting
-- [`timeGap`](./src/tools/dateTools.ts) - Get relative time like "1 minute ago"
-- [`dayDiff`](./src/tools/dateTools.ts) - Calculate date difference in days
-- [`getQuarter`](./src/tools/dateTools.ts) - Get quarter
+- [`formatDate`](./src/date/dateTools.ts) - Powerful date formatting
+- [`formatTimeFromNow`](./src/date/formatTimeFromNow.ts) - Get relative time like "1 minute ago"
+- [`dayDiff`](./src/date/dateTools.ts) - Calculate date difference in days
+- [`getQuarter`](./src/date/dateTools.ts) - Get quarter
 
 ### 🌈 Color Processing
 
