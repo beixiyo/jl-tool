@@ -21,8 +21,28 @@ describe('语义化时间测试', () => {
   })
 
   it('多语言（英文）', () => {
-    expect(formatTimeFromNow(Date.now() - 1000 * 60.1, { language: 'en-US' })).toBe('1minute ago')
-    expect(formatTimeFromNow(Date.now() + 1000 * 60.1, { language: 'en-US' })).toBe('in 1minute')
+    expect(formatTimeFromNow(Date.now() - 1000 * 60.1, { language: 'en-US' })).toBe('1 minute ago')
+    expect(formatTimeFromNow(Date.now() + 1000 * 60.1, { language: 'en-US' })).toBe('in 1 minute')
+  })
+
+  it('英文复数形式', () => {
+    expect(formatTimeFromNow(Date.now() - 1001, { language: 'en-US' })).toBe('1 second ago')
+    expect(formatTimeFromNow(Date.now() - 2001, { language: 'en-US' })).toBe('2 seconds ago')
+
+    expect(formatTimeFromNow(Date.now() - 1000 * 60.1, { language: 'en-US' })).toBe('1 minute ago')
+    expect(formatTimeFromNow(Date.now() - 1000 * 60 * 2.1, { language: 'en-US' })).toBe('2 minutes ago')
+
+    expect(formatTimeFromNow(Date.now() - 1000 * 60 * 60.1, { language: 'en-US' })).toBe('1 hour ago')
+    expect(formatTimeFromNow(Date.now() - 1000 * 60 * 60 * 2.1, { language: 'en-US' })).toBe('2 hours ago')
+
+    expect(formatTimeFromNow(Date.now() - 1000 * 60 * 60 * 24.1, { language: 'en-US' })).toBe('1 day ago')
+    expect(formatTimeFromNow(Date.now() - 1000 * 60 * 60 * 24 * 2.1, { language: 'en-US' })).toBe('2 days ago')
+
+    expect(formatTimeFromNow(Date.now() - 1000 * 60 * 60 * 24 * 30.1, { language: 'en-US' })).toBe('1 month ago')
+    expect(formatTimeFromNow(Date.now() - 1000 * 60 * 60 * 24 * 30 * 2.1, { language: 'en-US' })).toBe('2 months ago')
+
+    expect(formatTimeFromNow(Date.now() - 1000 * 60 * 60 * 24 * 365.1, { language: 'en-US' })).toBe('1 year ago')
+    expect(formatTimeFromNow(Date.now() - 1000 * 60 * 60 * 24 * 365 * 2.1, { language: 'en-US' })).toBe('2 years ago')
   })
 
   it('非法时间与 fallback', () => {

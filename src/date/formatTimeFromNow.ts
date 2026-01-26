@@ -1,13 +1,13 @@
 import type { TimeType } from '@/types/base'
 
-const TIME_FROM_NOW_DESC_MAP: Record<FormatTimeFromNowLanguage, Record<FormatTimeFromNowDesc, string>> = {
+const TIME_FROM_NOW_DESC_MAP: Record<FormatTimeFromNowLanguage, Record<FormatTimeFromNowDesc, string | { singular: string, plural: string }>> = {
   'en-US': {
-    year: 'year',
-    month: 'month',
-    day: 'day',
-    hour: 'hour',
-    minute: 'minute',
-    second: 'second',
+    year: { singular: 'year', plural: 'years' },
+    month: { singular: 'month', plural: 'months' },
+    day: { singular: 'day', plural: 'days' },
+    hour: { singular: 'hour', plural: 'hours' },
+    minute: { singular: 'minute', plural: 'minutes' },
+    second: { singular: 'second', plural: 'seconds' },
     justNow: 'just now',
   },
   'zh-CN': {
@@ -126,6 +126,21 @@ function getDescByLanguage(language: FormatTimeFromNowLanguage, desc: FormatTime
   const map = TIME_FROM_NOW_DESC_MAP[lang] || TIME_FROM_NOW_DESC_MAP[DEFAULT_LANG]
 
   return map[desc] ?? TIME_FROM_NOW_DESC_MAP[DEFAULT_LANG][desc]
+}
+
+function getDescByLanguageWithCount(language: FormatTimeFromNowLanguage, desc: FormatTimeFromNowDesc, count: number) {
+  const descValue = getDescByLanguage(language, desc)
+
+  if (typeof descValue === 'string')
+    return descValue
+
+  const unit = count === 1 ? descValue.singular : descValue.plural
+  const lang = normalizeLanguage(language)
+
+  if (lang === 'en-US')
+    return ` ${unit}`
+
+  return unit
 }
 
 function getTranslateByLanguage(language: FormatTimeFromNowLanguage, type: 'ago' | 'in') {
@@ -259,7 +274,7 @@ export function formatTimeFromNow(date?: TimeType, opts: FormatTimeFromNowOpts =
     const { desc, gap } = DETAIL_MAP[i]
     if (time >= gap) {
       const v = Math.floor(time / gap)
-      const str = `${v}${getDescByLanguage(lang, desc)}`
+      const str = `${v}${getDescByLanguageWithCount(lang, desc, v)}`
       if (isFuture)
         return (afterFn || defaultAfterFn)(str)
 
