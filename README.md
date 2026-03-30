@@ -1,8 +1,8 @@
 # 🛠️ @jl-org/tool
 
 <div align="center">
-  <a href="./README.en.md">English</a>
-  <a href="./README.md">中文</a>
+  <a href="https://github.com/beixiyo/jl-tool/blob/master/README.en.md">English</a>
+  <a href="https://github.com/beixiyo/jl-tool/blob/master/README.md">中文</a>
 </div>
 
 <br />
@@ -47,149 +47,149 @@ yarn add @jl-org/tool
 
 | 函数 | 说明 |
 |------|------|
-| [`uniqueId`](./src/tools/tools.ts) | 获取自增唯一ID |
-| [`deepClone`](./src/deep/deepClone.ts) | 深拷贝，支持循环引用 |
-| [`deepMerge`](./src/deep/deepMerge.ts) | 深度合并对象，保留目标对象未包含的属性 |
-| [`deepCompare`](./src/deep/deepCompare.ts) | 深度比较两个对象是否相等，支持自定义比较规则和忽略属性 |
-| [`wait`](./src/tools/tools.ts) | 等待指定时间 |
-| [`throttle`](./src/tools/domTools.ts) | 节流函数 |
-| [`debounce`](./src/tools/domTools.ts) | 防抖函数 |
-| [`once`](./src/tools/tools.ts) | 限制函数调用次数 |
-| [`isPureNum`](./src/shared/is.ts) | 判断是否能强转成数字 |
-| [`isStr`](./src/shared/is.ts) | 判断是否为字符串 |
-| [`isObj`](./src/shared/is.ts) | 判断是否为对象 |
-| [`isXXX`](./src/shared/is.ts) | 更多判断... |
-| [`parseMDCode`](./src/markdown/parseCode.ts) | 解析 markdown 中的代码块 |
+| [`uniqueId`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/tools.ts) | 获取自增唯一ID |
+| [`deepClone`](https://github.com/beixiyo/jl-tool/blob/master/src/deep/deepClone.ts) | 深拷贝，支持循环引用 |
+| [`deepMerge`](https://github.com/beixiyo/jl-tool/blob/master/src/deep/deepMerge.ts) | 深度合并对象，保留目标对象未包含的属性 |
+| [`deepCompare`](https://github.com/beixiyo/jl-tool/blob/master/src/deep/deepCompare.ts) | 深度比较两个对象是否相等，支持自定义比较规则和忽略属性 |
+| [`wait`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/tools.ts) | 等待指定时间 |
+| [`throttle`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/domTools.ts) | 节流函数 |
+| [`debounce`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/domTools.ts) | 防抖函数 |
+| [`once`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/tools.ts) | 限制函数调用次数 |
+| [`isPureNum`](https://github.com/beixiyo/jl-tool/blob/master/src/shared/is.ts) | 判断是否能强转成数字 |
+| [`isStr`](https://github.com/beixiyo/jl-tool/blob/master/src/shared/is.ts) | 判断是否为字符串 |
+| [`isObj`](https://github.com/beixiyo/jl-tool/blob/master/src/shared/is.ts) | 判断是否为对象 |
+| [`isXXX`](https://github.com/beixiyo/jl-tool/blob/master/src/shared/is.ts) | 更多判断... |
+| [`parseMDCode`](https://github.com/beixiyo/jl-tool/blob/master/src/markdown/parseCode.ts) | 解析 markdown 中的代码块 |
 
 ### 📊 数组处理
 
 | 函数 | 说明 |
 |------|------|
-| [`arrToTree`](./src/tools/arrTools.ts) | 扁平数组转树形结构 |
-| [`searchTreeData`](./src/tools/arrTools.ts) | 树形结构搜索 |
-| [`binarySearch`](./src/tools/arrTools.ts) | 二分查找 |
-| [`bfsFind`](./src/tools/arrTools.ts) | 广度优先遍历 |
-| [`dfsFind`](./src/tools/arrTools.ts) | 深度优先遍历 |
-| [`groupBy`](./src/tools/arrTools.ts) | 数组分组 |
-| [`arrToChunk`](./src/tools/arrTools.ts) | 数组分块 |
+| [`arrToTree`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/arrTools.ts) | 扁平数组转树形结构 |
+| [`searchTreeData`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/arrTools.ts) | 树形结构搜索 |
+| [`binarySearch`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/arrTools.ts) | 二分查找 |
+| [`bfsFind`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/arrTools.ts) | 广度优先遍历 |
+| [`dfsFind`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/arrTools.ts) | 深度优先遍历 |
+| [`groupBy`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/arrTools.ts) | 数组分组 |
+| [`arrToChunk`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/arrTools.ts) | 数组分块 |
 
 ### 📆 日期处理
 
-- [`formatDate`](./src/date/dateTools.ts) - 强大的日期格式化
-- [`formatTimeFromNow`](./src/date/formatTimeFromNow.ts) - 获取类似"1分钟前"的相对时间
-- [`dayDiff`](./src/date/dateTools.ts) - 计算日期差值，单位(天)
-- [`getQuarter`](./src/date/dateTools.ts) - 获取季度
+- [`formatDate`](https://github.com/beixiyo/jl-tool/blob/master/src/date/dateTools.ts) - 强大的日期格式化
+- [`formatTimeFromNow`](https://github.com/beixiyo/jl-tool/blob/master/src/date/formatTimeFromNow.ts) - 获取类似"1分钟前"的相对时间
+- [`dayDiff`](https://github.com/beixiyo/jl-tool/blob/master/src/date/dateTools.ts) - 计算日期差值，单位(天)
+- [`getQuarter`](https://github.com/beixiyo/jl-tool/blob/master/src/date/dateTools.ts) - 获取季度
 
 ### 🌈 颜色处理
 
-- [`mixColor`](./src/tools/colorTools.ts) - 混合两种颜色
-- [`lightenColor`](./src/tools/colorTools.ts) - 调整颜色明度
-- [`colorAddOpacity`](./src/tools/colorTools.ts) - 添加透明度
-- [`getColorInfo`](./src/tools/colorTools.ts) - 提取颜色的RGBA值
-- [`hexToRGB`](./src/tools/colorTools.ts) - 十六进制转RGB
-- [`rgbToHex`](./src/tools/colorTools.ts) - RGB转十六进制
+- [`mixColor`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/colorTools.ts) - 混合两种颜色
+- [`lightenColor`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/colorTools.ts) - 调整颜色明度
+- [`colorAddOpacity`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/colorTools.ts) - 添加透明度
+- [`getColorInfo`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/colorTools.ts) - 提取颜色的RGBA值
+- [`hexToRGB`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/colorTools.ts) - 十六进制转RGB
+- [`rgbToHex`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/colorTools.ts) - RGB转十六进制
 
 ### 🧮 数学运算
 
-- [`mapRange`](./src/math/mapRange.ts) - 将数值从一个范围映射到另一个范围
-- [`calcAspectRatio`](./src/math/ratio.ts) - 根据面积计算宽高比
-- [`clamp`](./src/math/tools.ts) - 限制值在指定范围内
-- [`numFixed`](./src/math/tools.ts) - 解决 Number.toFixed 计算错误，精确四舍五入
-- [`formatFileSize`](./src/math/tools.ts) - 文件大小单位换算，支持 bit/byte/kb/mb/gb/tb 互相转换，返回包含各单位数值的对象
-- [`formatDuration`](./src/math/tools.ts) - 格式化时长（秒转 MM:SS 格式），支持小数秒
-- [`calcCoord`](./src/math/coord.ts) - 根据半径和角度获取坐标
+- [`mapRange`](https://github.com/beixiyo/jl-tool/blob/master/src/math/mapRange.ts) - 将数值从一个范围映射到另一个范围
+- [`calcAspectRatio`](https://github.com/beixiyo/jl-tool/blob/master/src/math/ratio.ts) - 根据面积计算宽高比
+- [`clamp`](https://github.com/beixiyo/jl-tool/blob/master/src/math/tools.ts) - 限制值在指定范围内
+- [`numFixed`](https://github.com/beixiyo/jl-tool/blob/master/src/math/tools.ts) - 解决 Number.toFixed 计算错误，精确四舍五入
+- [`formatFileSize`](https://github.com/beixiyo/jl-tool/blob/master/src/math/tools.ts) - 文件大小单位换算，支持 bit/byte/kb/mb/gb/tb 互相转换，返回包含各单位数值的对象
+- [`formatDuration`](https://github.com/beixiyo/jl-tool/blob/master/src/math/tools.ts) - 格式化时长（秒转 MM:SS 格式），支持小数秒
+- [`calcCoord`](https://github.com/beixiyo/jl-tool/blob/master/src/math/coord.ts) - 根据半径和角度获取坐标
 
 ### 🎨 动画处理
 
 | 函数/类 | 说明 |
 |------|------|
-| [`ATo`](./src/animation/ATo.ts) | 链式调用，分段执行动画 |
-| [`ScrollTrigger`](./src/animation/ScrollTrigger/ScrollTrigger.ts) | 滚动触发动画系统，实现视差等滚动动画效果 |
-| [`SmoothScroller`](./src/animation/ScrollTrigger/SmoothScroller.ts) | 平滑滚动实现，提供惯性滚动体验 |
-| [`createAnimation`](./src/animation/createAnimation.ts) | 创建基础动画 |
-| [`createAnimationByTime`](./src/animation/createAnimationByTime.ts) | 基于时间的动画创建器，支持对 DOM 元素和普通 JS 对象的属性进行补间动画 |
+| [`ATo`](https://github.com/beixiyo/jl-tool/blob/master/src/animation/ATo.ts) | 链式调用，分段执行动画 |
+| [`ScrollTrigger`](https://github.com/beixiyo/jl-tool/blob/master/src/animation/ScrollTrigger/ScrollTrigger.ts) | 滚动触发动画系统，实现视差等滚动动画效果 |
+| [`SmoothScroller`](https://github.com/beixiyo/jl-tool/blob/master/src/animation/ScrollTrigger/SmoothScroller.ts) | 平滑滚动实现，提供惯性滚动体验 |
+| [`createAnimation`](https://github.com/beixiyo/jl-tool/blob/master/src/animation/createAnimation.ts) | 创建基础动画 |
+| [`createAnimationByTime`](https://github.com/beixiyo/jl-tool/blob/master/src/animation/createAnimationByTime.ts) | 基于时间的动画创建器，支持对 DOM 元素和普通 JS 对象的属性进行补间动画 |
 
 ### 🕒 时钟与进度
 
-- [`Clock`](./src/tools/Clock.ts) - 计时器，获取帧间隔、累计时间等
-- [`FakeProgress`](./src/tools/FakeProgress.ts) - 模拟进度条，适用于未知进度的加载
-- [`timer`](./src/tools/timer.ts) - 高级setInterval替代，使用requestAnimationFrame实现
+- [`Clock`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/Clock.ts) - 计时器，获取帧间隔、累计时间等
+- [`FakeProgress`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/FakeProgress.ts) - 模拟进度条，适用于未知进度的加载
+- [`timer`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/timer.ts) - 高级setInterval替代，使用requestAnimationFrame实现
 
 ### 🌐 网络请求工具
 
-- [`concurrentTask`](./src/net/concurrentTask.ts) - 并发执行异步任务
-- [`retryTask`](./src/net/retryTask.ts) - 失败后自动重试
-- [`WS`](./src/net/WS.ts) - 自动重连的WebSocket
+- [`concurrentTask`](https://github.com/beixiyo/jl-tool/blob/master/src/net/concurrentTask.ts) - 并发执行异步任务
+- [`retryTask`](https://github.com/beixiyo/jl-tool/blob/master/src/net/retryTask.ts) - 失败后自动重试
+- [`WS`](https://github.com/beixiyo/jl-tool/blob/master/src/net/WS.ts) - 自动重连的WebSocket
 
 ### 📊 数据解析
-- [`StreamJsonParser`](./src/tools/StreamJsonParser.ts) - 流式解析JSON，适用于SSE
-- [`StreamSingleXmlParser`](./src/tools/StreamSingleXmlParser.ts) - 流式解析单层 XML，适用于 AI 结构化流式输出
+- [`StreamJsonParser`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/StreamJsonParser.ts) - 流式解析JSON，适用于SSE
+- [`StreamSingleXmlParser`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/StreamSingleXmlParser.ts) - 流式解析单层 XML，适用于 AI 结构化流式输出
 
 ### 📄 文件处理
 
-- [`downloadByData`](./src/fileTool/tools.ts) / [`downloadByUrl`](./src/fileTool/tools.ts) - 下载文件
-- [`blobToBase64`](./src/fileTool/tools.ts) / [`base64ToBlob`](./src/fileTool/tools.ts) - 格式转换
-- [`checkFileSize`](./src/fileTool/tools.ts) - 检查文件大小
-- [`convertToWav`](./src/convert/audioToWav.ts) - 将 MediaRecorder/WebM/OGG 音频转换成 WAV，支持重采样和声道混合
-- [`FileChunker`](./src/fileTool/FileChunker.ts) - 文件分块处理器
-- [`BinaryMetadataEncoder`](./src/fileTool/BinaryMetadataEncoder.ts) - 元数据与二进制数据混合编码工具
-- [`createStreamDownloader`](./src/fileTool/streamDownloader.ts) - 流式下载（无内存限制）
-- [`getMimeType`](./src/fileTool/getMimeType.ts) - 获取资源的MIME类型
-- [`detectFileType`](./src/fileTool/fileType.ts) - 检测文件类型
-- [`jsonToJsonl`](./src/fileTool/jsonl.ts) / [`jsonlToJson`](./src/fileTool/jsonl.ts) - JSON与JSONL格式转换
-- [`readJsonlFile`](./src/fileTool/jsonl.ts) - 逐行读取JSONL文件
-- [`appendToJsonlFile`](./src/fileTool/jsonl.ts) - 追加JSON数据到JSONL文件
-- [`mapJsonlFile`](./src/fileTool/jsonl.ts) / [`filterJsonlFile`](./src/fileTool/jsonl.ts) - 对JSONL文件进行映射和过滤操作
-- [`findWithJsonlFile`](./src/fileTool/jsonl.ts) / [`findIndexWithJsonlFile`](./src/fileTool/jsonl.ts) - 在JSONL文件中查找数据
-- [`everyWithJsonlFile`](./src/fileTool/jsonl.ts) / [`someWithJsonlFile`](./src/fileTool/jsonl.ts) - 检查JSONL文件中数据是否满足条件
+- [`downloadByData`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/tools.ts) / [`downloadByUrl`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/tools.ts) - 下载文件
+- [`blobToBase64`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/tools.ts) / [`base64ToBlob`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/tools.ts) - 格式转换
+- [`checkFileSize`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/tools.ts) - 检查文件大小
+- [`convertToWav`](https://github.com/beixiyo/jl-tool/blob/master/src/convert/audioToWav.ts) - 将 MediaRecorder/WebM/OGG 音频转换成 WAV，支持重采样和声道混合
+- [`FileChunker`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/FileChunker.ts) - 文件分块处理器
+- [`BinaryMetadataEncoder`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/BinaryMetadataEncoder.ts) - 元数据与二进制数据混合编码工具
+- [`createStreamDownloader`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/streamDownloader.ts) - 流式下载（无内存限制）
+- [`getMimeType`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/getMimeType.ts) - 获取资源的MIME类型
+- [`detectFileType`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/fileType.ts) - 检测文件类型
+- [`jsonToJsonl`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/jsonl.ts) / [`jsonlToJson`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/jsonl.ts) - JSON与JSONL格式转换
+- [`readJsonlFile`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/jsonl.ts) - 逐行读取JSONL文件
+- [`appendToJsonlFile`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/jsonl.ts) - 追加JSON数据到JSONL文件
+- [`mapJsonlFile`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/jsonl.ts) / [`filterJsonlFile`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/jsonl.ts) - 对JSONL文件进行映射和过滤操作
+- [`findWithJsonlFile`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/jsonl.ts) / [`findIndexWithJsonlFile`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/jsonl.ts) - 在JSONL文件中查找数据
+- [`everyWithJsonlFile`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/jsonl.ts) / [`someWithJsonlFile`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/jsonl.ts) - 检查JSONL文件中数据是否满足条件
 
 ### 🌍 URL处理
 
-- [`isValidUrl`](./src/tools/urlTools.ts) - 检测链接是否合法
-- [`getUrlQuery`](./src/tools/urlTools.ts) - 解析URL的查询参数
-- [`getUrlPaths`](./src/tools/urlTools.ts) - 解析URL的路径部分
-- [`getHostname`](./src/tools/urlTools.ts) - 获取URL的主机名
-- [`getProtocol`](./src/tools/urlTools.ts) - 获取URL的协议
+- [`isValidUrl`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/urlTools.ts) - 检测链接是否合法
+- [`getUrlQuery`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/urlTools.ts) - 解析URL的查询参数
+- [`getUrlPaths`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/urlTools.ts) - 解析URL的路径部分
+- [`getHostname`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/urlTools.ts) - 获取URL的主机名
+- [`getProtocol`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/urlTools.ts) - 获取URL的协议
 
 ### 🎬 媒体API
 
-- [`Recorder`](./src/webApi/Recorder.ts) - 音频录制
-- [`Speaker`](./src/webApi/Speaker.ts) - 语音播放
-- [`SpeakToTxt`](./src/webApi/SpeakToTxt.ts) - 语音转文字
-- [`openCamera`](./src/webApi/openCamera.ts) - 开启摄像头
-- [`ScreenRecorder`](./src/webApi/screenRecord/ScreenRecorder.ts) - 屏幕录制
+- [`Recorder`](https://github.com/beixiyo/jl-tool/blob/master/src/webApi/Recorder.ts) - 音频录制
+- [`Speaker`](https://github.com/beixiyo/jl-tool/blob/master/src/webApi/Speaker.ts) - 语音播放
+- [`SpeakToTxt`](https://github.com/beixiyo/jl-tool/blob/master/src/webApi/SpeakToTxt.ts) - 语音转文字
+- [`openCamera`](https://github.com/beixiyo/jl-tool/blob/master/src/webApi/openCamera.ts) - 开启摄像头
+- [`ScreenRecorder`](https://github.com/beixiyo/jl-tool/blob/master/src/webApi/screenRecord/ScreenRecorder.ts) - 屏幕录制
 
-[查看测试用例](./test/__DOM_TEST__/webApi)
+[查看测试用例](https://github.com/beixiyo/jl-tool/blob/master/test/__DOM_TEST__/webApi)
 
 ### 📦 数据结构
 
-- [`MinHeap`](./src/dataStructure/Heap.ts) - 最小堆实现
-- [`MaxHeap`](./src/dataStructure/Heap.ts) - 最大堆实现
-- [`LRUCache`](./src/dataStructure/LRUCache.ts) - LRU缓存实现
+- [`MinHeap`](https://github.com/beixiyo/jl-tool/blob/master/src/dataStructure/Heap.ts) - 最小堆实现
+- [`MaxHeap`](https://github.com/beixiyo/jl-tool/blob/master/src/dataStructure/Heap.ts) - 最大堆实现
+- [`LRUCache`](https://github.com/beixiyo/jl-tool/blob/master/src/dataStructure/LRUCache.ts) - LRU缓存实现
 
 ### 🔄 事件与插件
 
-- [`EventBus`](./src/channel/EventBus.ts) - 消息订阅与派发
-- [`Observer`](./src/channel/Observe.ts) - 观察者模式
-- [`autoUpdate`](./src/plugins/autoUpdate.ts) - 检查页面更新
+- [`EventBus`](https://github.com/beixiyo/jl-tool/blob/master/src/channel/EventBus.ts) - 消息订阅与派发
+- [`Observer`](https://github.com/beixiyo/jl-tool/blob/master/src/channel/Observe.ts) - 观察者模式
+- [`autoUpdate`](https://github.com/beixiyo/jl-tool/blob/master/src/plugins/autoUpdate.ts) - 检查页面更新
 
 ### 🎨 DOM与主题
 
 | 函数 | 说明 |
 |------|------|
-| [`getCurTheme`](./src/tools/theme.ts) | 获取当前主题 |
-| [`isDarkMode`](./src/tools/theme.ts) | 判断是否为暗色模式 |
-| [`onChangeTheme`](./src/tools/theme.ts) | 监听主题变化 |
-| [`bindWinEvent`](./src/tools/eventTools.ts) | 绑定window事件 |
-| [`doubleKeyDown`](./src/tools/eventTools.ts) | 双击键盘事件 |
-| [`typewriterEffect`](./src/tools/typewriterEffect.ts) | 模拟打字机效果 |
+| [`getCurTheme`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/theme.ts) | 获取当前主题 |
+| [`isDarkMode`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/theme.ts) | 判断是否为暗色模式 |
+| [`onChangeTheme`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/theme.ts) | 监听主题变化 |
+| [`bindWinEvent`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/eventTools.ts) | 绑定window事件 |
+| [`doubleKeyDown`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/eventTools.ts) | 双击键盘事件 |
+| [`typewriterEffect`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/typewriterEffect.ts) | 模拟打字机效果 |
 
 ### 🔧 环境变量管理 (Node.js)
 
 | 函数 | 说明 |
 |------|------|
-| [`loadEnv`](./node/env/loadEnv.ts) | 加载环境变量文件，支持多环境自动切换 |
-| [`getEnv`](./node/env/getEnv.ts) | 读取环境变量，支持默认值和必需检查 |
+| [`loadEnv`](https://github.com/beixiyo/jl-tool/blob/master/node/env/loadEnv.ts) | 加载环境变量文件，支持多环境自动切换 |
+| [`getEnv`](https://github.com/beixiyo/jl-tool/blob/master/node/env/getEnv.ts) | 读取环境变量，支持默认值和必需检查 |
 
 ---
 
@@ -307,7 +307,7 @@ scheduleTask(tasks).then((results) => {
 
 ### 🎨 动画处理
 
-[查看完整测试用例](./test/__DOM_TEST__/createAnimationByTime.ts)
+[查看完整测试用例](https://github.com/beixiyo/jl-tool/blob/master/test/__DOM_TEST__/createAnimationByTime.ts)
 
 ```ts
 import { ATo, createAnimationByTime } from '@jl-org/tool'
@@ -384,7 +384,7 @@ new ScrollTrigger({
 
 #### 多区域视差效果示例
 
-[视差滚动完整代码](./test/__DOM_TEST__/ScrollTrigger.ts)
+[视差滚动完整代码](https://github.com/beixiyo/jl-tool/blob/master/test/__DOM_TEST__/ScrollTrigger.ts)
 
 ```ts
 /** 为每一个 section 单独创建 ScrollTrigger */
@@ -489,7 +489,7 @@ bus.once('singleEvent', () => {
 
 ### 📠 模拟打字机效果
 
-[完整代码示例](test/__DOM_TEST__/typewriterEffect.ts)
+[完整代码示例](https://github.com/beixiyo/jl-tool/blob/master/test/__DOM_TEST__/typewriterEffect.ts)
 
 ```ts
 import { typewriterEffect } from '@jl-org/tool'

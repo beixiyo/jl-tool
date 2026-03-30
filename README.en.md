@@ -1,8 +1,8 @@
 # 🛠️ @jl-org/tool
 
 <div align="center">
-  <a href="./README.en.md">English</a>
-  <a href="./README.md">中文</a>
+  <a href="https://github.com/beixiyo/jl-tool/blob/master/README.en.md">English</a>
+  <a href="https://github.com/beixiyo/jl-tool/blob/master/README.md">中文</a>
 </div>
 
 <br />
@@ -47,149 +47,149 @@ yarn add @jl-org/tool
 
 | Function | Description |
 |----------|-------------|
-| [`uniqueId`](./src/tools/tools.ts) | Get auto-incrementing unique ID |
-| [`deepClone`](./src/deep/deepClone.ts) | Deep clone with circular reference support |
-| [`deepMerge`](./src/deep/deepMerge.ts) | Deep merge objects, preserving properties not in source |
-| [`deepCompare`](./src/deep/deepCompare.ts) | Deep compare two objects for equality, supports custom comparers and ignored properties |
-| [`wait`](./src/tools/tools.ts) | Wait for specified time |
-| [`throttle`](./src/tools/domTools.ts) | Throttle function |
-| [`debounce`](./src/tools/domTools.ts) | Debounce function |
-| [`once`](./src/tools/tools.ts) | Limit function call count |
-| [`isPureNum`](./src/shared/is.ts) | Check if value can be converted to number |
-| [`isStr`](./src/shared/is.ts) | Check if value is string |
-| [`isObj`](./src/shared/is.ts) | Check if value is object |
-| [`isXXX`](./src/shared/is.ts) | More type checks... |
-| [`parseMDCode`](./src/markdown/parseCode.ts) | Parse code blocks from markdown |
+| [`uniqueId`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/tools.ts) | Get auto-incrementing unique ID |
+| [`deepClone`](https://github.com/beixiyo/jl-tool/blob/master/src/deep/deepClone.ts) | Deep clone with circular reference support |
+| [`deepMerge`](https://github.com/beixiyo/jl-tool/blob/master/src/deep/deepMerge.ts) | Deep merge objects, preserving properties not in source |
+| [`deepCompare`](https://github.com/beixiyo/jl-tool/blob/master/src/deep/deepCompare.ts) | Deep compare two objects for equality, supports custom comparers and ignored properties |
+| [`wait`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/tools.ts) | Wait for specified time |
+| [`throttle`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/domTools.ts) | Throttle function |
+| [`debounce`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/domTools.ts) | Debounce function |
+| [`once`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/tools.ts) | Limit function call count |
+| [`isPureNum`](https://github.com/beixiyo/jl-tool/blob/master/src/shared/is.ts) | Check if value can be converted to number |
+| [`isStr`](https://github.com/beixiyo/jl-tool/blob/master/src/shared/is.ts) | Check if value is string |
+| [`isObj`](https://github.com/beixiyo/jl-tool/blob/master/src/shared/is.ts) | Check if value is object |
+| [`isXXX`](https://github.com/beixiyo/jl-tool/blob/master/src/shared/is.ts) | More type checks... |
+| [`parseMDCode`](https://github.com/beixiyo/jl-tool/blob/master/src/markdown/parseCode.ts) | Parse code blocks from markdown |
 
 ### 📊 Array Processing
 
 | Function | Description |
 |----------|-------------|
-| [`arrToTree`](./src/tools/arrTools.ts) | Convert flat array to tree structure |
-| [`searchTreeData`](./src/tools/arrTools.ts) | Search in tree structure |
-| [`binarySearch`](./src/tools/arrTools.ts) | Binary search |
-| [`bfsFind`](./src/tools/arrTools.ts) | Breadth-first search |
-| [`dfsFind`](./src/tools/arrTools.ts) | Depth-first search |
-| [`groupBy`](./src/tools/arrTools.ts) | Group array elements |
-| [`arrToChunk`](./src/tools/arrTools.ts) | Split array into chunks |
+| [`arrToTree`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/arrTools.ts) | Convert flat array to tree structure |
+| [`searchTreeData`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/arrTools.ts) | Search in tree structure |
+| [`binarySearch`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/arrTools.ts) | Binary search |
+| [`bfsFind`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/arrTools.ts) | Breadth-first search |
+| [`dfsFind`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/arrTools.ts) | Depth-first search |
+| [`groupBy`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/arrTools.ts) | Group array elements |
+| [`arrToChunk`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/arrTools.ts) | Split array into chunks |
 
 ### 📆 Date Processing
 
-- [`formatDate`](./src/date/dateTools.ts) - Powerful date formatting
-- [`formatTimeFromNow`](./src/date/formatTimeFromNow.ts) - Get relative time like "1 minute ago"
-- [`dayDiff`](./src/date/dateTools.ts) - Calculate date difference in days
-- [`getQuarter`](./src/date/dateTools.ts) - Get quarter
+- [`formatDate`](https://github.com/beixiyo/jl-tool/blob/master/src/date/dateTools.ts) - Powerful date formatting
+- [`formatTimeFromNow`](https://github.com/beixiyo/jl-tool/blob/master/src/date/formatTimeFromNow.ts) - Get relative time like "1 minute ago"
+- [`dayDiff`](https://github.com/beixiyo/jl-tool/blob/master/src/date/dateTools.ts) - Calculate date difference in days
+- [`getQuarter`](https://github.com/beixiyo/jl-tool/blob/master/src/date/dateTools.ts) - Get quarter
 
 ### 🌈 Color Processing
 
-- [`mixColor`](./src/tools/colorTools.ts) - Mix two colors
-- [`lightenColor`](./src/tools/colorTools.ts) - Adjust color brightness
-- [`colorAddOpacity`](./src/tools/colorTools.ts) - Add opacity to color
-- [`getColorInfo`](./src/tools/colorTools.ts) - Extract RGBA values from color
-- [`hexToRGB`](./src/tools/colorTools.ts) - Convert hex to RGB
-- [`rgbToHex`](./src/tools/colorTools.ts) - Convert RGB to hex
+- [`mixColor`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/colorTools.ts) - Mix two colors
+- [`lightenColor`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/colorTools.ts) - Adjust color brightness
+- [`colorAddOpacity`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/colorTools.ts) - Add opacity to color
+- [`getColorInfo`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/colorTools.ts) - Extract RGBA values from color
+- [`hexToRGB`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/colorTools.ts) - Convert hex to RGB
+- [`rgbToHex`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/colorTools.ts) - Convert RGB to hex
 
 ### 🧮 Math Operations
 
-- [`mapRange`](./src/math/mapRange.ts) - Map value from one range to another
-- [`calcAspectRatio`](./src/math/ratio.ts) - Calculate aspect ratio based on area
-- [`clamp`](./src/math/tools.ts) - Clamp value within range
-- [`numFixed`](./src/math/tools.ts) - Fix Number.toFixed calculation errors with precise rounding
-- [`formatFileSize`](./src/math/tools.ts) - Convert between file size units (bit/byte/kb/mb/gb/tb), returns object with values in all units
-- [`formatDuration`](./src/math/tools.ts) - Format duration (seconds to MM:SS format), supports decimal seconds
-- [`calcCoord`](./src/math/coord.ts) - Get coordinates based on radius and angle
+- [`mapRange`](https://github.com/beixiyo/jl-tool/blob/master/src/math/mapRange.ts) - Map value from one range to another
+- [`calcAspectRatio`](https://github.com/beixiyo/jl-tool/blob/master/src/math/ratio.ts) - Calculate aspect ratio based on area
+- [`clamp`](https://github.com/beixiyo/jl-tool/blob/master/src/math/tools.ts) - Clamp value within range
+- [`numFixed`](https://github.com/beixiyo/jl-tool/blob/master/src/math/tools.ts) - Fix Number.toFixed calculation errors with precise rounding
+- [`formatFileSize`](https://github.com/beixiyo/jl-tool/blob/master/src/math/tools.ts) - Convert between file size units (bit/byte/kb/mb/gb/tb), returns object with values in all units
+- [`formatDuration`](https://github.com/beixiyo/jl-tool/blob/master/src/math/tools.ts) - Format duration (seconds to MM:SS format), supports decimal seconds
+- [`calcCoord`](https://github.com/beixiyo/jl-tool/blob/master/src/math/coord.ts) - Get coordinates based on radius and angle
 
 ### 🎨 Animation Processing
 
 | Function/Class | Description |
 |----------------|-------------|
-| [`ATo`](./src/animation/ATo.ts) | Chainable, segmented animation execution |
-| [`ScrollTrigger`](./src/animation/ScrollTrigger/ScrollTrigger.ts) | Scroll-triggered animation system for parallax and scroll effects |
-| [`SmoothScroller`](./src/animation/ScrollTrigger/SmoothScroller.ts) | Smooth scrolling implementation with inertia |
-| [`createAnimation`](./src/animation/createAnimation.ts) | Create basic animations |
-| [`createAnimationByTime`](./src/animation/createAnimationByTime.ts) | Time-based animation creator supporting DOM elements and JS objects |
+| [`ATo`](https://github.com/beixiyo/jl-tool/blob/master/src/animation/ATo.ts) | Chainable, segmented animation execution |
+| [`ScrollTrigger`](https://github.com/beixiyo/jl-tool/blob/master/src/animation/ScrollTrigger/ScrollTrigger.ts) | Scroll-triggered animation system for parallax and scroll effects |
+| [`SmoothScroller`](https://github.com/beixiyo/jl-tool/blob/master/src/animation/ScrollTrigger/SmoothScroller.ts) | Smooth scrolling implementation with inertia |
+| [`createAnimation`](https://github.com/beixiyo/jl-tool/blob/master/src/animation/createAnimation.ts) | Create basic animations |
+| [`createAnimationByTime`](https://github.com/beixiyo/jl-tool/blob/master/src/animation/createAnimationByTime.ts) | Time-based animation creator supporting DOM elements and JS objects |
 
 ### 🕒 Clock & Progress
 
-- [`Clock`](./src/tools/Clock.ts) - Timer for frame intervals and elapsed time
-- [`FakeProgress`](./src/tools/FakeProgress.ts) - Simulate progress bar for unknown progress loading
-- [`timer`](./src/tools/timer.ts) - Advanced setInterval replacement using requestAnimationFrame
+- [`Clock`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/Clock.ts) - Timer for frame intervals and elapsed time
+- [`FakeProgress`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/FakeProgress.ts) - Simulate progress bar for unknown progress loading
+- [`timer`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/timer.ts) - Advanced setInterval replacement using requestAnimationFrame
 
 ### 🌐 Network Request Tools
 
-- [`concurrentTask`](./src/net/concurrentTask.ts) - Execute async tasks concurrently
-- [`retryTask`](./src/net/retryTask.ts) - Automatic retry on failure
-- [`WS`](./src/net/WS.ts) - Auto-reconnecting WebSocket
+- [`concurrentTask`](https://github.com/beixiyo/jl-tool/blob/master/src/net/concurrentTask.ts) - Execute async tasks concurrently
+- [`retryTask`](https://github.com/beixiyo/jl-tool/blob/master/src/net/retryTask.ts) - Automatic retry on failure
+- [`WS`](https://github.com/beixiyo/jl-tool/blob/master/src/net/WS.ts) - Auto-reconnecting WebSocket
 
 ### 📊 Data Parsing
-- [`StreamJsonParser`](./src/tools/StreamJsonParser.ts) - Stream JSON parsing, suitable for SSE
-- [`StreamSingleXmlParser`](./src/tools/StreamSingleXmlParser.ts) - Stream single-layer XML parsing, suitable for AI structured streaming output
+- [`StreamJsonParser`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/StreamJsonParser.ts) - Stream JSON parsing, suitable for SSE
+- [`StreamSingleXmlParser`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/StreamSingleXmlParser.ts) - Stream single-layer XML parsing, suitable for AI structured streaming output
 
 ### 📄 File Processing
 
-- [`downloadByData`](./src/fileTool/tools.ts) / [`downloadByUrl`](./src/fileTool/tools.ts) - Download files
-- [`blobToBase64`](./src/fileTool/tools.ts) / [`base64ToBlob`](./src/fileTool/tools.ts) - Format conversion
-- [`checkFileSize`](./src/fileTool/tools.ts) - Check file size
-- [`convertToWav`](./src/convert/audioToWav.ts) - Convert MediaRecorder/WebM/OGG audio to WAV, with resampling and channel mixing support
-- [`FileChunker`](./src/fileTool/FileChunker.ts) - File chunking processor
-- [`BinaryMetadataEncoder`](./src/fileTool/BinaryMetadataEncoder.ts) - Metadata and binary data encoding tool
-- [`createStreamDownloader`](./src/fileTool/streamDownloader.ts) - Stream download (memory unlimited)
-- [`getMimeType`](./src/fileTool/getMimeType.ts) - Get resource MIME type
-- [`detectFileType`](./src/fileTool/fileType.ts) - Detect file type
-- [`jsonToJsonl`](./src/fileTool/jsonl.ts) / [`jsonlToJson`](./src/fileTool/jsonl.ts) - Convert between JSON and JSONL formats
-- [`readJsonlFile`](./src/fileTool/jsonl.ts) - Read JSONL file line by line
-- [`appendToJsonlFile`](./src/fileTool/jsonl.ts) - Append JSON data to JSONL file
-- [`mapJsonlFile`](./src/fileTool/jsonl.ts) / [`filterJsonlFile`](./src/fileTool/jsonl.ts) - Map and filter operations on JSONL files
-- [`findWithJsonlFile`](./src/fileTool/jsonl.ts) / [`findIndexWithJsonlFile`](./src/fileTool/jsonl.ts) - Find data in JSONL files
-- [`everyWithJsonlFile`](./src/fileTool/jsonl.ts) / [`someWithJsonlFile`](./src/fileTool/jsonl.ts) - Check if data in JSONL files meets conditions
+- [`downloadByData`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/tools.ts) / [`downloadByUrl`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/tools.ts) - Download files
+- [`blobToBase64`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/tools.ts) / [`base64ToBlob`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/tools.ts) - Format conversion
+- [`checkFileSize`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/tools.ts) - Check file size
+- [`convertToWav`](https://github.com/beixiyo/jl-tool/blob/master/src/convert/audioToWav.ts) - Convert MediaRecorder/WebM/OGG audio to WAV, with resampling and channel mixing support
+- [`FileChunker`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/FileChunker.ts) - File chunking processor
+- [`BinaryMetadataEncoder`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/BinaryMetadataEncoder.ts) - Metadata and binary data encoding tool
+- [`createStreamDownloader`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/streamDownloader.ts) - Stream download (memory unlimited)
+- [`getMimeType`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/getMimeType.ts) - Get resource MIME type
+- [`detectFileType`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/fileType.ts) - Detect file type
+- [`jsonToJsonl`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/jsonl.ts) / [`jsonlToJson`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/jsonl.ts) - Convert between JSON and JSONL formats
+- [`readJsonlFile`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/jsonl.ts) - Read JSONL file line by line
+- [`appendToJsonlFile`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/jsonl.ts) - Append JSON data to JSONL file
+- [`mapJsonlFile`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/jsonl.ts) / [`filterJsonlFile`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/jsonl.ts) - Map and filter operations on JSONL files
+- [`findWithJsonlFile`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/jsonl.ts) / [`findIndexWithJsonlFile`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/jsonl.ts) - Find data in JSONL files
+- [`everyWithJsonlFile`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/jsonl.ts) / [`someWithJsonlFile`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/jsonl.ts) - Check if data in JSONL files meets conditions
 
 ### 🌍 URL Processing
 
-- [`isValidUrl`](./src/tools/urlTools.ts) - Check if URL is valid
-- [`getUrlQuery`](./src/tools/urlTools.ts) - Parse URL query parameters
-- [`getUrlPaths`](./src/tools/urlTools.ts) - Parse URL path segments
-- [`getHostname`](./src/tools/urlTools.ts) - Get URL hostname
-- [`getProtocol`](./src/tools/urlTools.ts) - Get URL protocol
+- [`isValidUrl`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/urlTools.ts) - Check if URL is valid
+- [`getUrlQuery`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/urlTools.ts) - Parse URL query parameters
+- [`getUrlPaths`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/urlTools.ts) - Parse URL path segments
+- [`getHostname`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/urlTools.ts) - Get URL hostname
+- [`getProtocol`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/urlTools.ts) - Get URL protocol
 
 ### 🎬 Media APIs
 
-- [`Recorder`](./src/webApi/Recorder.ts) - Audio recording
-- [`Speaker`](./src/webApi/Speaker.ts) - Speech playback
-- [`SpeakToTxt`](./src/webApi/SpeakToTxt.ts) - Speech to text
-- [`openCamera`](./src/webApi/openCamera.ts) - Open camera
-- [`ScreenRecorder`](./src/webApi/screenRecord/ScreenRecorder.ts) - Screen recording
+- [`Recorder`](https://github.com/beixiyo/jl-tool/blob/master/src/webApi/Recorder.ts) - Audio recording
+- [`Speaker`](https://github.com/beixiyo/jl-tool/blob/master/src/webApi/Speaker.ts) - Speech playback
+- [`SpeakToTxt`](https://github.com/beixiyo/jl-tool/blob/master/src/webApi/SpeakToTxt.ts) - Speech to text
+- [`openCamera`](https://github.com/beixiyo/jl-tool/blob/master/src/webApi/openCamera.ts) - Open camera
+- [`ScreenRecorder`](https://github.com/beixiyo/jl-tool/blob/master/src/webApi/screenRecord/ScreenRecorder.ts) - Screen recording
 
-[View test cases](./test/__DOM_TEST__/webApi)
+[View test cases](https://github.com/beixiyo/jl-tool/blob/master/test/__DOM_TEST__/webApi)
 
 ### 📦 Data Structures
 
-- [`MinHeap`](./src/dataStructure/Heap.ts) - Min heap implementation
-- [`MaxHeap`](./src/dataStructure/Heap.ts) - Max heap implementation
-- [`LRUCache`](./src/dataStructure/LRUCache.ts) - LRU cache implementation
+- [`MinHeap`](https://github.com/beixiyo/jl-tool/blob/master/src/dataStructure/Heap.ts) - Min heap implementation
+- [`MaxHeap`](https://github.com/beixiyo/jl-tool/blob/master/src/dataStructure/Heap.ts) - Max heap implementation
+- [`LRUCache`](https://github.com/beixiyo/jl-tool/blob/master/src/dataStructure/LRUCache.ts) - LRU cache implementation
 
 ### 🔄 Events & Plugins
 
-- [`EventBus`](./src/channel/EventBus.ts) - Message subscription and dispatch
-- [`Observer`](./src/channel/Observe.ts) - Observer pattern
-- [`autoUpdate`](./src/plugins/autoUpdate.ts) - Check page updates
+- [`EventBus`](https://github.com/beixiyo/jl-tool/blob/master/src/channel/EventBus.ts) - Message subscription and dispatch
+- [`Observer`](https://github.com/beixiyo/jl-tool/blob/master/src/channel/Observe.ts) - Observer pattern
+- [`autoUpdate`](https://github.com/beixiyo/jl-tool/blob/master/src/plugins/autoUpdate.ts) - Check page updates
 
 ### 🎨 DOM & Theme
 
 | Function | Description |
 |----------|-------------|
-| [`getCurTheme`](./src/tools/theme.ts) | Get current theme |
-| [`isDarkMode`](./src/tools/theme.ts) | Check if dark mode |
-| [`onChangeTheme`](./src/tools/theme.ts) | Listen to theme changes |
-| [`bindWinEvent`](./src/tools/eventTools.ts) | Bind window events |
-| [`doubleKeyDown`](./src/tools/eventTools.ts) | Double key press events |
-| [`typewriterEffect`](./src/tools/typewriterEffect.ts) | Simulate typewriter effect |
+| [`getCurTheme`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/theme.ts) | Get current theme |
+| [`isDarkMode`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/theme.ts) | Check if dark mode |
+| [`onChangeTheme`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/theme.ts) | Listen to theme changes |
+| [`bindWinEvent`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/eventTools.ts) | Bind window events |
+| [`doubleKeyDown`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/eventTools.ts) | Double key press events |
+| [`typewriterEffect`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/typewriterEffect.ts) | Simulate typewriter effect |
 
 ### 🔧 Environment Variables (Node.js)
 
 | Function | Description |
 |----------|-------------|
-| [`loadEnv`](./node/env/loadEnv.ts) | Load environment files with multi-environment auto-switching |
-| [`getEnv`](./node/env/getEnv.ts) | Read environment variables with default values and required checks |
+| [`loadEnv`](https://github.com/beixiyo/jl-tool/blob/master/node/env/loadEnv.ts) | Load environment files with multi-environment auto-switching |
+| [`getEnv`](https://github.com/beixiyo/jl-tool/blob/master/node/env/getEnv.ts) | Read environment variables with default values and required checks |
 
 ---
 
@@ -307,7 +307,7 @@ scheduleTask(tasks).then((results) => {
 
 ### 🎨 Animation Processing
 
-[View complete test cases](./test/__DOM_TEST__/createAnimationByTime.ts)
+[View complete test cases](https://github.com/beixiyo/jl-tool/blob/master/test/__DOM_TEST__/createAnimationByTime.ts)
 
 ```ts
 import { ATo, createAnimationByTime } from '@jl-org/tool'
@@ -384,7 +384,7 @@ new ScrollTrigger({
 
 #### Multi-Section Parallax Example
 
-[Complete parallax scrolling code](./test/__DOM_TEST__/ScrollTrigger.ts)
+[Complete parallax scrolling code](https://github.com/beixiyo/jl-tool/blob/master/test/__DOM_TEST__/ScrollTrigger.ts)
 
 ```ts
 /** Create individual ScrollTrigger for each section */
@@ -489,7 +489,7 @@ bus.once('singleEvent', () => {
 
 ### 📠 Typewriter Effect
 
-[Complete code example](test/__DOM_TEST__/typewriterEffect.ts)
+[Complete code example](https://github.com/beixiyo/jl-tool/blob/master/test/__DOM_TEST__/typewriterEffect.ts)
 
 ```ts
 import { typewriterEffect } from '@jl-org/tool'
