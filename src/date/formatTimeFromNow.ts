@@ -134,7 +134,9 @@ function getDescByLanguageWithCount(language: FormatTimeFromNowLanguage, desc: F
   if (typeof descValue === 'string')
     return descValue
 
-  const unit = count === 1 ? descValue.singular : descValue.plural
+  const unit = count === 1
+    ? descValue.singular
+    : descValue.plural
   const lang = normalizeLanguage(language)
 
   if (lang === 'en-US')
