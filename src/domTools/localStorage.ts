@@ -1,9 +1,18 @@
+import { isStr } from '@/shared/is'
+
 /**
- * 设置 LocalStorage，默认自动转 JSON
+ * 写入 `Storage`（默认 `localStorage`）
  * @param key 存储键
- * @param value 存储值
- * @param autoToJSON 是否自动 JSON.stringify，默认 true
- * @param storage 存储对象，默认 localStorage
+ * @param value 存储值；`autoToJSON === true` 时：`string` 原样写入，其余类型走 `JSON.stringify`
+ * @param autoToJSON 为 `false` 时第二个参数原样交给 `setItem`（需为可被存储的字符串，见 MDN）
+ * @param storage 存储对象，默认 `localStorage`，可传 `sessionStorage`
+ *
+ * @example
+ * ```ts
+ * setLocalStorage('user', { id: 1, name: 'Ada' })
+ * setLocalStorage('token', 'eyJhbGc...') // 字符串不再包一层 JSON 引号
+ * setLocalStorage('legacy', '[1,2]', false)
+ * ```
  */
 export function setLocalStorage(
   key: string,
@@ -14,15 +23,26 @@ export function setLocalStorage(
   return storage.setItem(
     key,
     autoToJSON
-      ? JSON.stringify(value)
+      ? isStr(value)
+        ? value
+        : JSON.stringify(value)
       : value,
   )
 }
+
 /**
- * 获取 LocalStorage，默认自动解析 JSON。'undefined' 字符串会被转成 null
+ * 读取 `Storage`（默认 `localStorage`），默认对取值做 `JSON.parse`
  * @param key 存储键
- * @param autoParseJSON 是否自动 JSON.parse，默认 true
- * @param storage 存储对象，默认 localStorage
+ * @param autoParseJSON 为 `false` 时返回原始字符串（类型仍为 `T | null`）
+ * @param storage 存储对象，默认 `localStorage`
+ * @returns 解析后的值；无键或存的是字面量 `'undefined'` 时返回 `null`
+ *
+ * @example
+ * ```ts
+ * type User = { id: number }
+ * const user = getLocalStorage<User>('user')
+ * const token = getLocalStorage<string>('token', false)
+ * ```
  */
 export function getLocalStorage<T>(
   key: string,

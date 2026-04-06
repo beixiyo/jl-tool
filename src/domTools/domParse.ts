@@ -1,6 +1,14 @@
 /**
- * @deprecated 请使用 `extractDOMText` 代替
- * 解析出 `HTML` 的所有字符串
+ * @deprecated 请使用 {@link extractDOMText} 代替
+ * 用 DOMParser 将 HTML 字符串解析为文档后取 `body.textContent`（不做编码转义递归处理）
+ * @param HTMLStr HTML 片段
+ * @returns 文本内容，可能含空白
+ *
+ * @example
+ * ```ts
+ * // 不推荐新代码使用
+ * HTMLToStr('<p>a</p>') // 'a'（具体空白与浏览器解析一致）
+ * ```
  */
 export function HTMLToStr(HTMLStr: string) {
   const p = new DOMParser()
