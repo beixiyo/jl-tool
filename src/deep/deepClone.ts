@@ -61,7 +61,7 @@ export function deepClone<T>(
   for (const key in data) {
     if (!Object.prototype.hasOwnProperty.call(data, key))
       continue
-    tar[key] = deepClone(data[key], map)
+    tar[key] = deepClone(data[key], map, opts)
   }
 
   return tar as T

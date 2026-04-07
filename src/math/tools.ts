@@ -39,7 +39,7 @@ export function numFixed(num: number | string, precision = 2) {
 }
 
 /**
- * 将大小值与单位相互换算，返回包含各单位数值的对象
+ * @param input 包含数值和单位的对象
  *
  * @example
  * ```ts

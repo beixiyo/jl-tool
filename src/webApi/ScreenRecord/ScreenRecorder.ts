@@ -89,7 +89,7 @@ export class ScreenRecorder {
           stream.removeTrack(track)
         }
       }
-      catch (e) {
+      catch {
         /** 忽略错误，继续处理其他轨道 */
       }
     })

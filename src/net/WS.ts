@@ -103,7 +103,7 @@ export class WS {
    *
    * const socket = ws.connect()
    * socket.addEventListener('message', (event) => {
-   *   console.log('收到消息:', event.data)
+   *   console.warn('收到消息:', event.data)
    * })
    * ```
    *
@@ -179,7 +179,7 @@ export class WS {
     clearTimeout(this.leaveTimer)
 
     if (document.visibilityState === 'visible' && (!this.socket || this.isClosed)) {
-      console.log('页面可见，尝试重连...')
+      console.warn('页面可见，尝试重连...')
       const socket = this.connect()
       this.opts.onVisible?.(socket)
     }
@@ -190,7 +190,7 @@ export class WS {
 
       this.leaveTimer = window.setTimeout(() => {
         clearInterval(this.heartbeatTimer)
-        console.log('离开页面过久，关闭连接')
+        console.warn('离开页面过久，关闭连接')
         this.socket?.close()
         this.opts.onHidden?.()
       }, this.opts.leaveTime)
@@ -203,17 +203,17 @@ export class WS {
     this.rmNetEvent?.rmSocketEvent()
 
     const onOnline = () => {
-      console.log('网络恢复，尝试重连...')
+      console.warn('网络恢复，尝试重连...')
       this.connect()
       this.heartbeat()
     }
     const onOffline = () => {
-      console.log('网络断开，停止心跳检测')
+      console.warn('网络断开，停止心跳检测')
       clearInterval(this.heartbeatTimer)
     }
 
     const onClose = () => {
-      console.log('WebSocket 已关闭')
+      console.warn('WebSocket 已关闭')
       this.rmNetEvent?.rmSocketEvent()
       clearInterval(this.heartbeatTimer)
     }

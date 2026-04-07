@@ -84,16 +84,16 @@ const TIME_FROM_NOW_TRANSLATE_MAP: Record<FormatTimeFromNowLanguage, Record<stri
     in: '후',
   },
   'es-ES': {
-    ago: '前',
-    in: '後',
+    ago: 'hace',
+    in: 'en',
   },
   'fr-FR': {
-    ago: '前',
-    in: '後',
+    ago: 'il y a',
+    in: 'dans',
   },
   'de-DE': {
-    ago: '前',
-    in: '後',
+    ago: 'vor',
+    in: 'in',
   },
 }
 
@@ -238,8 +238,10 @@ export function formatTimeFromNow(date?: TimeType, opts: FormatTimeFromNowOpts =
     const lang = normalizeLanguage(language)
     const before = getTranslateByLanguage(lang, 'ago')
 
-    if (lang === 'en-US')
+    if (['en-US'].includes(lang))
       return `${str.trim()} ${before}`
+    if (['es-ES', 'fr-FR', 'de-DE'].includes(lang))
+      return `${before} ${str.trim()}`
 
     return `${str}${before}`
   }
@@ -248,7 +250,7 @@ export function formatTimeFromNow(date?: TimeType, opts: FormatTimeFromNowOpts =
     const lang = normalizeLanguage(language)
     const after = getTranslateByLanguage(lang, 'in')
 
-    if (lang === 'en-US')
+    if (['en-US', 'es-ES', 'fr-FR', 'de-DE'].includes(lang))
       return `${after} ${str.trim()}`
 
     return `${str}${after}`

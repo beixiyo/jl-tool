@@ -189,7 +189,7 @@ export function groupBy<T extends Record<BaseKey, any>>(
         break
 
       default:
-        const nv: never = action
+        const _nv: never = action
         break
     }
   }
@@ -552,6 +552,8 @@ export function genArr<V>(
 
 /**
  * 比较两个数组是否相等，默认不在乎顺序。空数组返回 true
+ * @param arr1 数组1
+ * @param arr2 数组2
  * @param ignoreOrder 是否忽略顺序，默认 true
  * @example
  * ```ts

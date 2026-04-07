@@ -84,8 +84,6 @@ export function parseMDCode(content: string, opts: ParseMDCodeOpts): string[] {
   if (includeInlineCode) {
     const inlineCodes = parseInlineCode(
       content,
-      codeType,
-      strictMatchCodeType,
     )
     results.push(...inlineCodes)
   }
@@ -153,8 +151,6 @@ function parseCodeBlocks(
  */
 function parseInlineCode(
   content: string,
-  codeType: string,
-  strictMatch: boolean,
 ): string[] {
   const results: string[] = []
   const matches = content.matchAll(INLINE_CODE_REGEX)

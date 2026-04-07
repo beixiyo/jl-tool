@@ -8,6 +8,8 @@
  *
  * @param audioBlob - 原始音频 Blob（支持 WebM、OGG、MP3 等浏览器支持的格式）
  * @param options - 转换选项
+ * @param options.sampleRate - 目标采样率，默认 16000 Hz（推荐用于语音识别）
+ * @param options.channels - 目标声道数，默认 1（单声道）
  * @returns 转换后的 WAV 格式 Blob
  *
  * @example

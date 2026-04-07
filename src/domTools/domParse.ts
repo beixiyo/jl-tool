@@ -74,7 +74,7 @@ export function extractDOMText(
         createHTML: (input: string): string => input,
       })
     }
-    catch (error) {
+    catch {
       /**
        * 如果创建失败（通常是因为策略已存在），则使用默认策略
        * 或者创建一个新的默认策略

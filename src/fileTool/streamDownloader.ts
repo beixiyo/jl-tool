@@ -97,7 +97,7 @@ async function filePickerDownload(
     })
 
     const writableStream = await fileHandle.createWritable()
-    console.log('Using File System Access API for streaming download.')
+    console.warn('Using File System Access API for streaming download.')
 
     return {
       append: async (chunk: Uint8Array): Promise<void> => {
@@ -105,11 +105,11 @@ async function filePickerDownload(
       },
       complete: async (): Promise<void> => {
         await writableStream.close()
-        console.log('File download completed via File System Access API.')
+        console.warn('File download completed via File System Access API.')
       },
       abort: async (): Promise<void> => {
         await writableStream.abort()
-        console.log('File download aborted via File System Access API.')
+        console.warn('File download aborted via File System Access API.')
       },
     }
   }
@@ -154,7 +154,7 @@ async function blobDonwload(
   filename: string,
   opts: Required<DownloaderOpts>,
 ): Promise<StreamDownloader> {
-  console.log('Using fallback: in-memory accumulation and Blob download.')
+  console.warn('Using fallback: in-memory accumulation and Blob download.')
   const accumulatedChunks: Uint8Array[] = []
   let aborted = false
 
@@ -167,7 +167,7 @@ async function blobDonwload(
     complete: async (): Promise<void> => {
       if (aborted || accumulatedChunks.length === 0) {
         if (!aborted)
-          console.log('No data to download or download was aborted.')
+          console.warn('No data to download or download was aborted.')
 
         accumulatedChunks.splice(0)
         return
@@ -177,12 +177,12 @@ async function blobDonwload(
       downloadByData(blob, filename, { mimeType: opts.mimeType })
 
       accumulatedChunks.splice(0)
-      console.log('File download completed via Blob.')
+      console.warn('File download completed via Blob.')
     },
     abort: async (): Promise<void> => {
       aborted = true
       accumulatedChunks.splice(0)
-      console.log('File download aborted (fallback method).')
+      console.warn('File download aborted (fallback method).')
     },
   }
 }
@@ -227,7 +227,7 @@ async function serviceWorkerDownload(
 
   if (navigator.serviceWorker.controller) {
     isRegistered = true
-    console.log('Service Worker already controlling the page')
+    console.warn('Service Worker already controlling the page')
   }
   else {
     await navigator.serviceWorker.register(opts.swPath, {

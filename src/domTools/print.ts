@@ -1,4 +1,3 @@
-import type { getAllStyle } from './cssTool';
 import { judgeImgLoad } from './eventTools'
 
 /**
@@ -69,4 +68,3 @@ interface Print {
    */
   (elStr: string, styleStr: string | undefined, href?: string): void
 }
-

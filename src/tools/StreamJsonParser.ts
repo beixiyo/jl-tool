@@ -21,7 +21,7 @@ export class StreamJsonParser {
       this.clear()
       return result
     }
-    catch (error) {
+    catch {
       /** 解析失败，尝试修复和部分解析 */
       if (!enableTryToRepair) {
         return null
@@ -48,7 +48,7 @@ export class StreamJsonParser {
         return JSON.parse(repaired)
       }
     }
-    catch (error) {
+    catch {
       /** 修复失败，继续等待更多数据 */
     }
 
@@ -121,7 +121,7 @@ export class StreamJsonParser {
       JSON.parse(repaired)
       return repaired
     }
-    catch (error) {
+    catch {
       /** 如果仍然无效，返回 null */
       return null
     }

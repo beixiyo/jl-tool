@@ -19,17 +19,18 @@ import { isBrowser } from '@/constants/tool'
  * // 返回: 'http://example.com/file.css'
  */
 export function matchProtocol(url: string, baseProtocol?: string) {
+  let targetProtocol = 'https:'
+
   if (baseProtocol) {
-    return url.replace(/(http:|https:)/, baseProtocol)
+    /** 支持传入 'http', 'http:', 'http://' 等灵活格式 */
+    targetProtocol = `${baseProtocol.replace(/[:/]+$/, '')}:`
+  }
+  else if (isBrowser && window.location.protocol) {
+    /** 浏览器环境，使用 window.location.protocol */
+    targetProtocol = window.location.protocol
   }
 
-  /** 浏览器环境，使用 window.location.protocol */
-  if (isBrowser && window.location.protocol) {
-    return url.replace(/(http:|https:)/, window.location.protocol)
-  }
-
-  /** 其他环境默认使用 https */
-  return url.replace(/(http:|https:)/, 'https:')
+  return url.replace(/(http:|https:)/i, targetProtocol)
 }
 
 /**
@@ -51,9 +52,8 @@ export function isValidUrl(url: string): boolean {
     new URL(url)
     return true
   }
-  catch {
-    return false
-  }
+  catch { }
+  return false
 }
 
 /**

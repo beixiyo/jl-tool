@@ -9,9 +9,8 @@ export function isMimeTypeSupported(mimeType: RecorderMimeType): boolean {
       ? MediaRecorder.isTypeSupported(mimeType)
       : false
   }
-  catch {
-    return false
-  }
+  catch { }
+  return false
 }
 
 /**

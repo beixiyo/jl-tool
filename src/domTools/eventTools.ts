@@ -151,7 +151,6 @@ export function doubleKeyDown<T, R>(
 /**
  * 切换全屏：当前未全屏则进入全屏，已全屏则退出（含 webkit / moz / ms 前缀）
  * @param dom 要全屏的节点；不传则对 `document.documentElement` 切换
- * @returns 无；若环境不支持全屏 API 则静默返回
  *
  * @example
  * ```ts
@@ -160,8 +159,7 @@ export function doubleKeyDown<T, R>(
  * ```
  */
 export function fullScreen(dom?: HTMLElement) {
-  const
-    doc = document as any
+  const doc = document as any
   const root = document.documentElement as any
   const rfs
       = root.requestFullscreen

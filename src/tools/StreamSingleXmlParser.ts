@@ -18,7 +18,7 @@
  * // 逐步解析数据块
  * for (const chunk of xmlChunks) {
  *   const result = parser.append(chunk)
- *   console.log('当前解析结果:', result)
+ *   console.warn('当前解析结果:', result)
  * }
  *
  * // 最终结果: { name: 'John Doe', age: '25', email: '' }
@@ -42,10 +42,10 @@
  * const parser = new StreamSingleXmlParser()
  *
  * parser.append('<name>Alice</name>')
- * console.log(parser.getResult()) // { name: 'Alice' }
+ * console.warn(parser.getResult()) // { name: 'Alice' }
  *
  * parser.reset()
- * console.log(parser.getResult()) // {}
+ * console.warn(parser.getResult()) // {}
  * ```
  */
 export class StreamSingleXmlParser {
@@ -70,11 +70,11 @@ export class StreamSingleXmlParser {
    *
    * // 输入不完整的数据
    * let result = parser.append('<name>John')
-   * console.log(result) // { "name": "John" } (标签未完成)
+   * console.warn(result) // { "name": "John" } (标签未完成)
    *
    * // 继续输入数据
    * result = parser.append(' Doe</name>')
-   * console.log(result) // { "name": "John Doe" }
+   * console.warn(result) // { "name": "John Doe" }
    * ```
    */
   append(chunk: string): Record<string, string> {
@@ -154,7 +154,7 @@ export class StreamSingleXmlParser {
           const tagName = tagContent.slice(0, -1)
           if (tagName) {
             this.result[tagName] = ''
-            console.log(`✅ 自闭合标签完成: ${tagName}`)
+            console.warn(`✅ 自闭合标签完成: ${tagName}`)
           }
           this.buffer = this.buffer.substring(tagEnd + 1)
           i = 0
@@ -167,7 +167,7 @@ export class StreamSingleXmlParser {
           if (this.currentTag === endTag) {
             /** 找到匹配的结束标签 */
             this.result[this.currentTag] = this.contentBuffer
-            console.log(`✅ 标签完成: ${this.currentTag} = "${this.contentBuffer}"`)
+            console.warn(`✅ 标签完成: ${this.currentTag} = "${this.contentBuffer}"`)
             this.currentTag = null
             this.isInsideContent = false
             this.contentBuffer = ''
@@ -181,7 +181,7 @@ export class StreamSingleXmlParser {
           this.currentTag = tagContent
           this.isInsideContent = true
           this.contentBuffer = ''
-          console.log(`🏷️  标签开始: ${this.currentTag}`)
+          console.warn(`🏷️  标签开始: ${this.currentTag}`)
           this.buffer = this.buffer.substring(tagEnd + 1)
           i = 0
           continue
@@ -194,7 +194,7 @@ export class StreamSingleXmlParser {
           /** 没有找到标签，所有内容都是文本 */
           const text = this.buffer.substring(i)
           this.contentBuffer += text
-          console.log(`📝 内容更新: "${text}" (累计: "${this.contentBuffer}")`)
+          console.warn(`📝 内容更新: "${text}" (累计: "${this.contentBuffer}")`)
           this.buffer = ''
           break
         }
@@ -206,7 +206,7 @@ export class StreamSingleXmlParser {
             /** 结束标签不完整，等待更多数据 */
             const text = this.buffer.substring(i, tagStart)
             this.contentBuffer += text
-            console.log(`📝 内容更新: "${text}" (累计: "${this.contentBuffer}")`)
+            console.warn(`📝 内容更新: "${text}" (累计: "${this.contentBuffer}")`)
             break
           }
 
@@ -217,7 +217,7 @@ export class StreamSingleXmlParser {
             this.contentBuffer += text
 
             this.result[this.currentTag] = this.contentBuffer
-            console.log(`✅ 标签完成: ${this.currentTag} = "${this.contentBuffer}"`)
+            console.warn(`✅ 标签完成: ${this.currentTag} = "${this.contentBuffer}"`)
             this.currentTag = null
             this.isInsideContent = false
             this.contentBuffer = ''
@@ -239,7 +239,7 @@ export class StreamSingleXmlParser {
               this.contentBuffer += text
 
               this.result[this.currentTag] = this.contentBuffer
-              console.log(`✅ 自闭合标签完成: ${this.currentTag} = "${this.contentBuffer}"`)
+              console.warn(`✅ 自闭合标签完成: ${this.currentTag} = "${this.contentBuffer}"`)
               this.currentTag = null
               this.isInsideContent = false
               this.contentBuffer = ''
@@ -253,7 +253,7 @@ export class StreamSingleXmlParser {
           /** 标签不完整，等待更多数据 */
           const text = this.buffer.substring(i, tagStart)
           this.contentBuffer += text
-          console.log(`📝 内容更新: "${text}" (累计: "${this.contentBuffer}")`)
+          console.warn(`📝 内容更新: "${text}" (累计: "${this.contentBuffer}")`)
           break
         }
 

@@ -88,7 +88,7 @@ export async function getMimeType(
     const extension = url.split('.').pop()?.split('?')[0]?.toLowerCase()
     return mimeFromExt[extension as keyof typeof mimeFromExt] || 'unknown'
   }
-  catch (error) {
+  catch {
     return 'unknown'
   }
 }

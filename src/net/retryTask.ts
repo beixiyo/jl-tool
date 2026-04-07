@@ -52,7 +52,7 @@ export async function retryTask<T>(
         await wait(delayMs)
       }
       /** 可以在这里添加日志，记录重试尝试 */
-      console.log(`Attempt ${attempts} failed for task. Retrying...`)
+      console.warn(`Attempt ${attempts} failed for task. Retrying...`)
     }
   }
 

@@ -340,7 +340,7 @@ function applyStyles(
           // @ts-ignore
           style[prop] = `${value}${unit}`
         }
-        catch (e) {
+        catch {
           console.warn(`无法设置样式属性: ${prop}`)
         }
         break

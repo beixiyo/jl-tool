@@ -58,7 +58,7 @@ export async function copyToClipboard(text: string) {
     const res = await navigator.clipboard.writeText(text)
     return res
   }
-  catch (error) {
+  catch {
     return fallback()
   }
 

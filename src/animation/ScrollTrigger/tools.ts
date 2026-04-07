@@ -236,6 +236,12 @@ export function applyStyles(element: HTMLElement, styles: Partial<CSSStyleDeclar
  * @param startPos 开始位置
  * @param endPos 结束位置
  * @param options 标记选项
+ * @param options.startColor 开始标记颜色
+ * @param options.endColor 结束标记颜色
+ * @param options.fontSize 标记字体大小
+ * @param options.indent 标记缩进
+ * @param options.direction 滚动方向
+ * @param options.container 标记容器
  * @returns 标记元素数组
  */
 export function createMarkers(
