@@ -75,7 +75,7 @@ yarn add @jl-org/tool
 
 ### 📆 Date Processing
 
-- [`formatDate`](https://github.com/beixiyo/jl-tool/blob/master/src/date/dateTools.ts) - Powerful date formatting
+- [`formatDate`](https://github.com/beixiyo/jl-tool/blob/master/src/date/formatDate.ts) - Powerful date formatting with LDML-standard tokens (`yyyy`/`yy`/`MM`/`M`/`dd`/`d`/`HH`/`mm`/`ss`/`SSS`, both padded and variable-width), single-quote literal escaping, and custom time zones
 - [`formatTimeFromNow`](https://github.com/beixiyo/jl-tool/blob/master/src/date/formatTimeFromNow.ts) - Get relative time like "1 minute ago"
 - [`dayDiff`](https://github.com/beixiyo/jl-tool/blob/master/src/date/dateTools.ts) - Calculate date difference in days
 - [`getQuarter`](https://github.com/beixiyo/jl-tool/blob/master/src/date/dateTools.ts) - Get quarter

@@ -17,7 +17,7 @@ describe('formatDate', () => {
     expect(formatDate('yyyy-MM-dd 23:59:59', new Date(timeStr)))
       .toBe(`${timeStr.slice(0, 10)} 23:59:59`)
 
-    expect(formatDate(dateInfo => `今年是${dateInfo.yyyy}年`))
+    expect(formatDate(dateInfo => `今年是${dateInfo.year}年`))
       .toBe(`今年是${new Date().getFullYear()}年`)
   })
 
@@ -53,7 +53,7 @@ describe('formatDate', () => {
 
   it('使用自定义格式化函数', () => {
     const date = new Date(2023, 9, 15)
-    const result = formatDate(dateInfo => `今年是${dateInfo.yyyy}年`, date)
+    const result = formatDate(dateInfo => `今年是${dateInfo.year}年`, date)
     expect(result).toBe('今年是2023年')
   })
 

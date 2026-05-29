@@ -75,7 +75,7 @@ yarn add @jl-org/tool
 
 ### 📆 日期处理
 
-- [`formatDate`](https://github.com/beixiyo/jl-tool/blob/master/src/date/dateTools.ts) - 强大的日期格式化
+- [`formatDate`](https://github.com/beixiyo/jl-tool/blob/master/src/date/formatDate.ts) - 强大的日期格式化，支持 LDML 标准 token（`yyyy`/`yy`/`MM`/`M`/`dd`/`d`/`HH`/`mm`/`ss`/`SSS` 等定宽与变宽写法）、单引号字面量转义、以及指定时区
 - [`formatTimeFromNow`](https://github.com/beixiyo/jl-tool/blob/master/src/date/formatTimeFromNow.ts) - 获取类似"1分钟前"的相对时间
 - [`dayDiff`](https://github.com/beixiyo/jl-tool/blob/master/src/date/dateTools.ts) - 计算日期差值，单位(天)
 - [`getQuarter`](https://github.com/beixiyo/jl-tool/blob/master/src/date/dateTools.ts) - 获取季度
