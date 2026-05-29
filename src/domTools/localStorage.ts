@@ -37,6 +37,15 @@ export function setLocalStorage(
  * @param storage 存储对象，默认 `localStorage`
  * @returns 解析后的值；无键或存的是字面量 `'undefined'` 时返回 `null`
  *
+ * @remarks
+ * 与 {@link setLocalStorage} 配套：后者对 `string` 原样写入（不包 JSON 引号），
+ * 因此读取裸字符串（如 `'-created_time'`、空串、普通文本）时 `JSON.parse` 会抛错，
+ * 此时**退回原始字符串**，保证字符串能正确往返、且不会因脏数据崩溃。
+ *
+ * 注意：因字符串原样存储，长得像 JSON 的字符串（如 `'123'`、`'true'`）读取时会被
+ * `JSON.parse` 解析成对应类型（`number` / `boolean`）。若需严格保持字符串类型，
+ * 读取时传 `autoParseJSON = false`。
+ *
  * @example
  * ```ts
  * type User = { id: number }
@@ -50,12 +59,18 @@ export function getLocalStorage<T>(
   storage: Storage = localStorage,
 ): T | null {
   const item = storage.getItem(key)
-  if (item === 'undefined') {
+  if (item === null || item === 'undefined') {
     return null
   }
 
-  return autoParseJSON
-    // @ts-ignore
-    ? JSON.parse(item) as T
-    : (item as T)
+  if (!autoParseJSON) {
+    return item as T
+  }
+
+  try {
+    return JSON.parse(item) as T
+  }
+  catch {
+    return item as T
+  }
 }

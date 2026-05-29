@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.0.1] - 2026-05-29
+
+### Fixed
+
+- **`getLocalStorage` no longer throws on non-JSON values.** `setLocalStorage` stores
+  `string` values verbatim (without JSON quotes), but `getLocalStorage` ran every value
+  through `JSON.parse` and threw on plain strings. It now falls back to the raw string
+  when `JSON.parse` fails, so strings round-trip correctly and malformed / legacy values
+  no longer crash the caller:
+  - `'-created_time'` — was `SyntaxError: No number after minus sign`, now returns `'-created_time'`
+  - `''` (empty string) — was `SyntaxError: Unexpected end of JSON input`, now returns `''`
+- **`getLocalStorage` returns `null` explicitly for missing keys**, instead of relying
+  on the incidental behaviour of `JSON.parse(null)`.
+
+### Notes
+
+- Because strings are stored verbatim, JSON-looking strings (`'123'`, `'true'`,
+  `'{"a":1}'`) are still parsed to their JSON type on read. Pass `autoParseJSON = false`
+  to `getLocalStorage` to keep the original string.
+- Added a regression test suite for `setLocalStorage` / `getLocalStorage`
+  (`test/test/tools/localStorage.test.ts`).
+
 ## [4.0.0] - 2026-05-29
 
 ### `formatDate` rewrite — universal LDML-style tokens
