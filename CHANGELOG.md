@@ -5,6 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.0.2] - 2026-06-02
+
+### Fixed
+
+- **Timer utilities no longer crash outside the browser.** `debounce`, `throttle`
+  and `FakeProgress` called `window.setTimeout` / `window.setInterval`, throwing
+  `ReferenceError: window is not defined` in non-browser runtimes (Node.js, Electron
+  main process, Web Workers). They now use the bare `setTimeout` / `setInterval`
+  globals — available in browser, Node and Workers alike — so the standard build is
+  truly portable.
+- Timer handle types changed from the hard-coded `number` to `ReturnType<typeof setTimeout>`,
+  which resolves correctly under both DOM and Node type definitions.
+
+### Changed
+
+- **`rafThrottle` degrades gracefully in non-browser environments.** When
+  `requestAnimationFrame` is unavailable it falls back to a ~16ms `setTimeout`
+  instead of throwing. Animation semantics still assume a browser; the fallback
+  only guarantees it won't crash.
+
+### Notes
+
+- Inherently browser-only modules (`WS`, `autoUpdate`, `domTools/*`, `fileTool/*`,
+  `webApi/*`, `ScrollTrigger`, `theme`, …) are unchanged — they legitimately depend
+  on DOM / browser APIs. Importing the package in Node remains safe: there is no
+  top-level browser-global access, only `typeof window` guards.
+
 ## [4.0.1] - 2026-05-29
 
 ### Fixed

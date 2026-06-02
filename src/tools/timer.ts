@@ -36,7 +36,7 @@ export function throttle<P extends any[]>(
   options: ThrottleOpts = {},
 ) {
   let st = 0
-  let timer: number | null = null
+  let timer: ReturnType<typeof setTimeout> | null = null
   const { makeSureNotToMissTask = true } = options
 
   /**
@@ -47,7 +47,7 @@ export function throttle<P extends any[]>(
       return
 
     clear()
-    timer = window.setTimeout(() => {
+    timer = setTimeout(() => {
       fn()
     }, delay)
   }
@@ -109,11 +109,11 @@ export function debounce<P extends any[]>(
   fn: (...args: P) => any,
   delay = 200,
 ) {
-  let id: number
+  let id: ReturnType<typeof setTimeout> | undefined
 
   return function (this: any, ...args: P) {
-    id && clearTimeout(id)
-    id = window.setTimeout(() => {
+    id !== undefined && clearTimeout(id)
+    id = setTimeout(() => {
       return fn.apply(this, args)
     }, delay)
   }
@@ -148,6 +148,10 @@ export function debounce<P extends any[]>(
  *
  * window.addEventListener('scroll', updateAnimation)
  * ```
+ *
+ * @remarks
+ * 非浏览器环境（如 Node）无 `requestAnimationFrame`，自动降级为 ~16ms 的 `setTimeout`，
+ * 仅保证不抛错；动画语义本就依赖浏览器，Node 下请按需自行处理
  */
 export function rafThrottle<P extends any[]>(
   fn: (...args: P) => any,
@@ -159,10 +163,33 @@ export function rafThrottle<P extends any[]>(
       return
     lock = true
 
-    window.requestAnimationFrame(async () => {
+    raf(async () => {
       await fn.apply(this, args)
       lock = false
     })
+  }
+}
+
+/**
+ * 回退帧间隔(ms)，模块级缓存只算一次
+ *
+ * 真实刷新率只能靠 rAF 连续两帧测时间差，而本回退恰恰发生在「没有 rAF」的环境，
+ * 那里既走不到原生 rAF、也测不出帧率，故用 60fps 标准间隔兜底
+ */
+const FALLBACK_FRAME_MS = Math.round(1000 / 60)
+
+/**
+ * 通用 requestAnimationFrame：浏览器用原生，非浏览器（如 Node）降级为按 60fps 的 setTimeout
+ * 用 `typeof` 守卫，对未声明全局取值也不会抛 ReferenceError
+ *
+ * 返回 `void`：调度句柄无人使用，避免 `number` 与 Node `Timeout` 类型冲突
+ */
+function raf(cb: FrameRequestCallback): void {
+  if (typeof requestAnimationFrame !== 'undefined') {
+    requestAnimationFrame(cb)
+  }
+  else {
+    setTimeout(() => cb(Date.now()), FALLBACK_FRAME_MS)
   }
 }
 

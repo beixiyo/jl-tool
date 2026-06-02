@@ -14,7 +14,7 @@ export class FakeProgress {
 
   onChange?: (progress: number) => void
 
-  private intervalId?: number
+  private intervalId?: ReturnType<typeof setInterval>
   private intervalFrequency = 100
   private startTime = 0
   private initialProgress = 0
@@ -39,7 +39,7 @@ export class FakeProgress {
     this.stop()
     this.startTime = Date.now()
 
-    this.intervalId = window.setInterval(() => {
+    this.intervalId = setInterval(() => {
       const elapsedTime = Date.now() - this.startTime
       const deltaProgress = 1 - Math.exp(-elapsedTime / this.timeConstant * 2)
       const nextProgress = this.initialProgress + (1 - this.initialProgress) * deltaProgress
