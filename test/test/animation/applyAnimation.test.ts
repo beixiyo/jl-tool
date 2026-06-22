@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { createAnimationFrameScheduler } from '@/animation/animationFrame'
 import { applyAnimation } from '@/animation/applyAnimation'
 
 describe('applyAnimation', () => {
@@ -79,9 +80,72 @@ describe('applyAnimation', () => {
     const stop = applyAnimation(fn)
 
     expect(fn).toHaveBeenCalledTimes(1)
-    // 注意：当函数立即返回 'stop' 时，cancelAnimationFrame 被调用但 id 是 undefined
-    expect(mockCancelAnimationFrame).toHaveBeenCalledWith(undefined)
+    expect(mockCancelAnimationFrame).not.toHaveBeenCalled()
     // requestAnimationFrame 不会被调用，因为函数立即返回 'stop'
     expect(mockRequestAnimationFrame).toHaveBeenCalledTimes(0)
+  })
+
+  it('没有 requestAnimationFrame 时应该回退到 setTimeout', () => {
+    const originalRAF = globalThis.requestAnimationFrame
+    const originalCAF = globalThis.cancelAnimationFrame
+
+    try {
+      Reflect.deleteProperty(globalThis, 'requestAnimationFrame')
+      Reflect.deleteProperty(globalThis, 'cancelAnimationFrame')
+      vi.useFakeTimers()
+
+      const fn = vi.fn(() => undefined)
+      const stop = applyAnimation(fn)
+
+      expect(fn).toHaveBeenCalledTimes(1)
+
+      vi.advanceTimersByTime(17)
+      expect(fn).toHaveBeenCalledTimes(2)
+
+      stop()
+      vi.advanceTimersByTime(17)
+      expect(fn).toHaveBeenCalledTimes(2)
+    }
+    finally {
+      vi.useRealTimers()
+
+      if (originalRAF)
+        globalThis.requestAnimationFrame = originalRAF
+      if (originalCAF)
+        globalThis.cancelAnimationFrame = originalCAF
+    }
+  })
+
+  it('scheduler 应该在创建时固定实现，不在每帧重新判断', () => {
+    const originalRAF = globalThis.requestAnimationFrame
+    const originalCAF = globalThis.cancelAnimationFrame
+
+    try {
+      Reflect.deleteProperty(globalThis, 'requestAnimationFrame')
+      Reflect.deleteProperty(globalThis, 'cancelAnimationFrame')
+      vi.useFakeTimers()
+
+      const scheduler = createAnimationFrameScheduler()
+      const fn = vi.fn()
+      const id = scheduler.request(fn)
+
+      globalThis.requestAnimationFrame = vi.fn()
+      globalThis.cancelAnimationFrame = vi.fn()
+
+      vi.advanceTimersByTime(17)
+
+      expect(fn).toHaveBeenCalledTimes(1)
+      expect(globalThis.requestAnimationFrame).not.toHaveBeenCalled()
+
+      scheduler.cancel(id)
+    }
+    finally {
+      vi.useRealTimers()
+
+      if (originalRAF)
+        globalThis.requestAnimationFrame = originalRAF
+      if (originalCAF)
+        globalThis.cancelAnimationFrame = originalCAF
+    }
   })
 })

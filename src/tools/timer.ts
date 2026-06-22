@@ -1,3 +1,5 @@
+import { createAnimationFrameScheduler } from '@/animation/animationFrame'
+
 /**
  * 节流函数
  * @param fn 要节流的函数
@@ -156,6 +158,7 @@ export function debounce<P extends any[]>(
 export function rafThrottle<P extends any[]>(
   fn: (...args: P) => any,
 ) {
+  const scheduler = createAnimationFrameScheduler()
   let lock = false
 
   return function (this: any, ...args: P) {
@@ -163,33 +166,10 @@ export function rafThrottle<P extends any[]>(
       return
     lock = true
 
-    raf(async () => {
+    scheduler.request(async () => {
       await fn.apply(this, args)
       lock = false
     })
-  }
-}
-
-/**
- * 回退帧间隔(ms)，模块级缓存只算一次
- *
- * 真实刷新率只能靠 rAF 连续两帧测时间差，而本回退恰恰发生在「没有 rAF」的环境，
- * 那里既走不到原生 rAF、也测不出帧率，故用 60fps 标准间隔兜底
- */
-const FALLBACK_FRAME_MS = Math.round(1000 / 60)
-
-/**
- * 通用 requestAnimationFrame：浏览器用原生，非浏览器（如 Node）降级为按 60fps 的 setTimeout
- * 用 `typeof` 守卫，对未声明全局取值也不会抛 ReferenceError
- *
- * 返回 `void`：调度句柄无人使用，避免 `number` 与 Node `Timeout` 类型冲突
- */
-function raf(cb: FrameRequestCallback): void {
-  if (typeof requestAnimationFrame !== 'undefined') {
-    requestAnimationFrame(cb)
-  }
-  else {
-    setTimeout(() => cb(Date.now()), FALLBACK_FRAME_MS)
   }
 }
 

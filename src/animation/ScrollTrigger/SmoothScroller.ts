@@ -1,6 +1,8 @@
 import type { ScrollTrigger } from './ScrollTrigger'
 import type { Scroller, SmoothScrollerOptions } from './types'
+import type { AnimationFrameId, AnimationFrameScheduler } from '../animationFrame'
 import { clamp } from '@/math'
+import { createAnimationFrameScheduler } from '../animationFrame'
 
 /**
  * 帧率无关的阻尼插值（参考 Lenis / Rory Driscoll）
@@ -27,7 +29,8 @@ export class SmoothScroller {
   private element: HTMLElement | Window
   private options: Required<SmoothScrollerOptions>
   private triggers: Set<Scroller> = new Set()
-  private animationFrameId: number | null = null
+  private animationFrameId: AnimationFrameId | null = null
+  private animationFrameScheduler: AnimationFrameScheduler
 
   /** 当前平滑滚动位置 */
   private currentScroll = 0
@@ -43,6 +46,7 @@ export class SmoothScroller {
 
   constructor(element: HTMLElement | Window, options: SmoothScrollerOptions = {}) {
     this.element = element
+    this.animationFrameScheduler = createAnimationFrameScheduler()
     this.options = {
       lerp: 0.1,
       direction: 'vertical',
@@ -164,7 +168,7 @@ export class SmoothScroller {
   private startLoop(): void {
     if (this.animationFrameId === null) {
       this.lastTime = 0
-      this.animationFrameId = requestAnimationFrame(this.update)
+      this.animationFrameId = this.animationFrameScheduler.request(this.update)
     }
   }
 
@@ -197,7 +201,7 @@ export class SmoothScroller {
       return
     }
 
-    this.animationFrameId = requestAnimationFrame(this.update)
+    this.animationFrameId = this.animationFrameScheduler.request(this.update)
   }
 
   private updateTriggers(): void {
@@ -218,7 +222,7 @@ export class SmoothScroller {
 
   destroy(): void {
     if (this.animationFrameId) {
-      cancelAnimationFrame(this.animationFrameId)
+      this.animationFrameScheduler.cancel(this.animationFrameId)
     }
     this.element.removeEventListener('wheel', this.onWheel as EventListener)
     this.element.removeEventListener('scroll', this.onScroll as EventListener)

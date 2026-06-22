@@ -1,9 +1,11 @@
 import type { Scroller, ScrollTriggerOptions, ScrollTriggerState } from './types'
+import type { AnimationFrameId, AnimationFrameScheduler } from '../animationFrame'
 import { CSS_DEFAULT_VAL, WITHOUT_UNITS } from '@/constants'
 import { clamp } from '@/math'
 import { isObj } from '@/shared/is'
 import { debounce, throttle } from '@/tools/timer'
 import { uniqueId } from '@/tools/tools'
+import { createAnimationFrameScheduler } from '../animationFrame'
 import { createAnimation } from '../createAnimation'
 import { genTimeFunc } from '../timeFunc'
 import { ScrollConfig } from './constants'
@@ -46,13 +48,15 @@ export class ScrollTrigger implements Scroller {
   private currentProgress = 0
   /** 上次更新时间 */
   private lastTime = 0
-  private animationFrameId: number | null = null
+  private animationFrameId: AnimationFrameId | null = null
+  private animationFrameScheduler: AnimationFrameScheduler
   /** 当前是否处于一次性播放动画中 */
   private isPlayingOnce = false
 
   constructor(options: ScrollTriggerOptions) {
     /** 生成唯一ID */
     this.id = options.id || uniqueId()
+    this.animationFrameScheduler = createAnimationFrameScheduler()
 
     /** 初始化默认选项 */
     this.options = {
@@ -345,7 +349,7 @@ export class ScrollTrigger implements Scroller {
 
         /** 如果之前在播放中，取消动画帧 */
         if (this.animationFrameId !== null) {
-          cancelAnimationFrame(this.animationFrameId)
+          this.animationFrameScheduler.cancel(this.animationFrameId)
           this.animationFrameId = null
           this.isPlayingOnce = false
         }
@@ -379,7 +383,7 @@ export class ScrollTrigger implements Scroller {
       else if (typeof this.options.scrub === 'number' && this.animationFrameId === null) {
         /** 启动动画帧更新 */
         this.lastTime = 0
-        this.animationFrameId = requestAnimationFrame(() => this.updateAnimation())
+        this.animationFrameId = this.animationFrameScheduler.request(() => this.updateAnimation())
       }
 
       /** 更新激活状态 */
@@ -604,7 +608,7 @@ export class ScrollTrigger implements Scroller {
 
     /** 取消动画帧 */
     if (this.animationFrameId !== null) {
-      cancelAnimationFrame(this.animationFrameId)
+      this.animationFrameScheduler.cancel(this.animationFrameId)
       this.animationFrameId = null
     }
 
@@ -637,7 +641,7 @@ export class ScrollTrigger implements Scroller {
     const currentTime = performance.now()
     if (this.lastTime === 0) {
       this.lastTime = currentTime
-      this.animationFrameId = requestAnimationFrame(() => this.updateAnimation())
+      this.animationFrameId = this.animationFrameScheduler.request(() => this.updateAnimation())
       return
     }
 
@@ -660,7 +664,7 @@ export class ScrollTrigger implements Scroller {
       this.currentProgress += step
       this.applyProgress(this.currentProgress)
       this.lastTime = currentTime
-      this.animationFrameId = requestAnimationFrame(() => this.updateAnimation())
+      this.animationFrameId = this.animationFrameScheduler.request(() => this.updateAnimation())
     }
     else {
       this.currentProgress = this.targetProgress
@@ -708,7 +712,7 @@ export class ScrollTrigger implements Scroller {
       this.applyProgress(progress)
 
       if (ratio < 1) {
-        this.animationFrameId = requestAnimationFrame(tick)
+        this.animationFrameId = this.animationFrameScheduler.request(tick)
       }
       else {
         this.isPlayingOnce = false
@@ -716,7 +720,7 @@ export class ScrollTrigger implements Scroller {
       }
     }
 
-    this.animationFrameId = requestAnimationFrame(tick)
+    this.animationFrameId = this.animationFrameScheduler.request(tick)
   }
 
   /**

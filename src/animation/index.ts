@@ -1,3 +1,4 @@
+export * from './animationFrame'
 export * from './applyAnimation'
 export * from './ATo'
 export * from './createAnimation'

@@ -40,6 +40,8 @@ export function timer(
   const clock = new Clock()
 
   const stop = applyAnimation(() => {
+    clock.update()
+
     /**
      * 没到时间，则返回
      */
