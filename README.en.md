@@ -119,7 +119,7 @@ yarn add @jl-org/tool
 
 - [`concurrentTask`](https://github.com/beixiyo/jl-tool/blob/master/src/net/concurrentTask.ts) - Execute async tasks concurrently
 - [`retryTask`](https://github.com/beixiyo/jl-tool/blob/master/src/net/retryTask.ts) - Automatic retry on failure
-- [`WS`](https://github.com/beixiyo/jl-tool/blob/master/src/net/WS.ts) - Auto-reconnecting WebSocket
+- [`WS`](https://github.com/beixiyo/jl-tool/tree/master/src/net/WS) - Auto-reconnecting WebSocket
 
 ### 📊 Data Parsing
 - [`StreamJsonParser`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/StreamJsonParser.ts) - Stream JSON parsing, suitable for SSE
@@ -412,11 +412,29 @@ import { WS } from '@jl-org/tool'
 const socket = new WS({
   url: 'wss://example.com/socket',
   heartbeatInterval: 3000, // Send heartbeat every 3 seconds
+  maxQueuedMessages: 100,
+  maxReconnectAttempts: 5, // Exponential backoff, 5 attempts by default
 })
 
+socket.onmessage = event => console.log(event.data)
+socket.onclose = (event) => {
+  if (!event.superseded) {
+    console.log('Disconnected')
+  }
+}
 socket.connect()
-socket.send(JSON.stringify({ type: 'message', content: 'Hello!' }))
+
+const accepted = socket.send(JSON.stringify({ type: 'message', content: 'Hello!' }))
+if (!accepted) {
+  /** Queue is full, or queueing is disabled and the connection cannot send right now */
+}
+
+socket.dispose()
 ```
+
+`WS` itself is the event target and stays stable across reconnects, so `connect()` returns the instance. An in-memory send queue is enabled by default (capacity 100, TTL 10s). It only covers brief disconnection windows and offers no ACK, persistence or exactly-once guarantee. Non-replayable commands should set `queueMessages: false` and handle the `send()` return value or the thrown `InvalidStateError`
+
+Nothing is logged to the console by default; pass `logger: console` for diagnostics. Unexpected closes reconnect with bounded exponential backoff, while pauses caused by page visibility and explicit `close()` / `dispose()` do not. A manual `connect()`, network `online` and page becoming visible each start a new reconnect cycle. Replacing the underlying connection always fires a logical `close` carrying `superseded: true` first, then waits for the new connection to fire `open`. Calling `connect()` after an explicit `close()` keeps every registered event handler
 
 ### 🖼️ Image Processing Tools
 
