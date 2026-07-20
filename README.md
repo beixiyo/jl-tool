@@ -119,7 +119,7 @@ yarn add @jl-org/tool
 
 - [`concurrentTask`](https://github.com/beixiyo/jl-tool/blob/master/src/net/concurrentTask.ts) - 并发执行异步任务
 - [`retryTask`](https://github.com/beixiyo/jl-tool/blob/master/src/net/retryTask.ts) - 失败后自动重试
-- [`WS`](https://github.com/beixiyo/jl-tool/blob/master/src/net/WS.ts) - 自动重连的WebSocket
+- [`WS`](https://github.com/beixiyo/jl-tool/tree/master/src/net/WS) - 自动重连的WebSocket
 
 ### 📊 数据解析
 - [`StreamJsonParser`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/StreamJsonParser.ts) - 流式解析JSON，适用于SSE
@@ -412,11 +412,29 @@ import { WS } from '@jl-org/tool'
 const socket = new WS({
   url: 'wss://example.com/socket',
   heartbeatInterval: 3000, // 每3秒发送一次心跳
+  maxQueuedMessages: 100,
+  maxReconnectAttempts: 5, // 指数退避，默认最多重连5次
 })
 
+socket.onmessage = event => console.log(event.data)
+socket.onclose = (event) => {
+  if (!event.superseded) {
+    console.log('连接已断开')
+  }
+}
 socket.connect()
-socket.send(JSON.stringify({ type: 'message', content: 'Hello!' }))
+
+const accepted = socket.send(JSON.stringify({ type: 'message', content: 'Hello!' }))
+if (!accepted) {
+  /** 队列已满，或关闭队列后连接当前不可发送 */
+}
+
+socket.dispose()
 ```
+
+`WS` 自身是跨底层重连保持稳定的事件目标，`connect()` 返回当前实例。默认开启容量为 100、TTL 为 10 秒的内存待发队列，只用于短暂断线窗口，不提供 ACK、持久化或 exactly-once 保证。不可重放的业务指令应设置 `queueMessages: false` 并处理 `send()` 的返回值或 `InvalidStateError`
+
+默认不向控制台输出日志；需要诊断信息时传入 `logger: console`。非预期关闭会按有限指数退避重连，页面隐藏造成的暂停和显式 `close()` / `dispose()` 不会触发自动重连。手动 `connect()`、网络恢复 `online` 和页面恢复可见会开启新的重连周期。替换底层连接时始终先触发带 `superseded: true` 的逻辑 `close`，再等待新连接触发 `open`。显式 `close()` 后再次 `connect()` 会保留已注册的事件处理器
 
 ### 🖼️ 图片处理工具
 

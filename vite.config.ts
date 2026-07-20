@@ -3,13 +3,14 @@ import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
   test: {
+    root: fileURLToPath(new URL('.', import.meta.url)),
     coverage: {
       provider: 'v8',
       clean: true,
       enabled: false,
       reporter: ['html'],
       reportsDirectory: './coverage',
-      include: ['../src/**/*'],
+      include: ['src/**/*'],
     },
     environment: 'jsdom',
     setupFiles: ['./test/setup.ts'],
