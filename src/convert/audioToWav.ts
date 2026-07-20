@@ -35,7 +35,7 @@ export async function convertToWav(
   // 1. 创建 AudioContext
   const AudioContextClass = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
   if (!AudioContextClass) {
-    throw new Error('当前环境不支持 AudioContext')
+    throw new Error('Current environment does not support AudioContext')
   }
 
   const audioContext = new AudioContextClass({ sampleRate })

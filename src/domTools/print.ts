@@ -24,7 +24,7 @@ export const print: Print = (
   href = location.href,
 ) => {
   if (window.location.protocol === 'file:')
-    return console.warn('请启动服务运行; please start server')
+    return console.warn('Please start server')
 
   const win = window.open(href, '_blank')
   const doc = win?.document
@@ -44,7 +44,7 @@ export const print: Print = (
     const loadDone = await judgeImgLoad(doc)
 
     if (!loadDone) {
-      win.confirm('图片加载失败，是否继续打印') && win.print()
+      win.confirm('Image failed to load. Continue printing?') && win.print()
       return
     }
 

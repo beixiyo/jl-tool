@@ -126,7 +126,7 @@ export async function scheduleTask<T>(
           })
         }
         catch (error) {
-          console.warn(`第${curIndex}个任务执行失败`, error)
+          console.warn(`Task ${curIndex} failed to execute`, error)
           res[curIndex] = {
             status: 'rejected',
             reason: error instanceof Error

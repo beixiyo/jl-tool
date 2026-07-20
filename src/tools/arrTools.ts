@@ -36,7 +36,7 @@ export function getSum<T>(arr: T[], handler?: (item: T) => number): number {
         : item
 
       if (typeof val !== 'number') {
-        throw new TypeError('数组中的值或处理过的值必须是数字')
+        throw new TypeError('Array value or processed value must be a number')
       }
 
       return init + val
@@ -130,7 +130,7 @@ export function groupBy<T extends Record<BaseKey, any>>(
   function hanledRepeatKey(mapKey: keyof T, item: any) {
     const index = keyMap[mapKey]
     if (action !== 'arr' && !isPureNum(item[operateKey], enableParseFloat)) {
-      throw new TypeError('指定的键值无法当作数值计算（Is not like Number）')
+      throw new TypeError('The specified key value cannot be treated as a numeric value (Not like Number)')
     }
 
     let num: number

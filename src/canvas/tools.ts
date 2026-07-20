@@ -161,7 +161,7 @@ export async function getImgData(
 ) {
   const img = await getImg(imgOrUrl, setImg)
   if (!img) {
-    throw new Error('图片加载失败')
+    throw new Error('Failed to load image')
   }
 
   const { ctx, cvs } = createCvs(img.naturalWidth, img.naturalHeight)

@@ -79,11 +79,11 @@ export async function copyToClipboard(text: string) {
     try {
       const successful = document.execCommand('copy')
       if (!successful) {
-        console.error('复制失败')
+        console.error('Copy failed')
       }
     }
     catch (err) {
-      console.error('复制错误:', err)
+      console.error('Copy error:', err)
     }
     finally {
       document.body.removeChild(textarea)

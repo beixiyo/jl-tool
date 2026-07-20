@@ -136,7 +136,7 @@ export function getCvsImg<T extends TransferType = 'base64'>(
 
     default:
       const data: never = resType
-      throw new Error(`未知的返回类型：${data}`)
+      throw new Error(`Unknown return type: ${data}`)
   }
 }
 

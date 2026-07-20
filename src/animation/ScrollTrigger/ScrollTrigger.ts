@@ -1,5 +1,5 @@
-import type { Scroller, ScrollTriggerOptions, ScrollTriggerState } from './types'
 import type { AnimationFrameId, AnimationFrameScheduler } from '../animationFrame'
+import type { Scroller, ScrollTriggerOptions, ScrollTriggerState } from './types'
 import { CSS_DEFAULT_VAL, WITHOUT_UNITS } from '@/constants'
 import { clamp } from '@/math'
 import { isObj } from '@/shared/is'
@@ -131,7 +131,7 @@ export class ScrollTrigger implements Scroller {
    */
   private init(): void {
     if (!this.state.triggerElement) {
-      console.error('无法找到触发元素')
+      console.error('Failed to find trigger element')
       return
     }
 

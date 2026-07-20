@@ -124,7 +124,7 @@ export class ScreenRecorder {
    */
   async start(): Promise<void> {
     if (!ScreenRecorder.isSupported()) {
-      const err = new Error('当前环境不支持屏幕录制')
+      const err = new Error('Screen recording is not supported in this environment')
       this.setState('error')
       this.config.onError?.(err)
       throw err
@@ -195,7 +195,7 @@ export class ScreenRecorder {
         const mixedAudio = await this.prepareAudioStream()
         const audioTrack = mixedAudio?.getAudioTracks()[0]
         if (!audioTrack) {
-          throw new Error('未获取到音频轨道。请确保至少启用了系统音频或麦克风音频')
+          throw new Error('Failed to get audio track. Please ensure that at least system audio or microphone audio is enabled')
         }
         this.recordStream = new MediaStream([audioTrack])
       }
@@ -244,7 +244,7 @@ export class ScreenRecorder {
         // 3. 组装最终录制流：视频 track 来自 display；音频 track 来自混音结果
         const videoTrack = this.displayStream.getVideoTracks()[0]
         if (!videoTrack) {
-          throw new Error('未获取到视频轨道')
+          throw new Error('Failed to get video track')
         }
 
         const mixedAudio = await this.prepareAudioStream()

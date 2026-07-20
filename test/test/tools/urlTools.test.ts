@@ -129,10 +129,10 @@ describe('uRL工具函数', () => {
 
     global.fetch = vi.fn().mockResolvedValue(mockResponseNoLength)
 
-    await expect(getUrlContentLen('https://example.com/file.zip')).rejects.toThrow('服务器未返回content-length')
+    await expect(getUrlContentLen('https://example.com/file.zip')).rejects.toThrow('Server did not return content-length')
 
     /** 测试无效的URL */
-    await expect(getUrlContentLen('invalid-url')).rejects.toThrow('无效的URL')
+    await expect(getUrlContentLen('invalid-url')).rejects.toThrow('Invalid URL')
 
     /** 恢复原始fetch（清理mock） */
     vi.restoreAllMocks()

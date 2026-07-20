@@ -26,7 +26,7 @@ export class SpeakToTxt {
           ? SpeechRecognition
           : undefined)
     if (!SpeechRecognitionCtor) {
-      throw new Error('请使用最新版 Chrome 或者 Edge 浏览器')
+      throw new Error('Please use the latest version of Chrome or Edge browser')
     }
 
     this.recognition = new SpeechRecognitionCtor()

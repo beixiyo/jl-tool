@@ -154,7 +154,7 @@ export class StreamSingleXmlParser {
           const tagName = tagContent.slice(0, -1)
           if (tagName) {
             this.result[tagName] = ''
-            console.warn(`✅ 自闭合标签完成: ${tagName}`)
+            console.warn(`✅ Self-closing tag complete: ${tagName}`)
           }
           this.buffer = this.buffer.substring(tagEnd + 1)
           i = 0
@@ -167,7 +167,7 @@ export class StreamSingleXmlParser {
           if (this.currentTag === endTag) {
             /** 找到匹配的结束标签 */
             this.result[this.currentTag] = this.contentBuffer
-            console.warn(`✅ 标签完成: ${this.currentTag} = "${this.contentBuffer}"`)
+            console.warn(`✅ Tag complete: ${this.currentTag} = "${this.contentBuffer}"`)
             this.currentTag = null
             this.isInsideContent = false
             this.contentBuffer = ''
@@ -181,7 +181,7 @@ export class StreamSingleXmlParser {
           this.currentTag = tagContent
           this.isInsideContent = true
           this.contentBuffer = ''
-          console.warn(`🏷️  标签开始: ${this.currentTag}`)
+          console.warn(`🏷️  Tag started: ${this.currentTag}`)
           this.buffer = this.buffer.substring(tagEnd + 1)
           i = 0
           continue
@@ -194,7 +194,7 @@ export class StreamSingleXmlParser {
           /** 没有找到标签，所有内容都是文本 */
           const text = this.buffer.substring(i)
           this.contentBuffer += text
-          console.warn(`📝 内容更新: "${text}" (累计: "${this.contentBuffer}")`)
+          console.warn(`📝 Content updated: "${text}" (cumulative: "${this.contentBuffer}")`)
           this.buffer = ''
           break
         }
@@ -206,7 +206,7 @@ export class StreamSingleXmlParser {
             /** 结束标签不完整，等待更多数据 */
             const text = this.buffer.substring(i, tagStart)
             this.contentBuffer += text
-            console.warn(`📝 内容更新: "${text}" (累计: "${this.contentBuffer}")`)
+            console.warn(`📝 Content updated: "${text}" (cumulative: "${this.contentBuffer}")`)
             break
           }
 
@@ -217,7 +217,7 @@ export class StreamSingleXmlParser {
             this.contentBuffer += text
 
             this.result[this.currentTag] = this.contentBuffer
-            console.warn(`✅ 标签完成: ${this.currentTag} = "${this.contentBuffer}"`)
+            console.warn(`✅ Tag complete: ${this.currentTag} = "${this.contentBuffer}"`)
             this.currentTag = null
             this.isInsideContent = false
             this.contentBuffer = ''
@@ -239,7 +239,7 @@ export class StreamSingleXmlParser {
               this.contentBuffer += text
 
               this.result[this.currentTag] = this.contentBuffer
-              console.warn(`✅ 自闭合标签完成: ${this.currentTag} = "${this.contentBuffer}"`)
+              console.warn(`✅ Self-closing tag complete: ${this.currentTag} = "${this.contentBuffer}"`)
               this.currentTag = null
               this.isInsideContent = false
               this.contentBuffer = ''
@@ -253,7 +253,7 @@ export class StreamSingleXmlParser {
           /** 标签不完整，等待更多数据 */
           const text = this.buffer.substring(i, tagStart)
           this.contentBuffer += text
-          console.warn(`📝 内容更新: "${text}" (累计: "${this.contentBuffer}")`)
+          console.warn(`📝 Content updated: "${text}" (cumulative: "${this.contentBuffer}")`)
           break
         }
 

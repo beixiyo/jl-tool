@@ -66,7 +66,7 @@ export async function mixAudioStreams(
    */
   const AudioContextClass = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
   if (!AudioContextClass) {
-    throw new Error('当前浏览器不支持 AudioContext')
+    throw new Error('Current browser does not support AudioContext')
   }
   const audioContext = new AudioContextClass()
   const destination = audioContext.createMediaStreamDestination()
@@ -101,7 +101,7 @@ export function buildMicConstraints(mic: MicrophoneConfig): MediaStreamConstrain
  */
 export async function createDesktopCaptureStream(request: DesktopStreamRequest) {
   if (!navigator.mediaDevices?.getUserMedia) {
-    throw new Error('当前环境不支持桌面捕获')
+    throw new Error('Desktop capture is not supported in this environment')
   }
   const { source, withAudio, withVideo } = request
   const frameRate = source.frameRate ?? 30

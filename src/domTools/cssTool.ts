@@ -116,6 +116,6 @@ export async function getAllStyle() {
     return styleTxtArr.concat(linkToStyleArr).join('')
   }
   catch (error) {
-    console.error(`getAllStyle：数据加载失败，${error}`)
+    console.error(`getAllStyle: Failed to load data, ${error}`)
   }
 }

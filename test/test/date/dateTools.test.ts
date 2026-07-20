@@ -107,7 +107,7 @@ describe('其他时间测试', () => {
   })
 
   it('异常测试', () => {
-    expect(() => getValidDate('xixi')).toThrowError('日期格式错误')
+    expect(() => getValidDate('xixi')).toThrowError('Invalid date format')
   })
 
   it('是否小于去年一月一日', () => {

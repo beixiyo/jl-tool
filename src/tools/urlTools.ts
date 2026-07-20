@@ -68,7 +68,7 @@ export function isValidUrl(url: string): boolean {
  */
 export async function getUrlContentLen(url: string): Promise<number> {
   if (!isValidUrl(url)) {
-    throw new Error(`无效的URL: ${url}`)
+    throw new Error(`Invalid URL: ${url}`)
   }
 
   try {
@@ -76,20 +76,20 @@ export async function getUrlContentLen(url: string): Promise<number> {
     const contentLength = response.headers.get('content-length')
 
     if (!contentLength) {
-      throw new Error('服务器未返回content-length')
+      throw new Error('Server did not return content-length')
     }
 
     const size = Number(contentLength)
     if (Number.isNaN(size)) {
-      throw new TypeError('无效的文件大小')
+      throw new TypeError('Invalid file size')
     }
 
     return size
   }
   catch (err) {
-    throw new Error(`获取URL文件大小失败: ${err instanceof Error
+    throw new Error(`Failed to fetch URL file size: ${err instanceof Error
       ? err.message
-      : '未知错误'}`)
+      : 'Unknown error'}`)
   }
 }
 

@@ -82,7 +82,7 @@ function animateDOM(
   /* 目标可能是多种形式，统一转为 元素和样式对象的数组 */
   const targets = normalizeTargets(target)
   if (targets.length === 0) {
-    throw new Error('[createAnimationByTime] 无有效 DOM target')
+    throw new Error('[createAnimationByTime] No valid DOM target')
   }
 
   /** 为每个目标存储起始值和差值 */
@@ -150,7 +150,7 @@ function animateObject<T = any>(
     ? target
     : [target]
   if (targets.length === 0) {
-    throw new Error('[createAnimationByTime] 无有效 target 对象')
+    throw new Error('[createAnimationByTime] No valid target object')
   }
 
   /** 为每个目标对象存储起始值和差值 */
@@ -341,7 +341,7 @@ function applyStyles(
           style[prop] = `${value}${unit}`
         }
         catch {
-          console.warn(`无法设置样式属性: ${prop}`)
+          console.warn(`Failed to set style property: ${prop}`)
         }
         break
     }

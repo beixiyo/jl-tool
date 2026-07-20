@@ -44,7 +44,7 @@ export function downloadByData(
     blob = new Blob([data], { type: opts?.mimeType ?? 'text/plain' })
   }
   else {
-    throw new TypeError('不支持的数据类型，仅支持 Blob, ArrayBuffer, 或 string')
+    throw new TypeError('Unsupported data type. Only Blob, ArrayBuffer, or string supported')
   }
 
   return downloadByUrl(URL.createObjectURL(blob), fileName, {
@@ -299,14 +299,14 @@ export async function checkFileSize(
       }
     }
     else {
-      throw new TypeError('不支持的文件类型')
+      throw new TypeError('Unsupported file type')
     }
 
     totalSize += size
 
     /** 每次累加后立即检查是否超出限制 */
     if (totalSize > maxSize) {
-      throw new Error(`文件总大小超过限制：${(totalSize / 1024 / 1024).toFixed(2)}MB，最大允许${(maxSize / 1024 / 1024).toFixed(2)}MB`)
+      throw new Error(`Total file size exceeds limit: ${(totalSize / 1024 / 1024).toFixed(2)}MB, max allowed ${(maxSize / 1024 / 1024).toFixed(2)}MB`)
     }
   }
 
@@ -379,8 +379,8 @@ function getTextDecoder(encode = 'utf-8') {
       textDecoderMap[encode] = textDecoder // 仅在新建时存入缓存
     }
     catch (error) {
-      console.error(`创建 TextDecoder 时出错，编码 "${encode}" 可能不受支持:`, error)
-      throw new Error(`不支持的编码或创建解码器失败: ${encode}`)
+      console.error(`Failed to create TextDecoder, encoding "${encode}" may not be supported:`, error)
+      throw new Error(`Unsupported encoding or failed to create decoder: ${encode}`)
     }
   }
 
@@ -403,7 +403,7 @@ export function dataToStr(
     return textDecoder.decode(buffer, options)
   }
   catch (error) {
-    console.error(`dataToStr 执行失败 (编码: ${encode}):`, error)
+    console.error(`dataToStr execution failed (encoding: ${encode}):`, error)
     throw error
   }
 }

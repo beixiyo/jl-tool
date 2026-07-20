@@ -30,7 +30,7 @@ class TestBlob {
         segments.push(new Uint8Array(await part.arrayBuffer()))
       }
       else {
-        throw new Error('Unsupported blob part')
+        throw new TypeError('Unsupported blob part')
       }
     }
 
@@ -178,7 +178,6 @@ describe('convertToWav', () => {
 
   it('在缺少 AudioContext 时抛出错误', async () => {
     delete (globalRef as any).window.AudioContext
-    await expect(convertToWav(fakeBlob)).rejects.toThrow('当前环境不支持 AudioContext')
+    await expect(convertToWav(fakeBlob)).rejects.toThrow('Current environment does not support AudioContext')
   })
 })
-

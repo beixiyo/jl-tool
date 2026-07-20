@@ -167,7 +167,7 @@ export function getValidDate(date: Date | string | number) {
   if (getType(date) !== 'date') {
     date = new Date(date)
     if (String(date) === 'Invalid Date') {
-      throw new Error('日期格式错误')
+      throw new Error('Invalid date format')
     }
   }
 

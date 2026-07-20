@@ -89,7 +89,7 @@ export async function splitWorkerTask<
   } = config
 
   if (totalItems < 0) {
-    return Promise.reject(new Error('totalItems 不能为负数'))
+    return Promise.reject(new Error('totalItems cannot be negative'))
   }
   if (totalItems === 0) {
     onProgress?.(1)
@@ -108,7 +108,7 @@ export async function splitWorkerTask<
 
   return new Promise(async (resolve, reject) => {
     if (workersToLaunch === 0 && totalItems > 0) {
-      reject(new Error('计算出的启动Worker数量为0，但仍有任务项'))
+      reject(new Error('Calculated worker count is 0, but tasks remain'))
       return
     }
 
@@ -167,7 +167,7 @@ export async function splitWorkerTask<
 
         const reportItemProcessed = (itemGlobalIndex: number, itemData: WorkerProgressData) => {
           if (itemGlobalIndex < 0 || itemGlobalIndex >= totalItems) {
-            console.warn(`调度器: itemGlobalIndex ${itemGlobalIndex} 超出范围 [0, ${totalItems - 1}]。已忽略`)
+            console.warn(`Scheduler: itemGlobalIndex ${itemGlobalIndex} out of range [0, ${totalItems - 1}]. Ignored`)
             return
           }
 
@@ -181,7 +181,7 @@ export async function splitWorkerTask<
         const resolveBatch = (batchResults: WorkerResultItem[]) => {
           const expectedBatchSize = endIndex - startIndex
           if (batchResults.length !== expectedBatchSize) {
-            const errMsg = `Worker ${workerId} (任务 ${startIndex}-${endIndex - 1}) 返回了 ${batchResults.length} 个结果，期望 ${expectedBatchSize} 个。`
+            const errMsg = `Worker ${workerId} (task ${startIndex}-${endIndex - 1}) returned ${batchResults.length} results, expected ${expectedBatchSize}`
             console.error(errMsg)
             worker.terminate()
             reject(new Error(errMsg))
@@ -204,7 +204,7 @@ export async function splitWorkerTask<
 
         const rejectBatch = (error: Error) => {
           worker.terminate()
-          reject(new Error(`Worker ${workerId} (任务 ${startIndex}-${endIndex - 1}) 失败: ${error.message}`))
+          reject(new Error(`Worker ${workerId} (task ${startIndex}-${endIndex - 1}) failed: ${error.message}`))
         }
 
         worker.onmessage = ({ data: messageFromWorker }) => {
@@ -220,14 +220,14 @@ export async function splitWorkerTask<
         }
 
         worker.onerror = (errorEvent) => {
-          rejectBatch(new Error(` onerror: ${errorEvent.message || '未知的 Worker 错误'}`))
+          rejectBatch(new Error(` onerror: ${errorEvent.message || 'Unknown worker error'}`))
         }
 
         const sendMsg = await genSendMsg(startIndex, endIndex)
         worker.postMessage(sendMsg, sendMsg.structuredSerializeOptions)
       }
       catch (e: any) {
-        reject(new Error(`初始化 Worker ${workerId} 或向其发送初始消息失败: ${e.message}`))
+        reject(new Error(`Failed to initialize Worker ${workerId} or send initial message: ${e.message}`))
         return
       }
     }
