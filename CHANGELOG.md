@@ -1,6 +1,6 @@
 # 更新日志
 
-## [5.0.0] - 未发布
+## [5.0.0] - 2026-07-20
 
 ### 破坏性改动
 
@@ -27,6 +27,31 @@
   new WS({ url, queueMessages: false })
   ```
 
+- **删除 `StreamSingleXmlParser`，由 `StreamXmlParser` 取代。** 新解析器是旧的功能超集，
+  唯一的行为差异在畸形标签名：`<user name>` 旧版产出键 `'user name'`，新版按 XML 语义
+  解析为标签 `user` 加属性 `name`（属性默认忽略），即 `{ user: '张三' }`
+
+  ```ts
+  // 旧写法
+  const parser = new StreamSingleXmlParser()
+
+  // 新写法
+  const parser = new StreamXmlParser()
+  ```
+
+- **`append()` 不再返回解析结果，返回值改为 `void`。** 结果由 `getResult()` 或 `end()` 取
+  这处变化不抛错也没有类型以外的提示，旧写法只会静默拿到 `undefined`，
+  升级时需要全局检索 `append(` 的返回值用法
+
+  ```ts
+  // 旧写法
+  const result = parser.append(chunk)
+
+  // 新写法：序列化是整棵树的深拷贝，改为按需付费而不是每个 chunk 强制付费
+  parser.append(chunk)
+  const result = parser.getResult()
+  ```
+
 ### 新增
 
 - **待发队列**，默认开启，容量 100、TTL 10 秒，可通过 `maxQueuedMessages` 和
@@ -43,6 +68,20 @@
   `binaryType`、`CONNECTING` / `OPEN` / `CLOSING` / `CLOSED` 常量，以及与
   `addEventListener` 并存的 `onopen` / `onclose` / `onerror` / `onmessage` 属性处理器
 - `close(code?, reason?)` 支持参数并按原生规则校验；新增显式别名 `dispose()`
+- **`StreamXmlParser`**，支持嵌套与数组的流式 XML 解析器，取代原先只能解析单层的实现
+  分词器与语法层分离，只在 token 完整时才产出，残缺尾部留在缓冲区等待后续数据
+- **`arrayTags` 与 `isArray` 数组声明。** 流式场景无法预知某个标签后续是否会重复出现，
+  若等到第二次出现才升级为数组，结果形状会在流中途由字符串变成数组，破坏增量渲染的消费方
+  声明后该标签从第一次出现即为数组，全程稳定。`isArray(tagName, tagStack)` 可按所处路径
+  区分同名标签，与 `arrayTags` 是或的关系
+- **`parseAttrs` 属性解析**，默认关闭。开启后属性以 `attrPrefix`（默认 `@`）为前缀，
+  文本落在 `textKey`（默认 `#text`），命名跟随 `fast-xml-parser` 的事实标准
+- **`maxDepth` 深度上限**，默认 100，超出的子树整体丢弃，防止畸形输入撑爆内存
+- **`end()`**，结束流并返回最终结果，自动闭合所有未闭合标签，
+  并把缓冲区残留的半截标签作为文本吐出而非静默丢弃
+- **`logger` 选项，默认输出到 `console`。** 同类告警每个实例只提示一次，畸形输入不会刷屏
+  传 `logger: null` 可完全静音
+- 注释、CDATA、DOCTYPE 与处理指令的处理，以及中文标签名支持
 
 ### 变更
 
@@ -61,12 +100,26 @@
 - 已被替换的 socket 上迟到的事件不再泄漏到当前逻辑连接
 - 替换连接时，若旧 socket 仍在关闭中，待发的 `close` 事件不再被吞掉
 - close 处理器内先 `connect()` 后 `close()` 不再无限递归，close 派发在单个同步栈内加了护栏
+- XML 解析器遇到顶层游离的结束标签（如 `</foo>`）不再陷入死循环。AI 流式输出出现失配的
+  结束标签是常态，此前会直接挂死线程
+- chunk 边界切开结束标签时内容不再重复累加。`'<a>hi</'` 加 `'a>'` 此前产出 `'hihi'`，
+  原因是文本并入后没有截断缓冲区，下次 `append` 重复消费同一段。LLM 流式 chunk
+  通常只有 10~30 字符，正好落在这条路径上
+- 属性值中未转义的 `>` 不再截断标签。XML 规范只要求转义 `<` 与 `&`，
+  `<cond expr="a > b">yes</cond>` 属于合规输入，此前会被解析成残缺结果
+- XML 解析器不再无条件向控制台输出调试日志，改由 `logger` 选项控制
 
 ### 说明
 
 - 页面恢复可见触发的重连**刻意不受** `autoReconnect` 约束。隐藏时的挂起是 `WS` 主动发起的，
   恢复与之成对，否则挂起过一次的连接将永久无法恢复。需要完全禁止自动建连时，
   请同时设置 `stopOnHidden: false`
+- **同一版本里 `WS` 与 `StreamXmlParser` 的 `logger` 默认值刻意相反。** `WS` 默认静音，
+  它的日志是连接状态的诊断信息，缺了不影响数据正确性；`StreamXmlParser` 默认输出，
+  它的每条告警都对应数据丢失或结构被改写（标签覆盖、超深度丢弃、游离结束标签），
+  静默会让使用者拿到残缺结果而不自知
+- `StreamXmlParser` 未声明为数组的标签重复出现时后者覆盖前者，这是有意的默认行为，
+  但会告警并提示改用 `arrayTags`。含子节点的父节点其裸文本会被丢弃，混合内容只保留结构
 
 ## [4.0.2] - 2026-06-02
 

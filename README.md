@@ -123,7 +123,7 @@ yarn add @jl-org/tool
 
 ### 📊 数据解析
 - [`StreamJsonParser`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/StreamJsonParser.ts) - 流式解析JSON，适用于SSE
-- [`StreamSingleXmlParser`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/StreamSingleXmlParser.ts) - 流式解析单层 XML，适用于 AI 结构化流式输出
+- [`StreamXmlParser`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/StreamXmlParser) - 流式解析 XML，支持嵌套与数组，容忍不完整、畸形输入，适用于 AI 结构化流式输出
 
 ### 📄 文件处理
 
@@ -287,7 +287,7 @@ async function toWav(webmBlob: Blob) {
 }
 ```
 
-> `convertToWav` 基于浏览器的 `AudioContext`，可在录音结束后立即完成重采样与格式化，避免后端再做二次处理。
+> `convertToWav` 基于浏览器的 `AudioContext`，可在录音结束后立即完成重采样与格式化，避免后端再做二次处理
 
 ### 🔄 分时渲染调度器
 

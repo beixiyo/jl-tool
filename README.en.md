@@ -123,7 +123,7 @@ yarn add @jl-org/tool
 
 ### 📊 Data Parsing
 - [`StreamJsonParser`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/StreamJsonParser.ts) - Stream JSON parsing, suitable for SSE
-- [`StreamSingleXmlParser`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/StreamSingleXmlParser.ts) - Stream single-layer XML parsing, suitable for AI structured streaming output
+- [`StreamXmlParser`](https://github.com/beixiyo/jl-tool/blob/master/src/tools/StreamXmlParser) - Stream XML parsing with nesting and array support, tolerant of incomplete or malformed input, suitable for AI structured streaming output
 
 ### 📄 File Processing
 
