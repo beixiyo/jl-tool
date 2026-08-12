@@ -1,5 +1,27 @@
 # 更新日志
 
+## [5.0.1] - 2026-08-13
+
+### 新增
+
+- 新增 `isRecord`，用于判断普通记录对象，并排除数组、内建对象与自定义类实例
+- `disableDebug` 新增调试暂停与窗口尺寸检测、检测回调、可配置空白页跳转及解锁存储策略
+- 新增独立的 SolidJS DOM 测试项目，集中提供动画、媒体、调度与浏览器 API 的交互测试页面
+- 新增终端覆盖率命令，并为核心工具、DOM 工具与浏览器 API 补充行为测试
+
+### 变更
+
+- 单元测试目录由 `test/test` 迁移到 `tests`，测试配置独立为 `vitest.config.ts`
+- 工作区改为 pnpm workspace，DOM 测试项目由根目录的原始脚本迁移到 `apps/dom-test`
+- 构建前执行独立类型检查，发布前统一运行类型检查、lint、单元测试与构建
+- 强化深拷贝、深比较、深合并、事件总线、LRU 缓存、滚动触发器及常用工具的边界行为
+
+### 修复
+
+- 修复 `scheduleTask` 在取消、超时、任务异常与动态追加任务时的调度和清理问题
+- 修复屏幕录制、摄像头、扬声器及录音相关 API 的资源释放和错误处理边界
+- 修复 URL、颜色、主题、元素尺寸和运行环境判断的异常输入与兼容性问题
+
 ## [5.0.0] - 2026-07-20
 
 ### 破坏性改动
@@ -148,7 +170,7 @@
 ### 说明
 
 - 因为字符串按字面存储，JSON 样式的字符串（`'123'`、`'true'`、`'{"a":1}'`）在读取时仍会解析到对应的 JSON 类型。传入 `autoParseJSON = false` 到 `getLocalStorage` 来保持原始字符串
-- 为 `setLocalStorage` / `getLocalStorage` 添加了回归测试套件（`test/test/tools/localStorage.test.ts`）
+- 为 `setLocalStorage` / `getLocalStorage` 添加了回归测试套件（`tests/tools/localStorage.test.ts`）
 
 ## [4.0.0] - 2026-05-29
 

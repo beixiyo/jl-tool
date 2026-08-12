@@ -159,7 +159,7 @@ yarn add @jl-org/tool
 - [`openCamera`](https://github.com/beixiyo/jl-tool/blob/master/src/webApi/openCamera.ts) - 开启摄像头
 - [`ScreenRecorder`](https://github.com/beixiyo/jl-tool/blob/master/src/webApi/screenRecord/ScreenRecorder.ts) - 屏幕录制
 
-[查看测试用例](https://github.com/beixiyo/jl-tool/blob/master/test/__DOM_TEST__/webApi)
+[查看浏览器测试项目](https://github.com/beixiyo/jl-tool/tree/master/apps/dom-test)
 
 ### 📦 数据结构
 
@@ -307,7 +307,7 @@ scheduleTask(tasks).then((results) => {
 
 ### 🎨 动画处理
 
-[查看完整测试用例](https://github.com/beixiyo/jl-tool/blob/master/test/__DOM_TEST__/createAnimationByTime.ts)
+[查看完整测试用例](https://github.com/beixiyo/jl-tool/blob/master/apps/dom-test/src/pages/create-animation-by-time/CreateAnimationByTimePage.tsx)
 
 ```ts
 import { ATo, createAnimationByTime } from '@jl-org/tool'
@@ -384,7 +384,7 @@ new ScrollTrigger({
 
 #### 多区域视差效果示例
 
-[视差滚动完整代码](https://github.com/beixiyo/jl-tool/blob/master/test/__DOM_TEST__/ScrollTrigger.ts)
+[视差滚动完整代码](https://github.com/beixiyo/jl-tool/blob/master/apps/dom-test/src/pages/scroll-trigger/ScrollTriggerPage.tsx)
 
 ```ts
 /** 为每一个 section 单独创建 ScrollTrigger */
@@ -507,7 +507,7 @@ bus.once('singleEvent', () => {
 
 ### 📠 模拟打字机效果
 
-[完整代码示例](https://github.com/beixiyo/jl-tool/blob/master/test/__DOM_TEST__/typewriterEffect.ts)
+[完整代码示例](https://github.com/beixiyo/jl-tool/blob/master/apps/dom-test/src/pages/typewriter-effect/TypewriterEffectPage.tsx)
 
 ```ts
 import { typewriterEffect } from '@jl-org/tool'
