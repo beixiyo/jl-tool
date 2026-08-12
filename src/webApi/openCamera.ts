@@ -23,9 +23,7 @@ export async function openCamera(callbackOrVideoEl: ((stream: MediaStream) => vo
       break
   }
 
-  return new Promise<Function>((resolve) => {
-    resolve(() => {
-      stream.getTracks().forEach(item => item.stop())
-    })
-  })
+  return () => {
+    stream.getTracks().forEach(item => item.stop())
+  }
 }

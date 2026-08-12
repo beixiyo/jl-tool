@@ -113,6 +113,30 @@ describe('eventBus', () => {
       eventBus.emit('test', { message: 'hello' })
       expect(receivedData).toEqual({ message: 'hello' })
     })
+
+    it('应该在回调前移除监听器，阻止重入时重复触发', () => {
+      let count = 0
+      eventBus.once('test', () => {
+        count++
+        eventBus.emit('test', undefined)
+      })
+
+      eventBus.emit('test', undefined)
+
+      expect(count).toBe(1)
+    })
+
+    it('不应该误删使用同一回调的持久订阅', () => {
+      let count = 0
+      const callback = () => { count++ }
+      eventBus.on('test', callback)
+      eventBus.once('test', callback)
+
+      eventBus.emit('test', undefined)
+      eventBus.emit('test', undefined)
+
+      expect(count).toBe(3)
+    })
   })
 
   describe('unsubscribe', () => {
@@ -125,6 +149,44 @@ describe('eventBus', () => {
       unsubscribe()
       eventBus.emit('test', undefined)
       expect(count).toBe(1) // 应该还是1，因为已经取消订阅
+    })
+
+    it('数字 0 事件取消订阅时不应该清空整个总线', () => {
+      const numericBus = new EventBus<number>()
+      let count = 0
+      numericBus.on(1, () => { count++ })
+      const unsubscribe = numericBus.on(0, () => { count += 10 })
+
+      unsubscribe()
+      numericBus.emit(1, undefined)
+
+      expect(count).toBe(1)
+    })
+  })
+
+  describe('triggerBefore', () => {
+    it('最后一个监听器移除后应该重新缓存遗漏事件', () => {
+      const bufferedBus = new EventBus({ triggerBefore: true })
+      const unsubscribe = bufferedBus.on('test', () => {})
+      unsubscribe()
+      bufferedBus.emit('test', 'queued')
+
+      let received = ''
+      bufferedBus.on('test', (value) => { received = value })
+
+      expect(received).toBe('queued')
+    })
+
+    it('once 只应该消费第一个遗漏事件', () => {
+      const bufferedBus = new EventBus({ triggerBefore: true })
+      const received: string[] = []
+      bufferedBus.emit('test', 'first')
+      bufferedBus.emit('test', 'second')
+
+      bufferedBus.once('test', value => received.push(value))
+      bufferedBus.emit('test', 'third')
+
+      expect(received).toEqual(['first'])
     })
   })
 

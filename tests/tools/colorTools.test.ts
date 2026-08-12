@@ -65,4 +65,7 @@ it('提取颜色', () => {
 it('混合颜色', () => {
   expect(mixColor('rgb(0, 0, 0)', 'rgb(255, 255, 255)', 0.5))
     .toEqual('rgba(128, 128, 128, 1)')
+
+  expect(mixColor('rgba(255, 0, 0, 0.4)', 'rgba(0, 0, 255, 0.4)', 0.5))
+    .toEqual('rgba(128, 0, 128, 0.4)')
 })

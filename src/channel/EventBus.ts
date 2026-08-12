@@ -53,10 +53,7 @@ export class EventBus<T extends BaseKey | EventMap = BaseKey> {
    * @returns 取消订阅的函数
    */
   on<K extends EventType<T>>(eventName: K, fn: (param: EventParams<T, K>) => void) {
-    this.subscribe(eventName, fn, false)
-    return () => {
-      this.off(eventName, fn)
-    }
+    return this.subscribe(eventName, fn, false)
   }
 
   /**
@@ -65,7 +62,7 @@ export class EventBus<T extends BaseKey | EventMap = BaseKey> {
    * @param fn 接收函数
    */
   once<K extends EventType<T>>(eventName: K, fn: (param: EventParams<T, K>) => void) {
-    this.subscribe(eventName, fn, true)
+    return this.subscribe(eventName, fn, true)
   }
 
   /**
@@ -93,10 +90,20 @@ export class EventBus<T extends BaseKey | EventMap = BaseKey> {
     if (!fnSet)
       return
 
-    fnSet.forEach(({ fn, once }) => {
+    Array.from(fnSet).forEach((item) => {
+      const { fn, once } = item
+      if (once) {
+        fnSet.delete(item)
+        if (fnSet.size === 0) {
+          this.eventMap.delete(eventName as BaseKey)
+        }
+      }
       fn(param)
-      once && this.off(eventName, fn as any)
     })
+
+    if (fnSet.size === 0) {
+      this.eventMap.delete(eventName as BaseKey)
+    }
   }
 
   /**
@@ -106,7 +113,7 @@ export class EventBus<T extends BaseKey | EventMap = BaseKey> {
    */
   off<K extends EventType<T>>(eventName?: K, func?: (param: EventParams<T, K>) => void) {
     /** 不传重置所有 */
-    if (!eventName) {
+    if (eventName === undefined) {
       this.eventMap.clear()
       this.beforeTriggerMap.clear()
       return
@@ -117,7 +124,8 @@ export class EventBus<T extends BaseKey | EventMap = BaseKey> {
      * fn 为空取关该事件的所有函数
      */
     if (fnSet && !func) {
-      fnSet.clear()
+      this.eventMap.delete(eventName as BaseKey)
+      this.beforeTriggerMap.delete(eventName as BaseKey)
       return
     }
 
@@ -127,26 +135,43 @@ export class EventBus<T extends BaseKey | EventMap = BaseKey> {
       }
     })
 
+    if (fnSet?.size === 0) {
+      this.eventMap.delete(eventName as BaseKey)
+    }
     this.beforeTriggerMap.delete(eventName as BaseKey)
   }
 
   private subscribe<K extends EventType<T>>(eventName: K, fn: (param: EventParams<T, K>) => void, once = false) {
-    const fnSet = this.eventMap.get(eventName as BaseKey)
-    if (!fnSet) {
-      this.eventMap.set(eventName as BaseKey, new Set())
-    }
-
-    this.eventMap
-      .get(eventName as BaseKey)!
-      .add(EventBus.genItem(fn, once))
+    const eventKey = eventName as BaseKey
+    const fnSet = this.eventMap.get(eventKey) ?? new Set()
+    const item = EventBus.genItem(fn, once)
+    fnSet.add(item)
+    this.eventMap.set(eventKey, fnSet)
 
     /**
      * 如果有之前遗漏事件，则统一派发事件
      */
-    const param = this.beforeTriggerMap.get(eventName as BaseKey)
-    if (param) {
-      param.forEach(arg => fn(arg))
-      this.beforeTriggerMap.delete(eventName as BaseKey)
+    const params = this.beforeTriggerMap.get(eventKey)
+    if (params) {
+      this.beforeTriggerMap.delete(eventKey)
+
+      if (once) {
+        fnSet.delete(item)
+        if (fnSet.size === 0) {
+          this.eventMap.delete(eventKey)
+        }
+        fn(params[0])
+      }
+      else {
+        params.forEach(arg => fn(arg))
+      }
+    }
+
+    return () => {
+      fnSet.delete(item)
+      if (fnSet.size === 0) {
+        this.eventMap.delete(eventKey)
+      }
     }
   }
 

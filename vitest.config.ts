@@ -4,6 +4,7 @@ import { defineConfig } from 'vitest/config'
 export default defineConfig({
   test: {
     root: fileURLToPath(new URL('.', import.meta.url)),
+    include: ['tests/**/*.test.ts'],
     coverage: {
       provider: 'v8',
       clean: true,
@@ -13,19 +14,12 @@ export default defineConfig({
       include: ['src/**/*'],
     },
     environment: 'jsdom',
-    setupFiles: ['./test/setup.ts'],
+    setupFiles: ['./tests/setup.ts'],
   },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
       '#': fileURLToPath(new URL('./node', import.meta.url)),
     },
-  },
-  // index.html 入口文件
-  root: fileURLToPath(new URL('./test', import.meta.url)),
-  publicDir: fileURLToPath(new URL('./public', import.meta.url)),
-
-  server: {
-    host: '::',
   },
 })

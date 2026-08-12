@@ -55,7 +55,7 @@ export const Reg = {
 /** 一整天的毫秒 */
 export const ONE_DAY = 1000 * 60 * 60 * 24
 
-/** 检查是否是 Node 环境 */
-export const isNode = typeof window === 'undefined' && typeof process !== 'undefined' && process.versions?.node
-/** 检查是否是 浏览器 环境 */
-export const isBrowser = typeof window !== 'undefined' && typeof process === 'undefined'
+/** 是否具备 Node.js 运行时能力，Electron Renderer 中可与 isBrowser 同时为 true */
+export const isNode = typeof process !== 'undefined' && Boolean(process.versions?.node)
+/** 是否具备浏览器 DOM 运行时能力，Electron Renderer 中可与 isNode 同时为 true */
+export const isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined'

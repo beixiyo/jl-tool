@@ -15,7 +15,7 @@ export class ScreenRecorder {
   private recordStream: MediaStream | null = null
   /** 媒体录制器 */
   private mediaRecorder: MediaRecorder | null = null
-  /** 分片数据缓存（未设置 timeslice 时，用于汇总最终 Blob） */
+  /** 分片数据缓存（仅在 retainChunks 未关闭时用于汇总最终 Blob） */
   private chunks: Blob[] = []
   /** 选择到的 mimeType */
   private selectedMimeType: RecorderMimeType | undefined
@@ -274,7 +274,9 @@ export class ScreenRecorder {
       this.chunks = []
       this.mediaRecorder.ondataavailable = (evt: RecorderBlobEvent) => {
         if (evt.data && evt.data.size > 0) {
-          this.chunks.push(evt.data)
+          if (this.config.retainChunks !== false) {
+            this.chunks.push(evt.data)
+          }
           this.config.onDataAvailable?.(evt)
         }
       }
@@ -350,7 +352,8 @@ export class ScreenRecorder {
 
   /**
    * 停止录制
-   * - 返回最终的 Blob（如果有）
+   * - 默认返回由全部分片组成的最终 Blob
+   * - `retainChunks` 为 `false` 时等待最终分片交付后返回 `null`
    */
   async stop(): Promise<Blob | null> {
     if (!this.mediaRecorder)

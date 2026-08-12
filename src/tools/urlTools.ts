@@ -1,5 +1,3 @@
-import { isBrowser } from '@/constants/tool'
-
 /**
  * 把 `http` 协议转换成当前站点的协议
  * @param url 要转换的 URL
@@ -25,9 +23,9 @@ export function matchProtocol(url: string, baseProtocol?: string) {
     /** 支持传入 'http', 'http:', 'http://' 等灵活格式 */
     targetProtocol = `${baseProtocol.replace(/[:/]+$/, '')}:`
   }
-  else if (isBrowser && window.location.protocol) {
-    /** 浏览器环境，使用 window.location.protocol */
-    targetProtocol = window.location.protocol
+  else if (typeof location !== 'undefined' && location.protocol) {
+    /** 浏览器、Worker 或 Electron 环境使用当前协议 */
+    targetProtocol = location.protocol
   }
 
   return url.replace(/(http:|https:)/i, targetProtocol)
@@ -116,21 +114,14 @@ export async function getUrlContentLen(url: string): Promise<number> {
  */
 export function getUrlQuery(url: string, baseUrl?: string): Record<string, string> {
   const query: Record<string, string> = {}
-  let queryString = ''
 
-  const base = baseUrl || (isBrowser
-    ? window.location.href
-    : 'http://localhost')
+  const base = getBaseUrl(baseUrl)
   const urlObj = new URL(url, base)
-  queryString = urlObj.search.substring(1)
 
-  if (queryString) {
-    queryString.split('&').forEach((pair) => {
-      const [key, value] = pair.split('=')
-      if (key) {
-        query[decodeURIComponent(key)] = decodeURIComponent(value || '')
-      }
-    })
+  for (const [key, value] of urlObj.searchParams) {
+    if (key) {
+      query[key] = value
+    }
   }
 
   return query
@@ -159,9 +150,7 @@ export function getUrlQuery(url: string, baseUrl?: string): Record<string, strin
 export function getUrlPaths(url: string, baseUrl?: string): string[] {
   let pathname = ''
 
-  const base = baseUrl || (isBrowser
-    ? window.location.href
-    : 'http://localhost')
+  const base = getBaseUrl(baseUrl)
   const urlObj = new URL(url, base)
   pathname = urlObj.pathname
 
@@ -189,9 +178,7 @@ export function getUrlPaths(url: string, baseUrl?: string): string[] {
  * // 返回: 'api.v2.example.com'
  */
 export function getHostname(url: string, baseUrl?: string): string {
-  const base = baseUrl || (isBrowser
-    ? window.location.href
-    : 'http://localhost')
+  const base = getBaseUrl(baseUrl)
   const urlObj = new URL(url, base)
   return urlObj.hostname
 }
@@ -217,9 +204,7 @@ export function getHostname(url: string, baseUrl?: string): string {
  * // 返回: 'ftp'
  */
 export function getProtocol(url: string, baseUrl?: string): string {
-  const base = baseUrl || (isBrowser
-    ? window.location.href
-    : 'http://localhost')
+  const base = getBaseUrl(baseUrl)
   const urlObj = new URL(url, base)
   return urlObj.protocol.replace(':', '')
 }
@@ -249,9 +234,17 @@ export function getProtocol(url: string, baseUrl?: string): string {
  * // 返回: '80'
  */
 export function getPort(url: string, baseUrl?: string): string {
-  const base = baseUrl || (isBrowser
-    ? window.location.href
-    : 'http://localhost')
+  const base = getBaseUrl(baseUrl)
   const urlObj = new URL(url, base)
   return urlObj.port
+}
+
+/** 按 URL 能力选择相对地址的解析基准 */
+function getBaseUrl(baseUrl?: string) {
+  if (baseUrl)
+    return baseUrl
+
+  return typeof location !== 'undefined' && location.href
+    ? location.href
+    : 'http://localhost'
 }

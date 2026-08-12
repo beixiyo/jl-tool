@@ -1,10 +1,10 @@
-import { isNode } from '@/shared'
+import { isBrowser } from '@/shared'
 
 /**
  * 获取当前主题
  */
 export function getCurTheme(defaultTheme: Theme = 'light'): Theme {
-  if (isNode || !window.matchMedia) { // SSR 保护
+  if (!isBrowser || !window.matchMedia) { // SSR 保护
     return defaultTheme // SSR 或不支持的环境的默认值
   }
 
@@ -26,7 +26,7 @@ export const isDarkMode = (): boolean => getCurTheme() === 'dark'
  * @returns 解绑事件函数
  */
 export function onChangeTheme(onLight?: VoidFunction, onDark?: VoidFunction): VoidFunction {
-  if (isNode || !window.matchMedia) { // SSR 保护
+  if (!isBrowser || !window.matchMedia) { // SSR 保护
     return () => { } // 无操作的清理函数
   }
 

@@ -1,4 +1,4 @@
-import { isNode } from '@/constants/tool'
+import { isBrowser } from '@/constants/tool'
 
 /**
  * 视口内容宽度（`SSR` / 非浏览器环境下为 `0`）
@@ -10,11 +10,11 @@ import { isNode } from '@/constants/tool'
  * ```
  */
 export function getWinWidth() {
-  return isNode
-    ? 0
-    : window.innerWidth
-      || document.documentElement.clientWidth
-      || document.body.clientWidth
+  return isBrowser
+    ? window.innerWidth
+    || document.documentElement.clientWidth
+    || document.body.clientWidth
+    : 0
 }
 /**
  * 视口内容高度（`SSR` / 非浏览器环境下为 `0`）
@@ -26,9 +26,9 @@ export function getWinWidth() {
  * ```
  */
 export function getWinHeight() {
-  return isNode
-    ? 0
-    : window.innerHeight
-      || document.documentElement.clientHeight
-      || document.body.clientHeight
+  return isBrowser
+    ? window.innerHeight
+    || document.documentElement.clientHeight
+    || document.body.clientHeight
+    : 0
 }

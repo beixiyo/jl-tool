@@ -166,16 +166,15 @@ export function getElementPosition(
   const isVertical = direction === 'vertical'
 
   let containerSize: number
-  let scrollPos: number
-  let containerStart = 0 // 滚动容器的起始位置（相对于文档）
+  let elementStart: number
 
   if (container === window) {
     containerSize = isVertical
       ? getWinHeight()
       : getWinWidth()
-    scrollPos = isVertical
-      ? window.scrollY
-      : window.scrollX
+    elementStart = (isVertical
+      ? rect.top + window.scrollY
+      : rect.left + window.scrollX)
   }
   else {
     const c = container as HTMLElement
@@ -183,39 +182,25 @@ export function getElementPosition(
     containerSize = isVertical
       ? c.clientHeight
       : c.clientWidth
-    scrollPos = isVertical
-      ? c.scrollTop
-      : c.scrollLeft
-    containerStart = isVertical
-      ? containerRect.top + window.scrollY
-      : containerRect.left + window.scrollX
+    elementStart = isVertical
+      ? rect.top - containerRect.top - c.clientTop + c.scrollTop
+      : rect.left - containerRect.left - c.clientLeft + c.scrollLeft
   }
 
   const elementSize = isVertical
     ? rect.height
     : rect.width
 
-  // 1. 计算触发元素在文档中的绝对位置
-  const elementAbsoluteStart = (isVertical
-    ? rect.top
-    : rect.left) + scrollPos
-    - (container === window
-      ? 0
-      : containerStart - (isVertical
-        ? window.scrollY
-        : window.scrollX))
+  // 1. 计算触发点在滚动内容坐标系中的位置
+  const triggerPoint = elementStart + parsePositionValue(triggerPosition, elementSize)
 
-  // 2. 计算触发点在文档中的绝对位置
-  const triggerPointAbsolute = elementAbsoluteStart + parsePositionValue(triggerPosition, elementSize)
-
-  // 3. 计算滚动容器对齐点相对于容器顶部的位置
+  // 2. 计算滚动容器对齐点相对于容器顶部的位置
   const scrollerPointOffset = parsePositionValue(scrollerPosition, containerSize)
 
-  // 4. 计算最终的滚动位置
-  /** 目标滚动位置 = 触发点的绝对位置 - 滚动容器对齐点偏移 - 容器的文档起始位置 */
-  let finalScrollPos = triggerPointAbsolute - scrollerPointOffset - containerStart
+  // 3. 计算最终的滚动位置
+  let finalScrollPos = triggerPoint - scrollerPointOffset
 
-  // 5. 应用自定义偏移量
+  // 4. 应用自定义偏移量
   const offsetValue = parseOffset(offset, containerSize)
   finalScrollPos += offsetValue
 

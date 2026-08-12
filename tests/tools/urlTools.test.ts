@@ -23,6 +23,12 @@ describe('uRL工具函数', () => {
 
     /** 测试空查询参数 */
     expect(getUrlQuery('https://example.com')).toEqual({})
+
+    /** 参数值中的等号和加号必须按 URLSearchParams 语义保留 */
+    expect(getUrlQuery('?token=YWJjZA==&message=hello+world')).toEqual({
+      token: 'YWJjZA==',
+      message: 'hello world',
+    })
   })
 
   it('获取路径部分', () => {
@@ -58,12 +64,12 @@ describe('uRL工具函数', () => {
   }
 
   /** Node.js 环境测试 */
-  if (isNode) {
+  if (isNode && !isBrowser) {
     it('node.js 环境 - 处理相对URL', () => {
       // Node.js 环境下，没有提供 baseUrl 时使用默认值
       expect(getUrlQuery('?test=value', 'http://localhost/base')).toEqual({ test: 'value' })
       expect(getUrlPaths('path/to/resource', 'http://localhost')).toEqual(['path', 'to', 'resource'])
-      expect(getHostname('sub.example.com', 'http://localhost')).toBe('sub.example.com')
+      expect(getHostname('//sub.example.com', 'http://localhost')).toBe('sub.example.com')
       expect(getProtocol('https://example.com', 'http://localhost')).toBe('https')
       expect(getPort('http://example.com:8080', 'http://localhost')).toBe('8080')
     })
@@ -89,9 +95,11 @@ describe('uRL工具函数', () => {
     expect(matchProtocol('https://example.com', 'http://')).toBe('http://example.com')
     expect(matchProtocol('https://example.com', 'http')).toBe('http://example.com')
 
-    // Node.js 环境下，没有提供 baseProtocol 时默认使用 https
-    expect(matchProtocol('http://example.com')).toBe('https://example.com')
-    expect(matchProtocol('https://example.com')).toBe('https://example.com')
+    const defaultProtocol = isBrowser
+      ? window.location.protocol
+      : 'https:'
+    expect(matchProtocol('http://example.com')).toBe(`${defaultProtocol}//example.com`)
+    expect(matchProtocol('https://example.com')).toBe(`${defaultProtocol}//example.com`)
   })
 
   it('uRL有效性检测', () => {

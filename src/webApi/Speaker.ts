@@ -12,7 +12,7 @@ export class Speaker {
   /** 内部操作的实例对象 */
   speak = new SpeechSynthesisUtterance()
   /** 语音播放器的配置选项 */
-  private config: SpeakerOptions
+  private config: Required<SpeakerOptions>
 
   private initVoice = () => {
     this.voiceArr = speechSynthesis.getVoices()
@@ -29,7 +29,7 @@ export class Speaker {
       rate: 1,
       pitch: 1,
     }
-    this.config = { ...defaultOptions, ...options } as SpeakerOptions
+    this.config = { ...defaultOptions, ...options } as Required<SpeakerOptions>
 
     this.speak.text = this.config.txt
     this.speak.volume = this.config.volume
@@ -114,30 +114,30 @@ export type SpeakerOptions = {
    * 播放的文本内容
    * @default ''
    */
-  txt: string
+  txt?: string
   /**
    * 音量，范围 0-1
    * @default 1
    */
-  volume: number
+  volume?: number
   /**
    * 语言代码
    * @default 'zh-CN'
    */
-  lang: string
+  lang?: string
   /**
    * 语音名称
    * @default 'Microsoft Kangkang - Chinese (Simplified, PRC)'
    */
-  voiceName: string
+  voiceName?: string
   /**
    * 语速，范围 0.1-10
    * @default 1
    */
-  rate: number
+  rate?: number
   /**
    * 音高，范围 0-2
    * @default 1
    */
-  pitch: number
+  pitch?: number
 }

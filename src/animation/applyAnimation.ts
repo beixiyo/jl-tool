@@ -1,4 +1,5 @@
-import { createAnimationFrameScheduler, type AnimationFrameId } from './animationFrame'
+import type { AnimationFrameId } from './animationFrame'
+import { createAnimationFrameScheduler } from './animationFrame'
 
 /**
  * 在每一帧中执行你的函数

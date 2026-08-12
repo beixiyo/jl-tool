@@ -66,91 +66,137 @@ const TICK = 1000 / 60
  * 6.  **环境限制：**
  *     - 依赖于 `MessageChannel`，它在现代浏览器中广泛可用，但并非在所有 JavaScript 环境中都可用
  *       （例如，没有 polyfill 的 Node.js，非常老的浏览器）。
- *     - 使用 `Promise.withResolvers()`，这是一个较新的 API。请确保您的目标环境支持它或使用
- *       polyfill/替代方案。
  * 7.  **如果 `needStop()` 开销大或容易出错：**
  *     `needStop()` 回调会频繁执行。如果它计算开销大或可能抛出错误，可能会对调度器的性能或
- *     稳定性产生负面影响。`needStop` 中的错误（如果 `needStop` 本身未处理）可能导致主 Promise
- *     永远不会解析。
+ *     稳定性产生负面影响。`needStop` 中的错误会拒绝主 Promise。
  */
-export async function scheduleTask<T>(
+export function scheduleTask<T>(
   taskArr: (() => Promise<T>)[],
   needStop?: () => boolean,
 ) {
-  let i = 0
-  const res: (TaskResult<T>)[] = []
-  const { start, hasIdleRunTask } = genFunc()
-  const { port1, port2 } = new MessageChannel()
-  const { promise, resolve, reject } = Promise.withResolvers<(TaskResult<T>)[]>()
+  return new Promise<(TaskResult<T>)[]>((resolve, reject) => {
+    let nextTaskIndex = 0
+    let pendingTaskCount = 0
+    let stopped = false
+    let settled = false
+    const results: (TaskResult<T>)[] = []
+    const { port1, port2 } = new MessageChannel()
 
-  port2.onmessage = () => {
-    runMacroTasks(hasIdleRunTask)
-    start()
-  }
+    port2.onmessage = runTaskBatch
 
-  try {
-    start()
-  }
-  catch (error) {
-    reject(error)
-  }
-
-  function genFunc() {
-    const isEnd = needStop
-      ? () => i >= taskArr.length || needStop()
-      : () => i >= taskArr.length
-
-    function start() {
-      if (isEnd()) {
-        resolve(res)
-      }
-      else {
-        port1.postMessage(null)
-      }
+    if (shouldStopScheduling()) {
+      finishIfReady()
+    }
+    else {
+      port1.postMessage(null)
     }
 
-    function hasIdleRunTask(hasIdle: HasIdle) {
-      const st = performance.now()
-      while (hasIdle(st)) {
-        if (isEnd())
-          return resolve(res)
+    /**
+     * 在一个时间片内启动尽可能多的任务
+     * 游标必须在调用任务前同步推进，避免同一任务被重复启动
+     */
+    function runTaskBatch() {
+      const startTime = performance.now()
 
-        const curIndex = i
+      while (performance.now() - startTime < TICK) {
+        if (settled || shouldStopScheduling())
+          break
+
+        const taskIndex = nextTaskIndex++
+        pendingTaskCount++
+
         try {
-          taskArr[curIndex]().then((data) => {
-            i++
-            res[curIndex] = {
+          Promise.resolve(taskArr[taskIndex]()).then(
+            value => settleTask(taskIndex, {
               status: 'fulfilled',
-              value: data,
-            }
-          })
+              value,
+            }),
+            reason => settleTask(taskIndex, {
+              status: 'rejected',
+              reason: normalizeError(reason),
+            }),
+          )
         }
         catch (error) {
-          console.warn(`Task ${curIndex} failed to execute`, error)
-          res[curIndex] = {
+          settleTask(taskIndex, {
             status: 'rejected',
-            reason: error instanceof Error
-              ? error
-              : new Error(String(error)),
-          }
+            reason: normalizeError(error),
+          })
         }
+      }
+
+      if (!settled && !stopped && nextTaskIndex < taskArr.length) {
+        port1.postMessage(null)
+      }
+
+      finishIfReady()
+    }
+
+    /** 检查是否应停止继续启动任务 */
+    function shouldStopScheduling() {
+      if (nextTaskIndex >= taskArr.length) {
+        stopped = true
+        return true
+      }
+
+      if (!needStop)
+        return false
+
+      try {
+        stopped = needStop()
+        return stopped
+      }
+      catch (error) {
+        fail(error)
+        return true
       }
     }
 
-    return {
-      /** 开始调度 */
-      start,
-      /** 空闲时执行 */
-      hasIdleRunTask,
+    /** 记录单个任务结果，并在全部已启动任务结束后尝试收敛 */
+    function settleTask(taskIndex: number, result: TaskResult<T>) {
+      if (settled)
+        return
+
+      results[taskIndex] = result
+      pendingTaskCount--
+      finishIfReady()
     }
-  }
 
-  /** 放入宏任务执行 并回调执行时间和开始时间的差值 */
-  function runMacroTasks(hasIdleRunTask: (hasIdle: HasIdle) => void) {
-    hasIdleRunTask(st => performance.now() - st < TICK)
-  }
+    /** 所有任务已启动或被停止，且没有进行中的任务时完成 */
+    function finishIfReady() {
+      if (
+        settled
+        || pendingTaskCount > 0
+        || (!stopped && nextTaskIndex < taskArr.length)
+      ) {
+        return
+      }
 
-  return promise
+      settled = true
+      closePorts()
+      resolve(results)
+    }
+
+    /** 调度器内部失败时拒绝并释放 MessageChannel */
+    function fail(error: unknown) {
+      if (settled)
+        return
+
+      settled = true
+      closePorts()
+      reject(error)
+    }
+
+    function closePorts() {
+      port2.onmessage = null
+      port1.close()
+      port2.close()
+    }
+  })
 }
 
-type HasIdle = (startTime: number) => boolean
+function normalizeError(error: unknown) {
+  return error instanceof Error
+    ? error
+    : new Error(String(error))
+}

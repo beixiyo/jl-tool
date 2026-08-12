@@ -65,6 +65,80 @@ describe('深度比较测试', () => {
   })
 })
 
+describe('内置对象比较', () => {
+  it('应该按内容比较 Map 和 Set', () => {
+    expect(deepCompare(
+      new Map<any, any>([[{ id: 1 }, new Set(['a', 'b'])]]),
+      new Map<any, any>([[{ id: 1 }, new Set(['b', 'a'])]]),
+    )).toBe(true)
+    expect(deepCompare(
+      new Map([['a', 1]]),
+      new Map([['b', 2]]),
+    )).toBe(false)
+  })
+
+  it('应该比较 RegExp 的模式、标志和游标', () => {
+    expect(deepCompare(/a/g, /b/i)).toBe(false)
+
+    const left = /a/g
+    const right = /a/g
+    left.lastIndex = 1
+    right.lastIndex = 2
+    expect(deepCompare(left, right)).toBe(false)
+  })
+
+  it('应该按字节比较 ArrayBuffer', () => {
+    expect(deepCompare(
+      new Uint8Array([1, 2]).buffer,
+      new Uint8Array([1, 3]).buffer,
+    )).toBe(false)
+  })
+
+  it('应该比较 TypedArray 和 DataView 的类型及字节内容', () => {
+    expect(deepCompare(new Uint16Array([1, 2]), new Uint16Array([1, 2]))).toBe(true)
+    expect(deepCompare(new Uint16Array([1, 2]), new Uint16Array([1, 3]))).toBe(false)
+    expect(deepCompare(
+      new DataView(new Uint8Array([1, 2]).buffer),
+      new DataView(new Uint8Array([1, 2]).buffer),
+    )).toBe(true)
+    expect(deepCompare(
+      new DataView(new Uint8Array([1, 2]).buffer),
+      new DataView(new Uint8Array([1, 3]).buffer),
+    )).toBe(false)
+  })
+
+  it('应该比较 Error 的名称和消息', () => {
+    expect(deepCompare(new Error('left'), new Error('right'))).toBe(false)
+  })
+
+  it('比较循环 Error.cause 时不应该无限递归', () => {
+    const left = new Error('cycle')
+    const right = new Error('cycle')
+    left.cause = left
+    right.cause = right
+
+    expect(() => deepCompare(left, right)).not.toThrow()
+    expect(deepCompare(left, right)).toBe(false)
+  })
+
+  it('比较 Error.cause 时应该沿用 ignores 配置', () => {
+    const left = new Error('wrapped', { cause: { id: 1, message: 'same' } })
+    const right = new Error('wrapped', { cause: { id: 2, message: 'same' } })
+
+    expect(deepCompare(left, right)).toBe(false)
+    expect(deepCompare(left, right, { ignores: ['id'] })).toBe(true)
+  })
+
+  it.runIf(typeof SharedArrayBuffer !== 'undefined')('应该按字节比较 SharedArrayBuffer', () => {
+    const left = new SharedArrayBuffer(2)
+    const right = new SharedArrayBuffer(2)
+    new Uint8Array(left).set([1, 2])
+    new Uint8Array(right).set([1, 3])
+
+    expect(deepCompare(left, right)).toBe(false)
+  })
+})
+
 describe('deepCompare 配置项测试', () => {
   describe('customComparers - 自定义比较规则', () => {
     it('应该支持字符串忽略大小写比较', () => {
@@ -95,10 +169,10 @@ describe('deepCompare 配置项测试', () => {
       const date1 = new Date('2024-01-01T00:00:00.000Z')
       const date2 = new Date('2024-01-01T00:00:00.001Z')
 
-      // 默认比较时间戳，应该相等
+      /** 默认比较时间戳，应该相等 */
       expect(deepCompare(date1, date2)).toBe(false)
 
-      // 自定义规则：只比较日期部分，忽略时间
+      /** 自定义规则：只比较日期部分，忽略时间 */
       expect(deepCompare(date1, date2, {
         customComparers: {
           date: (a, b) => {
@@ -116,7 +190,8 @@ describe('deepCompare 配置项测试', () => {
       expect(deepCompare(arr1, arr2, {
         customComparers: {
           array: (a, b) => {
-            if (a.length !== b.length) return false
+            if (a.length !== b.length)
+              return false
             const sortedA = [...a].sort()
             const sortedB = [...b].sort()
             return deepCompare(sortedA, sortedB)
@@ -253,7 +328,7 @@ describe('deepCompare 配置项测试', () => {
       obj1[sym] = 'value1'
       obj2[sym] = 'value2'
 
-      // 即使忽略了 id，Symbol 键不同也应该返回 false
+      /** 即使忽略了 id，Symbol 键不同也应该返回 false */
       expect(deepCompare(obj1, obj2, { ignores: ['id'] })).toBe(false)
 
       // Symbol 键相同，忽略 id 后应该返回 true
@@ -265,9 +340,8 @@ describe('deepCompare 配置项测试', () => {
       const obj1 = { name: 'Alice', age: 30 }
       const obj2 = { name: 'Alice', age: 30 }
 
-      // 忽略不存在的属性不应该影响比较结果
+      /** 忽略不存在的属性不应该影响比较结果 */
       expect(deepCompare(obj1, obj2, { ignores: ['id', 'timestamp'] })).toBe(true)
     })
   })
 })
-

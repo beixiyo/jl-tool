@@ -14,7 +14,7 @@ import {
   mapJsonlFile,
   readJsonlFile,
   someWithJsonlFile,
-} from '../../../node/jsonl'
+} from '../../node/jsonl'
 
 // 设置测试环境为 node
 // @vitest-environment node

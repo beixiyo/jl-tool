@@ -56,7 +56,7 @@ export class AudioAnalysis {
   }
 
   /** 获取频域数据，支持外部传入缓冲复用 */
-  getByteFrequencyData(out?: Uint8Array<ArrayBuffer>) {
+  getByteFrequencyData(out?: Uint8Array) {
     if (!this.analyser)
       return null
     const data = out ?? new Uint8Array(this.analyser.frequencyBinCount)

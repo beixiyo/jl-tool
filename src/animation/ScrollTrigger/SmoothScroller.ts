@@ -1,6 +1,6 @@
+import type { AnimationFrameId, AnimationFrameScheduler } from '../animationFrame'
 import type { ScrollTrigger } from './ScrollTrigger'
 import type { Scroller, SmoothScrollerOptions } from './types'
-import type { AnimationFrameId, AnimationFrameScheduler } from '../animationFrame'
 import { clamp } from '@/math'
 import { createAnimationFrameScheduler } from '../animationFrame'
 

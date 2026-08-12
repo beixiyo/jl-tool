@@ -329,7 +329,7 @@ export function mixColor(color1: string, color2: string, weight = 0.5) {
   const r = Math.round(c1.r * weight + c2.r * (1 - weight))
   const g = Math.round(c1.g * weight + c2.g * (1 - weight))
   const b = Math.round(c1.b * weight + c2.b * (1 - weight))
-  const a = Math.round(c1.a * weight + c2.a * (1 - weight))
+  const a = numFixed(c1.a * weight + c2.a * (1 - weight), 2)
 
   return `rgba(${r}, ${g}, ${b}, ${a})`
 }

@@ -42,7 +42,11 @@ export type ScreenRecorderCallbacks = {
   onDataAvailable?: (evt: RecorderBlobEvent) => void
   /** 录制开始 */
   onStart?: () => void
-  /** 录制停止（注意：停止后才生成最终 Blob） */
+  /**
+   * 录制停止
+   *
+   * `retainChunks` 为 `false` 时，分片只通过 `onDataAvailable` 交付，最终 Blob 为 `null`
+   */
   onStop?: (finalBlob: Blob | null) => void
   /** 暂停 */
   onPause?: () => void
@@ -137,6 +141,15 @@ export type ScreenRecorderOptions = DisplayMediaConfig
      * 如果不设置，`ondataavailable` 仅在 `stop()` 时触发一次
      */
     timesliceMs?: number
+    /**
+     * 是否在内存中保留全部数据分片，以便 `stop()` 和 `onStop` 返回完整 Blob
+     *
+     * 关闭后分片只通过 `onDataAvailable` 交付，适合由调用方边录制边持久化，
+     * 避免长录音同时占用调用方存储和本工具内部内存
+     *
+     * @default true
+     */
+    retainChunks?: boolean
     /**
      * 指定 desktopCapturer 源，提供后将跳过浏览器弹窗，直接按该 source 捕获
      */

@@ -7,7 +7,7 @@ import { defineConfig } from 'rollup'
 import clear from 'rollup-plugin-clear'
 
 export default defineConfig([
-  // 通用版本 (浏览器兼容)
+  /** 通用版本 (浏览器兼容) */
   {
     input: 'src/index.ts',
     output: [
@@ -18,9 +18,10 @@ export default defineConfig([
       ...getCommonPlugins(),
       typescript({
         compilerOptions: {
+          noEmitOnError: true,
           rootDir: './src',
         },
-        exclude: ['test/**']
+        exclude: ['tests/**', 'apps/**'],
       }),
       clear({
         targets: ['dist'],
@@ -40,9 +41,10 @@ export default defineConfig([
       ...getCommonPlugins(),
       typescript({
         compilerOptions: {
+          noEmitOnError: true,
           rootDir: './',
         },
-        exclude: ['test/**']
+        exclude: ['tests/**', 'apps/**'],
       }),
     ],
   },

@@ -160,7 +160,7 @@ export class Recorder {
   }
 
   /** 获取频域数据 */
-  getByteFrequencyData(out?: Uint8Array<ArrayBuffer>) {
+  getByteFrequencyData(out?: Uint8Array) {
     return this.analysis.getByteFrequencyData(out)
   }
 

@@ -27,7 +27,7 @@ import { isBrowser, isNode } from '@/constants'
  * ```
  */
 export function checkIsBrowser(needWarn = false) {
-  if (isNode) {
+  if (!isBrowser) {
     needWarn && console.warn('This function can only be used in Browser environment')
     return false
   }
@@ -63,7 +63,7 @@ export function checkIsBrowser(needWarn = false) {
  * ```
  */
 export function checkIsNode(needWarn = false) {
-  if (isBrowser) {
+  if (!isNode) {
     needWarn && console.warn('This function can only be used in Node.js environment')
     return false
   }

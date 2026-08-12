@@ -37,6 +37,24 @@ describe('deepMerge', () => {
     expect(result.arr).toBe(mergeSource.arr)
   })
 
+  it('应该直接替换 Date 等非普通对象', () => {
+    const sourceDate = new Date('2024-01-02')
+    const sourceRegExp = /source/g
+    const result = deepMerge(
+      {
+        date: new Date('2024-01-01'),
+        regexp: /target/g,
+      },
+      {
+        date: sourceDate,
+        regexp: sourceRegExp,
+      },
+    )
+
+    expect(result.date).toBe(sourceDate)
+    expect(result.regexp).toBe(sourceRegExp)
+  })
+
   it('应该处理基本类型', () => {
     const target = { str: 'hello', num: 42, bool: true }
     const mergeSource = { str: 'world', num: 100 }
@@ -208,4 +226,3 @@ describe('deepMerge', () => {
     expect('inherited' in result).toBe(false)
   })
 })
-

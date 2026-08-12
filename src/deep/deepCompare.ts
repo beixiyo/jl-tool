@@ -13,7 +13,13 @@ const defaultComparers: Record<string, CustomComparer> = {
     if (!(a instanceof Date) || !(b instanceof Date)) {
       return false
     }
-    return a.getTime() === b.getTime()
+    return Object.is(a.getTime(), b.getTime())
+  },
+  /** RegExp 类型：比较模式、标志和当前匹配游标 */
+  regexp: (a: RegExp, b: RegExp) => {
+    return a.source === b.source
+      && a.flags === b.flags
+      && a.lastIndex === b.lastIndex
   },
 }
 
@@ -81,75 +87,177 @@ export function deepCompare(
   seen?: WeakMap<object, boolean>,
 ): boolean {
   const comparers = { ...defaultComparers, ...config?.customComparers }
-  seen = seen || new WeakMap()
-
-  /** 使用 Object.is 进行快速比较 */
-  if (Object.is(o1, o2)) {
-    return true
+  const initialContext: CompareContext = {
+    leftToRight: new Map(),
+    rightToLeft: new Map(),
   }
 
-  /** 获取类型 */
-  const type1 = getType(o1)
-  const type2 = getType(o2)
+  return compareValue(o1, o2, initialContext)
 
-  /** 类型不同，直接返回 false */
-  if (type1 !== type2) {
-    return false
-  }
-
-  /** 如果有自定义比较规则（包括默认规则），使用自定义规则 */
-  if ((comparers as any)[type1]) {
-    return (comparers as any)[type1](o1, o2)
-  }
-
-  /**
-   * 基本类型比较（非对象类型）
-   * 如果没有自定义比较规则，且是基本类型，说明不相等（Object.is 已经检查过了）
-   */
-  if (!isObj(o1) || !isObj(o2)) {
-    return false
-  }
-
-  /** 处理循环引用 */
-  if (seen.has(o1) || seen.has(o2)) {
-    return false
-  }
-
-  seen.set(o1, true)
-  seen.set(o2, true)
-
-  /** 获取所有键（包括 Symbol） */
-  const allKeys1 = Object.keys(o1).concat(Object.getOwnPropertySymbols(o1) as any)
-  const allKeys2 = Object.keys(o2).concat(Object.getOwnPropertySymbols(o2) as any)
-
-  /** 过滤掉需要忽略的键（只过滤字符串键，Symbol 键不忽略） */
-  const ignores = config?.ignores || []
-  const keys1 = allKeys1.filter((key) => {
-    if (typeof key === 'string') {
-      return !ignores.includes(key)
+  function compareValue(a: any, b: any, context: CompareContext): boolean {
+    /** 使用 Object.is 进行快速比较 */
+    if (Object.is(a, b)) {
+      return true
     }
-    return true
-  })
-  const keys2 = allKeys2.filter((key) => {
-    if (typeof key === 'string') {
-      return !ignores.includes(key)
-    }
-    return true
-  })
 
-  if (keys1.length !== keys2.length) {
-    return false
-  }
-
-  /** 递归比较每个属性 */
-  for (const key of keys1) {
-    // @ts-ignore
-    if (!keys2.includes(key) || !deepCompare(o1[key], o2[key], config, seen)) {
+    const type1 = getType(a)
+    const type2 = getType(b)
+    if (type1 !== type2) {
       return false
     }
+
+    /** 自定义规则优先于内置的对象比较 */
+    if ((comparers as any)[type1]) {
+      return (comparers as any)[type1](a, b)
+    }
+
+    if (!isObj(a) || !isObj(b)) {
+      return false
+    }
+
+    /** 这些类型没有可枚举内容，不同实例无法通过结构可靠比较 */
+    if (type1 === 'weakmap' || type1 === 'weakset' || type1 === 'promise') {
+      return false
+    }
+
+    /** 保持既有契约：遇到循环引用或重复对象引用时返回 false */
+    if (
+      seen?.has(a)
+      || seen?.has(b)
+      || context.leftToRight.has(a)
+      || context.rightToLeft.has(b)
+    ) {
+      return false
+    }
+
+    context.leftToRight.set(a, b)
+    context.rightToLeft.set(b, a)
+
+    if (a instanceof Map && b instanceof Map) {
+      return compareMap(a, b, context)
+    }
+    if (a instanceof Set && b instanceof Set) {
+      return compareSet(a, b, context)
+    }
+    if (a instanceof ArrayBuffer && b instanceof ArrayBuffer) {
+      return compareBytes(
+        new Uint8Array(a),
+        new Uint8Array(b),
+      )
+    }
+    if (isSharedArrayBuffer(a) && isSharedArrayBuffer(b)) {
+      return compareBytes(
+        new Uint8Array(a),
+        new Uint8Array(b),
+      )
+    }
+    if (ArrayBuffer.isView(a) && ArrayBuffer.isView(b)) {
+      return a.constructor === b.constructor
+        && compareBytes(
+          new Uint8Array(a.buffer, a.byteOffset, a.byteLength),
+          new Uint8Array(b.buffer, b.byteOffset, b.byteLength),
+        )
+    }
+    if (a instanceof Error && b instanceof Error) {
+      return a.name === b.name
+        && a.message === b.message
+        && compareValue(a.cause, b.cause, context)
+        && compareProperties(a, b, context)
+    }
+
+    return compareProperties(a, b, context)
   }
 
-  return true
+  function compareMap(a: Map<any, any>, b: Map<any, any>, context: CompareContext) {
+    if (a.size !== b.size)
+      return false
+
+    const unmatchedEntries = Array.from(b.entries())
+    for (const [key, value] of a) {
+      const matchIndex = unmatchedEntries.findIndex(([otherKey, otherValue]) => {
+        const candidateContext = cloneContext(context)
+        if (
+          compareValue(key, otherKey, candidateContext)
+          && compareValue(value, otherValue, candidateContext)
+        ) {
+          context.leftToRight = candidateContext.leftToRight
+          context.rightToLeft = candidateContext.rightToLeft
+          return true
+        }
+        return false
+      })
+
+      if (matchIndex < 0)
+        return false
+
+      unmatchedEntries.splice(matchIndex, 1)
+    }
+
+    return compareProperties(a, b, context)
+  }
+
+  function compareSet(a: Set<any>, b: Set<any>, context: CompareContext) {
+    if (a.size !== b.size)
+      return false
+
+    const unmatchedValues = Array.from(b)
+    for (const value of a) {
+      const matchIndex = unmatchedValues.findIndex((otherValue) => {
+        const candidateContext = cloneContext(context)
+        if (compareValue(value, otherValue, candidateContext)) {
+          context.leftToRight = candidateContext.leftToRight
+          context.rightToLeft = candidateContext.rightToLeft
+          return true
+        }
+        return false
+      })
+
+      if (matchIndex < 0)
+        return false
+
+      unmatchedValues.splice(matchIndex, 1)
+    }
+
+    return compareProperties(a, b, context)
+  }
+
+  function compareProperties(a: object, b: object, context: CompareContext) {
+    const keys1 = getComparableKeys(a)
+    const keys2 = getComparableKeys(b)
+    if (keys1.length !== keys2.length) {
+      return false
+    }
+
+    return keys1.every((key) => {
+      return keys2.includes(key)
+        && compareValue((a as any)[key], (b as any)[key], context)
+    })
+  }
+
+  function getComparableKeys(value: object) {
+    const allKeys = Object.keys(value).concat(Object.getOwnPropertySymbols(value) as any)
+    const ignores = config?.ignores || []
+
+    return allKeys.filter((key) => {
+      return typeof key !== 'string' || !ignores.includes(key)
+    })
+  }
+}
+
+function isSharedArrayBuffer(value: unknown): value is SharedArrayBuffer {
+  return typeof SharedArrayBuffer !== 'undefined' && value instanceof SharedArrayBuffer
+}
+
+function compareBytes(a: Uint8Array, b: Uint8Array) {
+  return a.byteLength === b.byteLength
+    && a.every((value, index) => value === b[index])
+}
+
+function cloneContext(context: CompareContext): CompareContext {
+  return {
+    leftToRight: new Map(context.leftToRight),
+    rightToLeft: new Map(context.rightToLeft),
+  }
 }
 
 /**
@@ -194,4 +302,9 @@ export interface CompareConfig {
    * 比较时会跳过这些属性，不参与比较
    */
   ignores?: string[]
+}
+
+type CompareContext = {
+  leftToRight: Map<object, object>
+  rightToLeft: Map<object, object>
 }

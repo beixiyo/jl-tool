@@ -31,5 +31,20 @@ export const isFn = (data: any): data is Function => typeof data === 'function'
 export const isObj = (data: any): data is object => typeof data === 'object' && data !== null
 export const isArr = <T>(data: any): data is Array<T> => Array.isArray(data)
 
+/**
+ * 判断值是否为普通记录对象
+ *
+ * 数组、日期、集合和自定义类实例都不属于记录对象；无原型对象会被视为有效记录
+ * @param value 待检测的值
+ * @returns 值是可用字符串键访问的普通对象
+ */
+export function isRecord(value: unknown): value is Record<string, unknown> {
+  if (!isObj(value) || Array.isArray(value))
+    return false
+
+  const prototype = Object.getPrototypeOf(value)
+  return prototype === Object.prototype || prototype === null
+}
+
 /** Object.is */
 export const isSame = (a: any, b: any) => Object.is(a, b)

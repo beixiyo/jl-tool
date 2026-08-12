@@ -38,7 +38,7 @@ import { isObj } from '@/shared/is'
  */
 export function deepClone<T>(
   data: T,
-  map = new WeakMap(),
+  map: WeakMap<object, any> = new WeakMap(),
   opts: DeepCloneOpts = {},
 ): T {
   const { useStructuredClone = false } = opts
@@ -48,23 +48,105 @@ export function deepClone<T>(
 
   if (!isObj(data))
     return data
-  if (data instanceof Date)
-    return new Date(data) as T
-  if (data instanceof RegExp)
-    return new RegExp(data) as T
 
   if (map.has(data))
     return map.get(data)
 
-  const tar = new (data as any).constructor()
-  map.set(data, tar)
-  for (const key in data) {
-    if (!Object.prototype.hasOwnProperty.call(data, key))
-      continue
-    tar[key] = deepClone(data[key], map, opts)
+  if (data instanceof WeakMap || data instanceof WeakSet || data instanceof Promise) {
+    throw new TypeError(`deepClone does not support ${data.constructor.name}`)
   }
 
-  return tar as T
+  if (data instanceof Date) {
+    const target = new Date(data.getTime())
+    map.set(data, target)
+    cloneEnumerableProperties(data, target, map, opts)
+    return target as T
+  }
+
+  if (data instanceof RegExp) {
+    const target = new RegExp(data.source, data.flags)
+    target.lastIndex = data.lastIndex
+    map.set(data, target)
+    cloneEnumerableProperties(data, target, map, opts)
+    return target as T
+  }
+
+  if (data instanceof Map) {
+    const target = new Map()
+    map.set(data, target)
+    data.forEach((value, key) => {
+      target.set(
+        deepClone(key, map, opts),
+        deepClone(value, map, opts),
+      )
+    })
+    cloneEnumerableProperties(data, target, map, opts)
+    return target as T
+  }
+
+  if (data instanceof Set) {
+    const target = new Set()
+    map.set(data, target)
+    data.forEach((value) => {
+      target.add(deepClone(value, map, opts))
+    })
+    cloneEnumerableProperties(data, target, map, opts)
+    return target as T
+  }
+
+  if (data instanceof ArrayBuffer) {
+    const target = data.slice(0)
+    map.set(data, target)
+    cloneEnumerableProperties(data, target, map, opts)
+    return target as T
+  }
+
+  if (isSharedArrayBuffer(data)) {
+    const target = data.slice(0)
+    map.set(data, target)
+    cloneEnumerableProperties(data, target, map, opts)
+    return target as T
+  }
+
+  if (ArrayBuffer.isView(data)) {
+    const buffer = deepClone(data.buffer, map, opts)
+    const target = data instanceof DataView
+      ? new DataView(buffer, data.byteOffset, data.byteLength)
+      : new (data.constructor as any)(buffer, data.byteOffset, (data as any).length)
+    map.set(data, target)
+    cloneEnumerableProperties(data, target, map, opts)
+    return target as T
+  }
+
+  const target = Array.isArray(data)
+    ? []
+    : Object.create(Object.getPrototypeOf(data))
+  map.set(data, target)
+  cloneEnumerableProperties(data, target, map, opts)
+
+  return target as T
+}
+
+function isSharedArrayBuffer(value: unknown): value is SharedArrayBuffer {
+  return typeof SharedArrayBuffer !== 'undefined' && value instanceof SharedArrayBuffer
+}
+
+/** 克隆对象自身的可枚举字符串键和 Symbol 键 */
+function cloneEnumerableProperties(
+  source: object,
+  target: any,
+  map: WeakMap<object, any>,
+  opts: DeepCloneOpts,
+) {
+  const keys = [
+    ...Object.keys(source),
+    ...Object.getOwnPropertySymbols(source)
+      .filter(symbol => Object.prototype.propertyIsEnumerable.call(source, symbol)),
+  ]
+
+  keys.forEach((key) => {
+    target[key] = deepClone((source as any)[key], map, opts)
+  })
 }
 
 export type DeepCloneOpts = {

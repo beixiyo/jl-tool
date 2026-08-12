@@ -1,5 +1,6 @@
+import type { TruncateOptions } from '@/tools/tools'
 import { describe, expect, it } from 'vitest'
-import { celsiusToFahrenheit, truncate, TruncateOptions, excludeKeys, excludeVals, fahrenheitToCelsius, filterKeys, filterVals, getRandomNum, getType, padEmptyObj, padNum, randomStr, toCamel } from '@/tools/tools'
+import { celsiusToFahrenheit, curry, excludeKeys, excludeVals, fahrenheitToCelsius, filterKeys, filterVals, getRandomNum, getType, padEmptyObj, padNum, randomStr, toCamel, truncate } from '@/tools/tools'
 
 it('获取类型', () => {
   expect(getType(undefined)).toBe('undefined')
@@ -48,6 +49,21 @@ describe('随机数字', () => {
   })
 })
 
+describe('curry', () => {
+  it('应该保留预置参数并按原顺序执行', () => {
+    const join = (a: string, b: string, c: string) => `${a}-${b}-${c}`
+
+    expect(curry(join, 'a')('b')('c')).toBe('a-b-c')
+    expect(curry(join, 'a', 'b')('c')).toBe('a-b-c')
+  })
+
+  it('预置参数满足函数元数时应该立即执行', () => {
+    const add = (a: number, b: number) => a + b
+
+    expect(curry(add, 5, 3)).toBe(8)
+  })
+})
+
 describe('截取字符串', () => {
   it('基础用法', () => {
     const str = '123456789'
@@ -78,49 +94,49 @@ describe('截取字符串', () => {
   })
 
   it('数组支持 - 自定义拼接函数', () => {
-    // 使用自定义 join 函数添加括号
+    /** 使用自定义 join 函数添加括号 */
     expect(truncate([1, 2, 3, 4, 5], 3, {
-      join: (arr, sep) => arr.map(x => `[${x}]`).join(sep)
+      join: (arr, sep) => arr.map(x => `[${x}]`).join(sep),
     })).toBe('[1],[2]...')
 
-    // 自定义 join 函数，忽略 separator 参数
+    /** 自定义 join 函数，忽略 separator 参数 */
     expect(truncate(['apple', 'banana', 'cherry'], 2, {
       separator: ' | ',
       suffix: ' 等',
-      join: (arr) => arr.join('、')
+      join: arr => arr.join('、'),
     })).toBe('apple 等')
 
-    // 自定义 join 函数处理对象数组
+    /** 自定义 join 函数处理对象数组 */
     expect(truncate([{ name: 'a' }, { name: 'b' }, { name: 'c' }], 2, {
-      join: (arr) => arr.map(item => item.name).join(', ')
+      join: arr => arr.map(item => item.name).join(', '),
     })).toBe('a...')
 
-    // 自定义 join 函数，使用 separator 参数
+    /** 自定义 join 函数，使用 separator 参数 */
     expect(truncate([1, 2, 3, 4], 3, {
       separator: ' | ',
-      join: (arr, sep) => arr.join(sep)
+      join: (arr, sep) => arr.join(sep),
     })).toBe('1 | 2...')
 
-    // 数组未超过长度时也使用自定义 join
+    /** 数组未超过长度时也使用自定义 join */
     expect(truncate([1, 2, 3], 5, {
-      join: (arr) => arr.map(x => `(${x})`).join(' + ')
+      join: arr => arr.map(x => `(${x})`).join(' + '),
     })).toBe('(1) + (2) + (3)')
   })
 
   it('配置项类型导出', () => {
-    // 验证 CutStrOptions 类型可以正常使用
+    /** 验证 CutStrOptions 类型可以正常使用 */
     const options: TruncateOptions<number> = {
       separator: ',',
       suffix: '...',
-      join: (arr) => arr.join(',')
+      join: arr => arr.join(','),
     }
     expect(truncate([1, 2, 3], 2, options)).toBe('1...')
 
-    // 测试自定义 join 函数
+    /** 测试自定义 join 函数 */
     const optionsWithJoin: TruncateOptions<string> = {
       separator: ',',
       suffix: '...',
-      join: (arr) => arr.map(s => s.toUpperCase()).join(' | ')
+      join: arr => arr.map(s => s.toUpperCase()).join(' | '),
     }
     expect(truncate(['a', 'b', 'c', 'd'], 3, optionsWithJoin)).toBe('A | B...')
   })

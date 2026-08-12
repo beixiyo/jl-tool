@@ -35,10 +35,8 @@ export function deepMerge<T extends Record<string, any>>(target: T, mergeSource:
 
     /** 处理对象类型的合并（排除数组和 null） */
     if (
-      isObj(sourceValue)
-      && !Array.isArray(sourceValue)
-      && isObj(targetValue)
-      && !Array.isArray(targetValue)
+      isPlainObject(sourceValue)
+      && isPlainObject(targetValue)
     ) {
       result[key] = deepMerge(targetValue, sourceValue)
     }
@@ -49,4 +47,12 @@ export function deepMerge<T extends Record<string, any>>(target: T, mergeSource:
   }
 
   return result
+}
+
+function isPlainObject(value: unknown): value is Record<string, any> {
+  if (!isObj(value))
+    return false
+
+  const prototype = Object.getPrototypeOf(value)
+  return prototype === Object.prototype || prototype === null
 }

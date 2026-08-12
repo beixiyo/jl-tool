@@ -421,7 +421,8 @@ export function toCamel(key: string, replaceStr = '_') {
 
 /**
  * 柯里化函数
- * @param args 参数列表，第一个参数是函数，其余是预设参数
+ * @param fn 要柯里化的函数
+ * @param initialArgs 预设参数
  * @returns 柯里化后的函数
  *
  * @example
@@ -454,24 +455,16 @@ export function toCamel(key: string, replaceStr = '_') {
  * const userRequest = apiRequest('/users')
  * ```
  */
-export function curry(...args: any[]) {
-  const fn = Array.prototype.slice.call(args, 0, 1)[0]
-  const argArr = Array.prototype.slice.call(args, 1)
+export function curry(fn: (...args: any[]) => any, ...initialArgs: any[]): any {
+  return collect(initialArgs)
 
-  if (arguments.length >= fn.length) {
-    // @ts-ignore
-    return fn.apply(this, argArr)
-  }
-
-  return function curried(...args: any[]) {
-    if (args.length >= fn.length) {
-      // @ts-ignore
-      return fn.apply(this, args)
+  function collect(this: unknown, collectedArgs: any[]): any {
+    if (collectedArgs.length >= fn.length) {
+      return fn.apply(this, collectedArgs)
     }
 
-    return function (...moreArgs: any[]) {
-      // @ts-ignore
-      return curried.apply(this, moreArgs.concat(args))
+    return function curried(this: unknown, ...nextArgs: any[]) {
+      return collect.call(this, collectedArgs.concat(nextArgs))
     }
   }
 }

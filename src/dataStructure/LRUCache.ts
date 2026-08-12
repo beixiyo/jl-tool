@@ -7,13 +7,14 @@ export class LRUCache<K, V> extends Map<K, V> {
   }
 
   get(key: K): V | undefined {
+    const hasKey = super.has(key)
     const value = super.get(key)
     /**
      * 如果存在，则删除后重新设置，保证顺序最新
      */
-    if (value) {
-      this.delete(key)
-      this.set(key, value)
+    if (hasKey) {
+      super.delete(key)
+      super.set(key, value as V)
     }
     return value
   }
@@ -30,11 +31,12 @@ export class LRUCache<K, V> extends Map<K, V> {
     /**
      * 如果超出最大缓存长度，则删除最久未使用的（第一个）
      */
-    if (this.size > this.maxCacheLen) {
-      const k = this.keys().next()?.value
-      if (k) {
-        this.delete(k)
-      }
+    while (this.size > this.maxCacheLen && this.size > 0) {
+      const oldest = this.keys().next()
+      if (oldest.done)
+        break
+
+      super.delete(oldest.value)
     }
 
     return res

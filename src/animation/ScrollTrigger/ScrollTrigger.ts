@@ -633,7 +633,11 @@ export class ScrollTrigger implements Scroller {
    * 处理延迟动画更新
    */
   private updateAnimation(): void {
+    /** 当前帧已经开始执行，不再有待处理的动画帧 */
+    this.animationFrameId = null
+
     if (!this.options.scrub || typeof this.options.scrub !== 'number') {
+      this.lastTime = 0
       return
     }
 

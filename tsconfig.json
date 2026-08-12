@@ -22,7 +22,11 @@
   "include": [
     "src/**/*.ts",
     "node/**/*.ts",
-    "test/**/*.ts"
+    "tests/**/*.ts",
+    "tests/setup.ts"
+  ],
+  "exclude": [
+    "apps/**"
   ],
   "typedocOptions": {
     "entryPoints": [

@@ -39,6 +39,27 @@ describe('lRUCache', () => {
     expect(cache.get(4)).toBe('d')
   })
 
+  it('should evict a falsy key', () => {
+    cache = new LRUCache<number, string>(2)
+    cache.set(0, 'zero')
+    cache.set(1, 'one')
+    cache.set(2, 'two')
+
+    expect(cache.size).toBe(2)
+    expect(cache.has(0)).toBe(false)
+  })
+
+  it('should refresh recency for a falsy value', () => {
+    cache = new LRUCache<number, string>(2)
+    cache.set(1, '')
+    cache.set(2, 'two')
+    cache.get(1)
+    cache.set(3, 'three')
+
+    expect(cache.has(1)).toBe(true)
+    expect(cache.has(2)).toBe(false)
+  })
+
   it('should handle maxLen of 0', () => {
     const zeroLenCache = new LRUCache<number, string>(0)
     zeroLenCache.set(1, 'a')
