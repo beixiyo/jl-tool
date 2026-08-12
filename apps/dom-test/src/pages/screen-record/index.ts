@@ -1,0 +1,1 @@
+export { ScreenRecordPage } from './ScreenRecordPage'

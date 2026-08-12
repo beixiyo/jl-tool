@@ -1,0 +1,22 @@
+{
+  "name": "@jl-org/tool-dom-test",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "typecheck": "tsc -p tsconfig.json",
+    "build": "vite build",
+    "test": "vitest --run"
+  },
+  "dependencies": {
+    "@solidjs/router": "1.0.0",
+    "solid-js": "1.9.14"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "4.3.3",
+    "tailwindcss": "4.3.3",
+    "vite": "^6.0.3",
+    "vite-plugin-solid": "2.11.14",
+    "vitest": "^2.1.8"
+  }
+}

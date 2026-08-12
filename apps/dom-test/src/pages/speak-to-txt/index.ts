@@ -1,0 +1,1 @@
+export { SpeakToTxtPage } from './SpeakToTxtPage'

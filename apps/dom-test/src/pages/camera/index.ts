@@ -1,0 +1,1 @@
+export { CameraPage } from './CameraPage'

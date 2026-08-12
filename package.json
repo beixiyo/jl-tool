@@ -39,9 +39,11 @@
     }
   },
   "scripts": {
-    "build": "run-p build:only",
+    "build": "run-s typecheck build:only",
     "build:only": "rollup -c && tsc-alias",
-    "prepublishOnly": "npm run build",
+    "typecheck": "tsc -p tsconfig.typecheck.json",
+    "check": "run-p typecheck lint test",
+    "prepublishOnly": "npm run check && npm run build:only",
     "------doc------": "",
     "gen-doc": "typedoc --tsconfig tsconfig.json",
     "docs:dev": "vitepress dev ./docs",
@@ -49,8 +51,14 @@
     "docs:preview": "vitepress preview ./docs",
     "------test------": "",
     "test": "vitest --run",
-    "test:dom": "vite",
-    "lint": "eslint --fix src"
+    "test:coverage": "vitest --run --coverage --coverage.reporter=text",
+    "dev": "pnpm --dir apps/dom-test dev",
+    "dev:typecheck": "pnpm --dir apps/dom-test typecheck",
+    "dev:build": "pnpm --dir apps/dom-test build",
+    "dev:test": "pnpm --dir apps/dom-test test",
+    "dev:check": "run-p dev:typecheck dev:build dev:test",
+    "lint": "eslint src",
+    "lint:fix": "eslint --fix src"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^4.13.2",
@@ -73,6 +81,7 @@
     "tslib": "^2.6.2",
     "typedoc": "^0.25.10",
     "typedoc-plugin-markdown": "^3.17.1",
+    "typescript": "5.3.3",
     "vite": "^6.0.3",
     "vitepress": "1.3.1",
     "vitest": "^2.1.8"
