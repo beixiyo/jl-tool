@@ -1,105 +1,127 @@
 // @ts-check
 
 self.addEventListener('install', (event) => {
-  console.log('StreamDownloader SW installed')
   // @ts-ignore
-  event.waitUntil(self.skipWaiting()) // 强制立即激活
-})
-
-self.addEventListener('activate', (event) => {
-  console.log('StreamDownloader SW activated')
-  // @ts-ignore
-  event.waitUntil(self.clients.claim()) // 立即控制所有页面
+  event.waitUntil(self.skipWaiting())
 })
 
 /**
- * @type {Map<string, { stream: ReadableStream, data: PostServiceWorkerData }>}
+ * 下载任务按最终请求 URL 隔离；SW 只拦截自己 scope 下的临时下载地址
+ * @type {Map<string, { stream: ReadableStream, data: PostServiceWorkerData, port: MessagePort }>}
  */
 const downloadMap = new Map()
 
-/**
- * 接收消息并返回文件 URL
- */
 self.addEventListener('message', (event) => {
   /** @type {PostServiceWorkerData} */
   const data = event.data
+  if (data?.type !== 'jl-org-stream-download-init') return
+
   const port = event.ports[0]
+  if (!port) return
 
   // @ts-ignore
   const scope = self.registration.scope
-  const downloadUrl = `${scope}jl-org-download/${data.downloadId}/${data.filename}`
+  const downloadUrl = `${scope}${data.downloadId}/${data.filename}`
+  /** @type {{ sequence: number, chunk: ArrayBuffer } | null} */
+  let pendingChunk = null
+  let endRequested = false
+  let settled = false
 
-  /** 创建流 */
   const stream = new ReadableStream({
     start(controller) {
-      port.onmessage = (event) => {
-        /**
-         * @type {PostAction}
-         */
-        const data = event.data
-        if (data === 'end') {
-          controller.close()
+      port.onmessage = ({ data: request }) => {
+        /** @type {ServiceWorkerDownloadRequest} */
+        const message = request
+        if (message.type === 'chunk') {
+          if (pendingChunk) {
+            fail(controller, 'Received a chunk before the previous chunk was consumed')
+            return
+          }
+          pendingChunk = message
+          drain(controller)
+          return
         }
-        else if (data === 'abort') {
-          onError('Download aborted')
+        if (message.type === 'end') {
+          endRequested = true
+          drain(controller)
+          return
         }
-        else {
-          controller.enqueue(data)
-        }
+        if (message.type === 'abort') abort(controller)
       }
-
-      port.onmessageerror = () => {
-        onError('Channel error')
-      }
-
-      /**
-       * @param {string} msg
-       */
-      function onError(msg) {
-        controller.error(msg)
-        controller.close()
-        downloadMap.delete(downloadUrl)
-      }
+      port.onmessageerror = () => fail(controller, 'Stream downloader channel failed')
+    },
+    pull(controller) {
+      drain(controller)
+    },
+    cancel() {
+      cleanup()
     },
   })
 
-  downloadMap.set(downloadUrl, { stream, data })
-  port.postMessage({ downloadUrl })
+  downloadMap.set(downloadUrl, { stream, data, port })
+  port.postMessage({ type: 'ready', downloadUrl })
+
+  /** @param {ReadableStreamDefaultController} controller */
+  function drain(controller) {
+    if (settled) return
+    if (pendingChunk && (controller.desiredSize ?? 0) > 0) {
+      const { sequence, chunk } = pendingChunk
+      pendingChunk = null
+      controller.enqueue(new Uint8Array(chunk))
+      port.postMessage({ type: 'chunk-accepted', sequence })
+    }
+
+    if (endRequested && !pendingChunk) {
+      settled = true
+      controller.close()
+      port.postMessage({ type: 'complete' })
+      cleanup()
+    }
+  }
+
+  /** @param {ReadableStreamDefaultController} controller */
+  function abort(controller) {
+    if (settled) return
+    settled = true
+    controller.error(new Error('Stream download aborted'))
+    cleanup()
+  }
+
+  /** @param {ReadableStreamDefaultController} controller @param {string} message */
+  function fail(controller, message) {
+    if (settled) return
+    settled = true
+    controller.error(new Error(message))
+    port.postMessage({ type: 'error', message })
+    cleanup()
+  }
+
+  function cleanup() {
+    downloadMap.delete(downloadUrl)
+    port.close()
+  }
 })
 
-/**
- * 拦截下载请求并实时下载
- */
 self.addEventListener('fetch', (event) => {
   // @ts-ignore
   const url = event.request.url
-  if (!downloadMap.has(url)) {
-    return
-  }
+  const download = downloadMap.get(url)
+  if (!download) return
 
-  const downloadData = downloadMap.get(url)
-  if (downloadData) {
-    downloadMap.delete(url)
-    const { data } = downloadData
+  downloadMap.delete(url)
+  download.port.postMessage({ type: 'download-started' })
+  const headers = new Headers({
+    'Content-Type': download.data.mimeType,
+    'Content-Disposition': `attachment; filename="${download.data.filename}"`,
+    ...(download.data.contentLength
+      ? { 'Content-Length': String(download.data.contentLength) }
+      : {}),
+  })
 
-    const headerData = {
-      'Content-Type': data.mimeType,
-      'Content-Disposition': `attachment; filename="${data.filename}"`,
-    }
-    if (data.contentLength) {
-      headerData['Content-Length'] = data.contentLength
-    }
-    const headers = new Headers(headerData)
-
-    // @ts-ignore
-    event.respondWith(new Response(downloadData.stream, { headers }))
-  }
+  // @ts-ignore
+  event.respondWith(new Response(download.stream, { headers }))
 })
 
-/**
- * @typedef {import('../fileTool/streamDownloader').PostAction} PostAction
- */
-
-/**
- * @typedef {import('../fileTool/streamDownloader').PostServiceWorkerData} PostServiceWorkerData
- */
+/** @typedef {import('../fileTool/streamDownloader').ServiceWorkerDownloadRequest} ServiceWorkerDownloadRequest */
+/** @typedef {import('../fileTool/streamDownloader').ServiceWorkerDownloadResponse} ServiceWorkerDownloadResponse */
+/** @typedef {import('../fileTool/streamDownloader').PostServiceWorkerData} PostServiceWorkerData */

@@ -1,6 +1,6 @@
 import { Button, PageShell, Panel, StatusBadge } from '@app/components'
 import { createSignal, onCleanup } from 'solid-js'
-import { Speaker } from '@/webApi'
+import { Speaker } from '@jl-org/tool'
 
 /** 使用真实 SpeechSynthesisUtterance 验证文字转语音参数与播放控制 */
 export function SpeakerPage() {

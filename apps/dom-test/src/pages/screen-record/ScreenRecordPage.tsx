@@ -1,7 +1,7 @@
-import type { RecorderState } from '@/webApi/ScreenRecord/type'
+import type { RecorderState } from '@jl-org/tool'
 import { Button, PageShell, Panel, StatusBadge } from '@app/components'
 import { createSignal, onCleanup } from 'solid-js'
-import { ScreenRecorder } from '@/webApi'
+import { ScreenRecorder } from '@jl-org/tool'
 
 /** 使用真实 video、getDisplayMedia 和 ScreenRecorder 验证屏幕录制生命周期 */
 export function ScreenRecordPage() {

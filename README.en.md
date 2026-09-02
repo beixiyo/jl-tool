@@ -133,7 +133,7 @@ yarn add @jl-org/tool
 - [`convertToWav`](https://github.com/beixiyo/jl-tool/blob/master/src/convert/audioToWav.ts) - Convert MediaRecorder/WebM/OGG audio to WAV, with resampling and channel mixing support
 - [`FileChunker`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/FileChunker.ts) - File chunking processor
 - [`BinaryMetadataEncoder`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/BinaryMetadataEncoder.ts) - Metadata and binary data encoding tool
-- [`createStreamDownloader`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/streamDownloader.ts) - Stream download (memory unlimited)
+- [`createStreamDownloader`](https://github.com/beixiyo/jl-tool/tree/master/src/fileTool/streamDownloader) - Streaming downloads with backpressure
 - [`getMimeType`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/getMimeType.ts) - Get resource MIME type
 - [`detectFileType`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/fileType.ts) - Detect file type
 - [`jsonToJsonl`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/jsonl.ts) / [`jsonlToJson`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/jsonl.ts) - Convert between JSON and JSONL formats

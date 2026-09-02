@@ -51,11 +51,15 @@ export default defineConfig([
 
   {
     input: 'src/sw/streamDownload.js',
-    output: [
-      { file: 'dist/sw/streamDownload.js', format: 'es' },
-      // use for test
-      { file: 'public/streamDownload.js', format: 'es' },
+    output: { file: 'dist/sw/streamDownload.js', format: 'es' },
+    plugins: [
+      terser(),
     ],
+  },
+
+  {
+    input: 'src/worklet/pcmCapture.js',
+    output: { file: 'dist/worklet/pcmCapture.js', format: 'es' },
     plugins: [
       terser(),
     ],

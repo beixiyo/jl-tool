@@ -133,7 +133,7 @@ yarn add @jl-org/tool
 - [`convertToWav`](https://github.com/beixiyo/jl-tool/blob/master/src/convert/audioToWav.ts) - 将 MediaRecorder/WebM/OGG 音频转换成 WAV，支持重采样和声道混合
 - [`FileChunker`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/FileChunker.ts) - 文件分块处理器
 - [`BinaryMetadataEncoder`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/BinaryMetadataEncoder.ts) - 元数据与二进制数据混合编码工具
-- [`createStreamDownloader`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/streamDownloader.ts) - 流式下载（无内存限制）
+- [`createStreamDownloader`](https://github.com/beixiyo/jl-tool/tree/master/src/fileTool/streamDownloader) - 带背压的流式下载
 - [`getMimeType`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/getMimeType.ts) - 获取资源的MIME类型
 - [`detectFileType`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/fileType.ts) - 检测文件类型
 - [`jsonToJsonl`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/jsonl.ts) / [`jsonlToJson`](https://github.com/beixiyo/jl-tool/blob/master/src/fileTool/jsonl.ts) - JSON与JSONL格式转换
@@ -154,12 +154,58 @@ yarn add @jl-org/tool
 ### 🎬 媒体API
 
 - [`Recorder`](https://github.com/beixiyo/jl-tool/blob/master/src/webApi/Recorder.ts) - 音频录制
+- [`PcmCapture`](https://github.com/beixiyo/jl-tool/tree/master/src/webApi/PcmCapture) - 基于 AudioWorklet 的实时 PCM 采集，支持麦克风、MediaStream 和 AudioNode
 - [`Speaker`](https://github.com/beixiyo/jl-tool/blob/master/src/webApi/Speaker.ts) - 语音播放
 - [`SpeakToTxt`](https://github.com/beixiyo/jl-tool/blob/master/src/webApi/SpeakToTxt.ts) - 语音转文字
 - [`openCamera`](https://github.com/beixiyo/jl-tool/blob/master/src/webApi/openCamera.ts) - 开启摄像头
 - [`ScreenRecorder`](https://github.com/beixiyo/jl-tool/blob/master/src/webApi/screenRecord/ScreenRecorder.ts) - 屏幕录制
 
 [查看浏览器测试项目](https://github.com/beixiyo/jl-tool/tree/master/apps/dom-test)
+
+#### 实时 PCM 采集
+
+```ts
+import { PcmCapture } from '@jl-org/tool'
+
+const capture = new PcmCapture({
+  source: {
+    kind: 'microphone',
+    constraints: {
+      channelCount: 1,
+      echoCancellation: true,
+      noiseSuppression: true,
+      autoGainControl: true,
+    },
+  },
+  format: {
+    sampleRate: 16000,
+    channelCount: 1,
+    encoding: 's16le',
+    frameDurationMs: 100,
+  },
+  levelMeter: {
+    intervalMs: 50,
+    gain: 3,
+  },
+  onFrame: ({ data }) => {
+    websocket.send(data)
+  },
+  onLevel: (level) => {
+    console.log('volume:', level)
+  },
+})
+
+await capture.prepare()
+await capture.start()
+
+// 停止时会等待 Worklet 交出最后一个不足整帧的 PCM buffer
+const summary = await capture.stop()
+console.log(summary.durationMs, summary.bytes)
+
+await capture.destroy()
+```
+
+`source` 也可传入已有的 `MediaStream` 或 `AudioNode`。外部资源默认不由 `PcmCapture` 销毁；可通过 `stopTracksOnDestroy`、`audioContext.closeOnDestroy` 显式转移所有权。自定义 CSP 或构建环境可以通过 `worklet.moduleUrl` 提供独立 Worklet 模块
 
 ### 📦 数据结构
 

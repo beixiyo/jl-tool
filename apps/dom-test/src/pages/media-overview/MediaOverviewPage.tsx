@@ -4,6 +4,7 @@ import { For } from 'solid-js'
 
 const MEDIA_PAGES = [
   { path: '/tests/recorder', title: 'Recorder', description: '麦克风录音、音频播放与实时频谱' },
+  { path: '/tests/pcm-capture', title: 'PcmCapture', description: 'AudioWorklet 实时采集原始 PCM 帧' },
   { path: '/tests/speaker', title: 'Speaker', description: '文字转语音、参数调节与播放控制' },
   { path: '/tests/speak-to-txt', title: 'SpeakToTxt', description: '语音识别、连续识别与临时结果' },
   { path: '/tests/camera', title: 'Camera', description: '摄像头预览与 MediaStream 释放' },

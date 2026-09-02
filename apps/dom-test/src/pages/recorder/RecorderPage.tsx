@@ -1,6 +1,6 @@
 import { Button, PageShell, Panel, StatusBadge } from '@app/components'
 import { createSignal, onCleanup } from 'solid-js'
-import { Recorder } from '@/webApi'
+import { Recorder } from '@jl-org/tool'
 
 type RecorderViewState = 'idle' | 'recording' | 'paused' | 'stopped' | 'error'
 

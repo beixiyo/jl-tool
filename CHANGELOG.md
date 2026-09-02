@@ -1,5 +1,37 @@
 # 更新日志
 
+## [5.1.0] - 2026-09-02
+
+### 破坏性改动
+
+- **`createStreamDownloader` 删除 `swPath`，改用 `serviceWorker` 配置。** Service Worker
+  现在默认启用并使用包内置脚本；需要自定义脚本时传入
+  `serviceWorker: { scriptUrl: '/sw.js' }`，需要保持文件选择器与 Blob 回退路径时传入
+  `serviceWorker: false`
+
+### 新增
+
+- 新增 `PcmCapture`，基于 AudioWorklet 实时输出 PCM 帧，支持麦克风、已有
+  `MediaStream` 和 `AudioNode` 输入，以及 `s16le` / `f32le`、单/双声道、帧长和音量计配置
+- `PcmCapture` 提供成对的 `prepare()` / `start()` / `stop()` / `destroy()` 生命周期，停止时会
+  等待 Worklet 交出最后一个不足整帧的 buffer，并返回本轮帧数、字节数与音频时长
+- 包内置 PCM AudioWorklet 和流式下载 Service Worker 构建产物；流式下载 Worker 另可通过
+  `@jl-org/tool/stream-download-sw` 直接引用
+- DOM 测试应用新增 PCM 采集页面，用于检查真实浏览器输入、音量和逐帧 PCM 数据
+
+### 变更
+
+- 重构 `createStreamDownloader`，按 Service Worker、File System Access API 和 Blob 回退拆分职责
+- Service Worker 下载改为每个任务使用独立 `MessageChannel`，逐块确认写入以提供背压，并为
+  Worker 激活、握手、分块写入和完成确认增加超时与资源清理
+- Service Worker 下载不再依赖宿主页面当前的 `controller`，也不再强制申请根 scope；调用方可
+  注入既有 `ServiceWorkerRegistration` 或覆盖注册选项
+
+### 修复
+
+- 修复流式下载过早暴露 downloader、没有等待浏览器开始读取、下游消费速度无法约束上游写入，
+  以及 Worker 更新期间可能向旧 active 实例发送新协议消息的问题
+
 ## [5.0.1] - 2026-08-13
 
 ### 新增

@@ -7,6 +7,7 @@ import { DebouncePage } from '@app/pages/debounce/DebouncePage'
 import { DisableDebugPage } from '@app/pages/disable-debug/DisableDebugPage'
 import { MediaOverviewPage } from '@app/pages/media-overview/MediaOverviewPage'
 import { PreloadPage } from '@app/pages/preload/PreloadPage'
+import { PcmCapturePage } from '@app/pages/pcm-capture/PcmCapturePage'
 import { RecorderPage } from '@app/pages/recorder/RecorderPage'
 import { ScheduleTaskPage } from '@app/pages/schedule-task/ScheduleTaskPage'
 import { ScreenRecordPage } from '@app/pages/screen-record/ScreenRecordPage'
@@ -32,6 +33,7 @@ const PAGE_COMPONENTS: readonly Component[] = [
   ScrollTriggerXPage,
   MediaOverviewPage,
   RecorderPage,
+  PcmCapturePage,
   SpeakerPage,
   SpeakToTxtPage,
   CameraPage,

@@ -1,6 +1,6 @@
 import { Button, PageShell, Panel, StatusBadge } from '@app/components'
 import { createSignal, onCleanup } from 'solid-js'
-import { SpeakToTxt } from '@/webApi'
+import { SpeakToTxt } from '@jl-org/tool'
 
 /** 使用真实 SpeechRecognition 验证连续识别、临时结果和生命周期 */
 export function SpeakToTxtPage() {

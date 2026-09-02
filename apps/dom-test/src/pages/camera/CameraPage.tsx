@@ -1,6 +1,6 @@
 import { Button, PageShell, Panel, StatusBadge } from '@app/components'
 import { createSignal, onCleanup } from 'solid-js'
-import { openCamera } from '@/webApi'
+import { openCamera } from '@jl-org/tool'
 
 /** 使用真实 video 元素验证摄像头流的开启、预览和关闭 */
 export function CameraPage() {

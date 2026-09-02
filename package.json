@@ -1,6 +1,6 @@
 {
   "name": "@jl-org/tool",
-  "version": "5.0.1",
+  "version": "5.1.0",
   "description": "JS的瑞士军刀",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
@@ -29,6 +29,9 @@
         "types": "./dist/node/typings/node/index.d.ts",
         "default": "./dist/node/index.js"
       }
+    },
+    "./stream-download-sw": {
+      "default": "./dist/sw/streamDownload.js"
     }
   },
   "typesVersions": {

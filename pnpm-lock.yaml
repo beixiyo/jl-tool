@@ -83,6 +83,9 @@ importers:
 
   apps/dom-test:
     dependencies:
+      '@jl-org/tool':
+        specifier: workspace:*
+        version: link:../..
       '@solidjs/router':
         specifier: 1.0.0
         version: 1.0.0(solid-js@1.9.14)

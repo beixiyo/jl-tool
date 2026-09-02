@@ -1,7 +1,7 @@
-import type { StreamDownloader } from '@/fileTool/streamDownloader'
+import type { StreamDownloader } from '@jl-org/tool'
 import { Button, PageShell, Panel, StatusBadge } from '@app/components'
 import { createSignal, onCleanup } from 'solid-js'
-import { createStreamDownloader } from '@/fileTool/streamDownloader'
+import { createStreamDownloader } from '@jl-org/tool'
 
 export function StreamDownloaderPage() {
   const [running, setRunning] = createSignal(false)
@@ -24,8 +24,13 @@ export function StreamDownloaderPage() {
       : '准备 Blob / File System Access 下载…')
     try {
       active = await createStreamDownloader('jl-tool-stream-demo.txt', useServiceWorker
-        ? { swPath: '/streamDownload.js', mimeType: 'text/plain' }
-        : { mimeType: 'text/plain' })
+        ? {
+            mimeType: 'text/plain',
+          }
+        : {
+            mimeType: 'text/plain',
+            serviceWorker: false,
+          })
       for (let index = 0; index < 20 && !cancelled; index++) {
         await write(active, `Line ${index}\n`)
         setProgress(index + 1)
@@ -82,8 +87,8 @@ export function StreamDownloaderPage() {
           / 20 chunks
         </div>
         <div class="mt-6 flex flex-wrap gap-2">
-          <Button onClick={() => run(false)} disabled={running()}>文件下载</Button>
-          <Button onClick={() => run(true)} disabled={running()}>Service Worker 下载</Button>
+          <Button onClick={() => run(false)} disabled={running()}>File System / Blob 下载</Button>
+          <Button onClick={() => run(true)} disabled={running()}>默认 Service Worker 下载</Button>
           <Button variant="danger" onClick={abort} disabled={!running()}>取消</Button>
         </div>
       </Panel>

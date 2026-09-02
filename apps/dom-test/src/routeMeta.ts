@@ -12,6 +12,7 @@ export const ROUTE_META = [
   route('/tests/scroll-trigger-x', 'ScrollTrigger X', '横向滚动触发动画', 'Visual'),
   route('/tests/media', 'Media APIs', '浏览所有浏览器媒体能力', 'Media'),
   route('/tests/recorder', 'Recorder', '录音、暂停、分析和回放', 'Media'),
+  route('/tests/pcm-capture', 'PcmCapture', 'AudioWorklet、PCM 帧和资源释放', 'Media'),
   route('/tests/speaker', 'Speaker', '语音合成参数与播放控制', 'Media'),
   route('/tests/speak-to-txt', 'SpeakToTxt', '浏览器语音识别与实时结果', 'Media'),
   route('/tests/camera', 'Camera', '摄像头权限、预览和释放', 'Media'),

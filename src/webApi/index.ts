@@ -1,4 +1,5 @@
 export * from './openCamera'
+export * from './PcmCapture'
 export * from './Recorder/index'
 export * from './ScreenRecord'
 export * from './Speaker'
