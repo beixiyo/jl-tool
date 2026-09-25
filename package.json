@@ -1,6 +1,6 @@
 {
   "name": "@jl-org/tool",
-  "version": "5.1.0",
+  "version": "5.2.0",
   "description": "JS的瑞士军刀",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
