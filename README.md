@@ -155,6 +155,9 @@ yarn add @jl-org/tool
 
 - [`Recorder`](https://github.com/beixiyo/jl-tool/blob/master/src/webApi/Recorder.ts) - 音频录制
 - [`PcmCapture`](https://github.com/beixiyo/jl-tool/tree/master/src/webApi/PcmCapture) - 基于 AudioWorklet 的实时 PCM 采集，支持麦克风、MediaStream 和 AudioNode
+- [`AudioLaneRecorder`](https://github.com/beixiyo/jl-tool/tree/master/src/webApi/AudioLaneRecorder) - 输入源可热切换的单路音频录制
+- [`MicrophoneInput`](https://github.com/beixiyo/jl-tool/tree/master/src/webApi/MicrophoneInput) - 麦克风获取与断开后自动接回
+- [`MediaPermission`](https://github.com/beixiyo/jl-tool/tree/master/src/webApi/MediaPermission) - 媒体权限状态读取、订阅与 getUserMedia 失败归类
 - [`Speaker`](https://github.com/beixiyo/jl-tool/blob/master/src/webApi/Speaker.ts) - 语音播放
 - [`SpeakToTxt`](https://github.com/beixiyo/jl-tool/blob/master/src/webApi/SpeakToTxt.ts) - 语音转文字
 - [`openCamera`](https://github.com/beixiyo/jl-tool/blob/master/src/webApi/openCamera.ts) - 开启摄像头
@@ -206,6 +209,41 @@ await capture.destroy()
 ```
 
 `source` 也可传入已有的 `MediaStream` 或 `AudioNode`。外部资源默认不由 `PcmCapture` 销毁；可通过 `stopTracksOnDestroy`、`audioContext.closeOnDestroy` 显式转移所有权。自定义 CSP 或构建环境可以通过 `worklet.moduleUrl` 提供独立 Worklet 模块
+
+#### 可热切换输入的录音
+
+```ts
+import { AudioLaneRecorder, MicrophoneInput } from '@jl-org/tool'
+
+const context = new AudioContext()
+const lane = new AudioLaneRecorder({
+  context,
+  timesliceMs: 5000,
+  onDataAvailable: blob => chunks.push(blob),
+})
+const mic = new MicrophoneInput({
+  constraints: { audio: { echoCancellation: true } },
+  // 设备断开时先交出 null（写入静音），接回后交出新流
+  onStreamChange: stream => lane.setSource(stream),
+  onEvent: (event) => {
+    if (event.type === 'recovered') console.log('switched to', event.deviceLabel)
+  },
+})
+
+const result = await mic.acquire()
+if (!result.ok) {
+  // system-denied / blocked / denied / dismissed / no-device / device-busy / unknown
+  console.log(result.failure)
+}
+else {
+  mic.startWatching()
+  lane.start()
+}
+
+await lane.stop()
+mic.release()
+await context.close()
+```
 
 ### 📦 数据结构
 

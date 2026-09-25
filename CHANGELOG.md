@@ -1,5 +1,18 @@
 # 更新日志
 
+## [Unreleased]
+
+### 新增
+
+- 新增 `AudioLaneRecorder`，录制 AudioContext 里的固定目标节点，输入源可在录制中通过
+  `setSource()` 随时替换或拔掉（拔掉时写入静音），换设备、中途补上另一路声音都不必重启录制；
+  输出默认单声道，可通过 `channelCount` 改为双声道
+- 新增 `MicrophoneInput`，持有麦克风流并在音轨 ended 后自动接回系统默认麦克风；接不回时等待
+  `devicechange` 重试，通过 `onStreamChange` / `onEvent` 通知调用方，`acquire()` 失败不抛错
+- 新增 `queryMediaPermission` / `watchMediaPermission` / `hasMediaInputDevice` /
+  `classifyMediaAccessError`，读取与订阅站点媒体权限，并把 getUserMedia 失败归为系统拒绝、
+  站点已拒绝、刚被拒绝、关闭授权窗口、无设备、设备占用等类别
+
 ## [5.1.0] - 2026-09-02
 
 ### 破坏性改动

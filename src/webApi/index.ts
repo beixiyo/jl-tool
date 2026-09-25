@@ -1,3 +1,6 @@
+export * from './AudioLaneRecorder'
+export * from './MediaPermission'
+export * from './MicrophoneInput'
 export * from './openCamera'
 export * from './PcmCapture'
 export * from './Recorder/index'
