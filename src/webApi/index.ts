@@ -1,4 +1,5 @@
 export * from './AudioLaneRecorder'
+export * from './DisplayAudio'
 export * from './MediaPermission'
 export * from './MicrophoneInput'
 export * from './openCamera'

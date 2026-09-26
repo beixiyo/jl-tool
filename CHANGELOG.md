@@ -9,6 +9,9 @@
   输出默认单声道，可通过 `channelCount` 改为双声道
 - 新增 `MicrophoneInput`，持有麦克风流并在音轨 ended 后自动接回系统默认麦克风；接不回时等待
   `devicechange` 重试，通过 `onStreamChange` / `onEvent` 通知调用方，`acquire()` 失败不抛错
+- 新增 `requestDisplayAudio` / `isDisplayAudioSupported`，通过屏幕共享只取声音（标签页 / 系统声音），
+  拿到后立即停掉视频轨，默认不把焦点切到被共享的页面；取消、系统拒绝、不支持分别归类
+- `AudioLaneRecorder` 支持 `setInput(id, source)` 多路输入，在目标节点处混成一路
 - 新增 `queryMediaPermission` / `watchMediaPermission` / `hasMediaInputDevice` /
   `classifyMediaAccessError`，读取与订阅站点媒体权限，并把 getUserMedia 失败归为系统拒绝、
   站点已拒绝、刚被拒绝、关闭授权窗口、无设备、设备占用等类别

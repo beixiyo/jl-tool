@@ -24,6 +24,15 @@ export interface AudioLaneRecorderOptions {
   environment?: AudioLaneRecorderEnvironment
 }
 
+/** {@link AudioLaneRecorder.setInput} 的选项 */
+export interface AudioLaneInputOptions {
+  /**
+   * 该路输入的增益
+   * @default 1
+   */
+  gain?: number
+}
+
 /** 输入源：采集流或已在同一 AudioContext 里的音频节点 */
 export type AudioLaneSource = MediaStream | AudioNode
 

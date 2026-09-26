@@ -1,10 +1,11 @@
 /** 输入源可热切换的单路音频录制 */
 
 import type { RecorderMimeType } from '../ScreenRecord/type'
-import type { AudioLaneRecorderEnvironment, AudioLaneRecorderOptions, AudioLaneRecorderState, AudioLaneSource } from './types'
+import type { AudioLaneInputOptions, AudioLaneRecorderEnvironment, AudioLaneRecorderOptions, AudioLaneRecorderState, AudioLaneSource } from './types'
 import { pickSupportedMimeType } from '../ScreenRecord/utils'
 
 const DEFAULT_MIME_TYPES: RecorderMimeType[] = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4']
+const DEFAULT_INPUT_ID = 'default'
 
 /**
  * 录制 AudioContext 里一个固定的目标节点，而不是采集流本身
@@ -51,8 +52,7 @@ export class AudioLaneRecorder {
   private readonly keepAlive: ConstantSourceNode
   private readonly keepAliveGain: GainNode
   private readonly recorder: MediaRecorder
-  private sourceNode: AudioNode | null = null
-  private ownsSourceNode = false
+  private readonly inputs = new Map<string, ConnectedInput>()
   private stopPromise: Promise<void> | null = null
 
   /** 录制中的输出流（含切换后的输入），可用于音量分析 */
@@ -71,27 +71,49 @@ export class AudioLaneRecorder {
   }
 
   /**
-   * 替换输入源；传 `null` 或无音轨的流时写入静音
+   * 替换默认输入；传 `null` 或无音轨的流时拔掉（只剩其他输入或静音）
    *
-   * 传入 AudioNode 时只做连接，不负责它的断开以外的清理
+   * 等价于 `setInput('default', source)`
    */
   setSource(source: AudioLaneSource | null): void {
-    this.sourceNode?.disconnect(this.destination)
-    if (this.ownsSourceNode) this.sourceNode?.disconnect()
-    this.sourceNode = null
-    this.ownsSourceNode = false
+    this.setInput(DEFAULT_INPUT_ID, source)
+  }
+
+  /**
+   * 接上、替换或拔掉一路具名输入；多路输入在目标节点处相加混成一路
+   *
+   * 传入 MediaStream 时由本实例创建并负责断开 source 节点，不会停止流里的音轨；
+   * 传入 AudioNode 时只做连接与断开
+   *
+   * @param id 输入名，同名再次调用即替换
+   * @param source 新输入；`null` 或无音轨的流表示拔掉
+   */
+  setInput(id: string, source: AudioLaneSource | null, options: AudioLaneInputOptions = {}): void {
+    this.disconnectInput(id)
     if (!source || this.stopPromise) return
 
+    const { context } = this.options
+    let node: AudioNode
+    let ownsNode = false
     if (isMediaStream(source)) {
       if (!source.getAudioTracks().length) return
 
-      this.sourceNode = this.options.context.createMediaStreamSource(source)
-      this.ownsSourceNode = true
+      node = context.createMediaStreamSource(source)
+      ownsNode = true
     }
     else {
-      this.sourceNode = source
+      node = source
     }
-    this.sourceNode.connect(this.destination)
+
+    const gain = context.createGain()
+    gain.gain.value = options.gain ?? 1
+    node.connect(gain).connect(this.destination)
+    this.inputs.set(id, { node, gain, ownsNode })
+  }
+
+  /** 当前已接上的输入名 */
+  get inputIds(): string[] {
+    return [...this.inputs.keys()]
   }
 
   /** 开始录制；已开始或已停止时忽略 */
@@ -123,14 +145,26 @@ export class AudioLaneRecorder {
       this.recorder.addEventListener('stop', () => resolve(), { once: true })
       this.recorder.stop()
     }).finally(() => {
-      this.sourceNode?.disconnect(this.destination)
-      if (this.ownsSourceNode) this.sourceNode?.disconnect()
-      this.sourceNode = null
+      for (const id of [...this.inputs.keys()]) this.disconnectInput(id)
       this.keepAlive.stop()
       this.keepAlive.disconnect()
       this.keepAliveGain.disconnect()
     })
     return this.stopPromise
+  }
+
+  private disconnectInput(id: string): void {
+    const input = this.inputs.get(id)
+    if (!input) return
+
+    this.inputs.delete(id)
+    input.gain.disconnect()
+    if (input.ownsNode) {
+      input.node.disconnect()
+    }
+    else {
+      input.node.disconnect(input.gain)
+    }
   }
 
   private get environment(): AudioLaneRecorderEnvironment {
@@ -140,4 +174,11 @@ export class AudioLaneRecorder {
 
 function isMediaStream(source: AudioLaneSource): source is MediaStream {
   return typeof (source as MediaStream).getAudioTracks === 'function'
+}
+
+type ConnectedInput = {
+  node: AudioNode
+  gain: GainNode
+  /** 由本实例创建的 MediaStreamAudioSourceNode，断开时整个断掉 */
+  ownsNode: boolean
 }
