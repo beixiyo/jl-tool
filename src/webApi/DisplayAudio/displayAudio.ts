@@ -106,6 +106,10 @@ export async function requestDisplayAudio(options: RequestDisplayAudioOptions = 
  *
  * Chromium：取消选择报 `NotAllowedError: Permission denied by user`，
  * macOS 未授予屏幕录制权限报 `NotAllowedError: Permission denied by system`
+ *
+ * 规范规定缺少瞬时用户激活、文档没有焦点或未完全激活时报 `InvalidStateError`；
+ * CaptureController 被重复使用也报该错，但 {@link requestDisplayAudio} 每次都新建 controller，
+ * 因此这里统一归为 `activation-required`
  */
 export function classifyDisplayMediaError(error: unknown): DisplayAudioFailure {
   const name = (error as { name?: unknown } | null)?.name
@@ -115,6 +119,7 @@ export function classifyDisplayMediaError(error: unknown): DisplayAudioFailure {
       ? 'system-denied'
       : 'cancelled'
   }
+  if (name === 'InvalidStateError') return 'activation-required'
   if (name === 'NotSupportedError' || name === 'TypeError') return 'unsupported'
   return 'unknown'
 }

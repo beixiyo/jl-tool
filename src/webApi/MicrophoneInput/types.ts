@@ -1,15 +1,19 @@
 import type { MediaAccessFailure, MediaPermissionState } from '../MediaPermission'
+import type { MicrophoneConstraints } from './echoCancellation'
 
 /** {@link MicrophoneInput} 的构造参数 */
 export interface MicrophoneInputOptions {
   /**
-   * getUserMedia 约束；不要写死 deviceId，接回时要跟随系统默认设备
+   * getUserMedia 约束，echoCancellation 可用 `'all'` / `'remote-only'`
+   *
+   * 不要用 `deviceId: { exact }` 写死设备：设备拔掉后接回会一直失败；
+   * 手动选择设备请用 `deviceId: { ideal }`，并通过 {@link MicrophoneInput.setConstraints} 在运行中切换
    * @default { audio: true }
    */
-  constraints?: MediaStreamConstraints
+  constraints?: MicrophoneConstraints
   /** 当前麦克风流变化：首次获取、接回新设备、断开（null） */
   onStreamChange?: (stream: MediaStream | null) => void
-  /** 监听期间的设备 / 权限事件 */
+  /** 监听期间的设备 / 权限 / 静音事件 */
   onEvent?: (event: MicrophoneInputEvent) => void
   /** 可替换的浏览器环境依赖 */
   environment?: MicrophoneInputEnvironment
@@ -21,9 +25,13 @@ export interface MicrophoneInputOptions {
  * - `recovered`：断开后已接回系统默认麦克风
  * - `unavailable`：接不回来（没有设备 / 被占用），之后每次 devicechange 会静默重试
  * - `permission-denied`：接回时发现系统或站点的麦克风权限已被关闭
+ * - `muted` / `unmuted`：音轨暂时收不到数据 / 恢复，音轨本身没有结束。
+ *   例如 Safari 中麦克风被其他标签页占用时音轨被静音而不是 ended，此时不会自动接回
  */
 export type MicrophoneInputEvent =
   | { type: 'recovered', stream: MediaStream, deviceLabel: string }
+  | { type: 'muted', track: MediaStreamTrack }
+  | { type: 'unmuted', track: MediaStreamTrack }
   | { type: 'unavailable', failure: MediaAccessFailure }
   | { type: 'permission-denied', failure: Extract<MediaAccessFailure, 'system-denied' | 'blocked' | 'denied'> }
 

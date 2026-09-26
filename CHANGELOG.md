@@ -2,6 +2,13 @@
 
 ## [5.2.0] - 2026-09-26
 
+### 破坏性改动
+
+- **`Recorder.stop()` 可能被拒绝。** 此前 `stop()` 不会拒绝；现在原生 `MediaRecorder` 报错、
+  `finalizeBlob` 失败或原生 `stop()` 同步抛错时，`stop()` 会拒绝并通知 `onError`。
+  `await recorder.stop()` 后紧跟 `destroy()` 的代码需要改成 `try { ... } finally { await recorder.destroy() }`，
+  否则 `stop()` 被拒绝时执行不到 `destroy()`，麦克风会一直开着
+
 ### 新增
 
 - 新增 `AudioLaneRecorder`，录制 AudioContext 里的固定目标节点，输入源可在录制中通过
@@ -34,12 +41,19 @@
 - 三种录制器新增可选 `finalizeBlob` 最终文件处理器与 `finalizeRecording()`，并交付不含暂停时间的
   有效时长 `durationMs`。库不内置 WebM 时长修复，也不引入第三方依赖；需要补写 Duration 时由应用
   自行安装修复库并注入，见 `docs/media-apis.md`
+- `MicrophoneInput` 新增 `setConstraints()`，运行中按新约束重新获取（如手动选择设备），失败时保留原来的流；
+  新增 `muted` 以及 `muted` / `unmuted` 事件，Safari 中麦克风被其他标签页占用时音轨只是被静音而不结束，
+  调用方可据此提示用户
+- 新增 `EchoCancellationMode` / `AudioTrackConstraints` / `MicrophoneConstraints` 类型，`echoCancellation`
+  可直接写 `'all'` / `'remote-only'`；新增 `getEchoCancellationValues` / `isEchoCancellationModeSupported`
+  从音轨或 `InputDeviceInfo` 的能力中检测支持的模式
+- `classifyDisplayMediaError` 新增 `activation-required` 归类：不在用户操作中发起、页面在后台或没有焦点时
+  返回该值，调用方可提示用户回到页面再点一次
 - DOM 测试应用新增媒体总览、音频工作台、共享声音、麦克风与权限等页面
 
 ### 变更
 
-- `Recorder.stop()` 现在等待最后分片与 `finalizeBlob` 完成；原生 `MediaRecorder` 错误或
-  `finalizeBlob` 失败时 `stop()` 会拒绝，并通知 `onError`。此前 `stop()` 不会拒绝
+- `Recorder.stop()` 现在等待最后分片与 `finalizeBlob` 完成后才返回
 - `Recorder.updateConfig()` 新增的采集配置在录制中或最终输出尚未交付时不打断当前轮，在下一轮
   `start()` 生效
 - `ScreenRecorder` 构造时复制配置对象，`updateConfig()` 不再修改调用方传入的对象；录制自然停止
@@ -50,6 +64,8 @@
 - 修复 `Recorder.updateConfig()` 未把新的采集配置传给采集层的问题
 - 修复 `Recorder` / `ScreenRecorder` 在初始化或采集尚未完成时销毁，迟到的流和结果仍被使用或发布的问题
 - 修复 `AudioLaneRecorder` 停止时未停止内部输出音轨的问题
+- 修复 `MicrophoneInput.acquire()` 并发调用时各自请求 getUserMedia、后返回的流把先返回的流停掉的问题，
+  同时进行的调用现在合并为一次请求；请求期间调用 `release()` 时，晚到的流会被停掉而不再成为当前流
 
 ## [5.1.0] - 2026-09-02
 

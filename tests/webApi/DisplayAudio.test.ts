@@ -98,7 +98,7 @@ describe('requestDisplayAudio', () => {
     expect(result).toMatchObject({ ok: false, failure: 'unknown' })
   })
 
-  it('取消选择与系统拒绝分别归类', async () => {
+  it('取消选择、系统拒绝与缺少用户激活分别归类', async () => {
     const cancelled = await requestDisplayAudio({
       environment: envRejecting(new DOMException('Permission denied by user', 'NotAllowedError')),
     })
@@ -106,7 +106,12 @@ describe('requestDisplayAudio', () => {
       environment: envRejecting(new DOMException('Permission denied by system', 'NotAllowedError')),
     })
 
+    const inactive = await requestDisplayAudio({
+      environment: envRejecting(new DOMException('getDisplayMedia must be called from a user gesture handler', 'InvalidStateError')),
+    })
+
     expect(cancelled).toMatchObject({ ok: false, failure: 'cancelled' })
     expect(systemDenied).toMatchObject({ ok: false, failure: 'system-denied' })
+    expect(inactive).toMatchObject({ ok: false, failure: 'activation-required' })
   })
 })

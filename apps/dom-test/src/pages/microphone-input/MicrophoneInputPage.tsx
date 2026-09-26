@@ -1,4 +1,4 @@
-import type { MicrophoneInputEvent } from '@/webApi/MicrophoneInput'
+import type { MicrophoneConstraints, MicrophoneInputEvent } from '@/webApi/MicrophoneInput'
 import { MicrophoneInput } from '@/webApi/MicrophoneInput'
 import { Button, createEventLog, EventLog, Metric, PageShell, Panel, SelectField, StatusBadge } from '@app/components'
 import { createSignal, onCleanup } from 'solid-js'
@@ -240,6 +240,8 @@ const EVENT_TONE = {
   recovered: 'success',
   unavailable: 'warning',
   'permission-denied': 'danger',
+  muted: 'warning',
+  unmuted: 'success',
 } as const
 
 function describeEvent(event: MicrophoneInputEvent): string {
@@ -249,14 +251,16 @@ function describeEvent(event: MicrophoneInputEvent): string {
     case 'unavailable':
     case 'permission-denied':
       return `onEvent ${event.type} · ${event.failure}`
+    case 'muted':
+    case 'unmuted':
+      return `onEvent ${event.type} · ${event.track.label}`
   }
 }
 
-function buildConstraints(option: EchoOption): MediaStreamConstraints {
+function buildConstraints(option: EchoOption): MicrophoneConstraints {
   if (option === 'default') return { audio: true }
-  /** 'all' 不在 lib.dom 的 ConstrainBoolean 里，Chromium 已支持 */
   const echoCancellation = option === 'all'
-    ? option as unknown as boolean
+    ? option
     : option === 'true'
   return { audio: { echoCancellation } }
 }

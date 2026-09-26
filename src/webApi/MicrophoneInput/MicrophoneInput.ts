@@ -1,9 +1,10 @@
 /** 麦克风输入：获取、失败归类，以及设备断开后自动接回系统默认麦克风 */
 
+import type { MicrophoneConstraints } from './echoCancellation'
 import type { MicrophoneAcquireResult, MicrophoneInputEnvironment, MicrophoneInputOptions } from './types'
 import { classifyMediaAccessError, hasMediaInputDevice, queryMediaPermission } from '../MediaPermission'
 
-const DEFAULT_CONSTRAINTS: MediaStreamConstraints = { audio: true }
+const DEFAULT_CONSTRAINTS: MicrophoneConstraints = { audio: true }
 
 /**
  * 持有一条麦克风流并负责它的生命周期
@@ -11,27 +12,77 @@ const DEFAULT_CONSTRAINTS: MediaStreamConstraints = { audio: true }
  * - `acquire()` 获取麦克风；失败时按 {@link classifyMediaAccessError} 归类，不抛错
  * - `startWatching()` 之后，音轨 ended（设备拔掉、被系统收回、权限被撤销）会先交出 `null`
  *   让下游接静音，再重新获取系统默认麦克风；没有设备时等 devicechange 再试
- * - 流换了通过 `onStreamChange` 通知，设备与权限事件通过 `onEvent` 通知，本类不做任何 UI
+ * - 流换了通过 `onStreamChange` 通知，设备、权限与静音事件通过 `onEvent` 通知，本类不做任何 UI
  *
- * 约束里不要写死 deviceId：接回时要跟随系统当前默认设备
+ * 约束里不要用 exact 写死 deviceId：接回时要跟随系统当前默认设备
  */
 export class MicrophoneInput {
-  constructor(private readonly options: MicrophoneInputOptions = {}) {}
+  constructor(private readonly options: MicrophoneInputOptions = {}) {
+    this.constraints = options.constraints ?? DEFAULT_CONSTRAINTS
+  }
 
   private current: MediaStream | null = null
+  private constraints: MicrophoneConstraints
   private watching = false
   private waitingForDevice = false
   private recovering: Promise<void> | null = null
+  /** 进行中的 getUserMedia；并发的 acquire 共用同一次请求 */
+  private acquiring: Promise<MicrophoneAcquireResult> | null = null
+  /** setConstraints 按调用顺序串行执行 */
+  private switching: Promise<unknown> = Promise.resolve()
+  /** release 时递增，丢弃释放前发出、之后才返回的流 */
+  private generation = 0
 
   /** 当前麦克风流；未获取或已断开时为 null */
   get stream(): MediaStream | null {
     return this.current
   }
 
-  /** 获取麦克风；已有可用流时直接复用，不会重复触发授权 */
-  async acquire(): Promise<MicrophoneAcquireResult> {
-    if (this.current && isLive(this.current)) return { ok: true, stream: this.current }
+  /** 当前音轨是否被静音（如 Safari 中麦克风被其他标签页占用）；没有流时为 false */
+  get muted(): boolean {
+    return this.current?.getAudioTracks().some((track) => track.muted) ?? false
+  }
 
+  /**
+   * 获取麦克风；已有可用流时直接复用，不会重复触发授权
+   *
+   * 同时进行的调用合并为一次 getUserMedia，返回同一结果；
+   * 请求期间调用了 release 时，晚到的流会被立即停止，结果为 `unknown` 失败（error 为 AbortError）
+   */
+  acquire(): Promise<MicrophoneAcquireResult> {
+    if (this.current && isLive(this.current)) return Promise.resolve({ ok: true, stream: this.current })
+    return this.acquiring ?? this.trackAcquiring(this.request())
+  }
+
+  /**
+   * 运行中更换约束，例如用户手动选择设备（用 `deviceId: { ideal }`）
+   *
+   * - 持有流时立即按新约束重新获取：成功则替换并触发 `onStreamChange`；失败保留原来的流，返回失败结果
+   * - 未持有流时只保存约束，在下次 acquire 或自动接回时生效，返回 null
+   * - 连续调用按顺序执行、以最后一次为准，被后续调用取代的那次返回 null
+   */
+  setConstraints(constraints: MicrophoneConstraints): Promise<MicrophoneAcquireResult | null> {
+    this.constraints = constraints
+    const run = this.switching.then(async () => {
+      if (this.acquiring) await this.acquiring
+      if (constraints !== this.constraints || !this.current) return null
+      return this.trackAcquiring(this.request())
+    })
+    this.switching = run.then(noop, noop)
+    return run
+  }
+
+  private trackAcquiring(pending: Promise<MicrophoneAcquireResult>): Promise<MicrophoneAcquireResult> {
+    this.acquiring = pending
+    const clear = () => {
+      if (this.acquiring === pending) this.acquiring = null
+    }
+    pending.then(clear, clear)
+    return pending
+  }
+
+  private async request(): Promise<MicrophoneAcquireResult> {
+    const generation = this.generation
     const mediaDevices = this.environment.mediaDevices ?? globalThis.navigator?.mediaDevices
     if (!mediaDevices?.getUserMedia) {
       return {
@@ -44,7 +95,18 @@ export class MicrophoneInput {
 
     const stateBefore = await queryMediaPermission('microphone', this.environment)
     try {
-      const next = await mediaDevices.getUserMedia(this.options.constraints ?? DEFAULT_CONSTRAINTS)
+      /** 规范已允许 echoCancellation 取模式字符串，DOM 类型尚未跟进 */
+      const next = await mediaDevices.getUserMedia(this.constraints as MediaStreamConstraints)
+      if (generation !== this.generation) {
+        next.getTracks().forEach((track) => track.stop())
+        return {
+          ok: false,
+          failure: 'unknown',
+          permissionState: stateBefore,
+          error: new DOMException('MicrophoneInput was released while acquiring', 'AbortError'),
+        }
+      }
+
       this.replaceStream(next)
       return { ok: true, stream: next }
     }
@@ -89,6 +151,8 @@ export class MicrophoneInput {
 
   /** 停止监听并释放麦克风；可重复调用 */
   release(): void {
+    this.generation++
+    this.acquiring = null
     this.stopWatching()
     this.replaceStream(null)
   }
@@ -105,9 +169,17 @@ export class MicrophoneInput {
     const prev = this.current
     if (prev === next) return
 
-    prev?.getAudioTracks().forEach(track => track.removeEventListener('ended', this.handleTrackEnded))
+    prev?.getAudioTracks().forEach((track) => {
+      track.removeEventListener('ended', this.handleTrackEnded)
+      track.removeEventListener('mute', this.handleTrackMute)
+      track.removeEventListener('unmute', this.handleTrackMute)
+    })
     this.current = next
-    next?.getAudioTracks().forEach(track => track.addEventListener('ended', this.handleTrackEnded))
+    next?.getAudioTracks().forEach((track) => {
+      track.addEventListener('ended', this.handleTrackEnded)
+      track.addEventListener('mute', this.handleTrackMute)
+      track.addEventListener('unmute', this.handleTrackMute)
+    })
     prev?.getTracks().forEach(track => track.stop())
 
     this.options.onStreamChange?.(next)
@@ -158,10 +230,23 @@ export class MicrophoneInput {
     void this.recover()
   }
 
+  /** 静音不结束音轨，不触发接回，只转发给调用方 */
+  private readonly handleTrackMute = (event: Event) => {
+    if (!this.watching) return
+    this.options.onEvent?.({
+      type: event.type === 'mute'
+        ? 'muted'
+        : 'unmuted',
+      track: event.target as MediaStreamTrack,
+    })
+  }
+
   private readonly handleDeviceChange = () => {
     if (this.waitingForDevice) void this.recover()
   }
 }
+
+function noop(): void {}
 
 function isLive(stream: MediaStream): boolean {
   return stream.getAudioTracks().some(track => track.readyState === 'live')

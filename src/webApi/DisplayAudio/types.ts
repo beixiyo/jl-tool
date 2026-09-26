@@ -26,10 +26,11 @@ export type DisplayAudioSurface = 'monitor' | 'browser' | 'window' | 'unknown'
  *
  * - `cancelled`：用户取消了选择窗口
  * - `system-denied`：操作系统未授予浏览器屏幕录制权限（macOS）
+ * - `activation-required`：不是在用户点击等操作中发起，或页面在后台 / 没有焦点；提示用户回到页面再点一次即可
  * - `unsupported`：浏览器不支持
  * - `unknown`：其他错误
  */
-export type DisplayAudioFailure = 'cancelled' | 'system-denied' | 'unsupported' | 'unknown'
+export type DisplayAudioFailure = 'cancelled' | 'system-denied' | 'activation-required' | 'unsupported' | 'unknown'
 
 /** {@link requestDisplayAudio} 的结果；失败不抛错 */
 export type DisplayAudioResult =
