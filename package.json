@@ -1,7 +1,7 @@
 {
   "name": "@jl-org/tool",
   "version": "5.2.0",
-  "description": "JS的瑞士军刀",
+  "description": "A zero-dependency, fully typed Swiss Army knife for frontend: utilities, animation, streaming parsers, file processing, networking and browser media APIs",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
   "type": "module",
@@ -60,12 +60,14 @@
     "dev:build": "pnpm --dir apps/dom-test build",
     "dev:test": "pnpm --dir apps/dom-test test",
     "dev:check": "run-p dev:typecheck dev:build dev:test",
-    "lint": "eslint src",
-    "lint:fix": "eslint --fix src"
+    "lint": "oxlint src",
+    "lint:fix": "oxlint src --fix",
+    "format": "dprint fmt --config-discovery=global .",
+    "format:check": "dprint check --config-discovery=global .",
+    "fix": "pnpm run lint && dprint fmt --config-discovery=global ."
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^4.13.2",
-    "@jl-org/eslint-plugins": "^1.0.0",
+    "@jl-org/eslint-plugins": "^1.0.1",
     "@jl-org/ts-tool": "^0.0.8",
     "@rollup/plugin-alias": "^5.1.0",
     "@rollup/plugin-node-resolve": "^15.2.3",
@@ -75,9 +77,9 @@
     "@types/webspeechapi": "^0.0.29",
     "@types/wicg-file-system-access": "^2023.10.6",
     "@vitest/coverage-v8": "^2.1.8",
-    "eslint": "^9.39.2",
     "jsdom": "^25.0.1",
     "npm-run-all2": "^8.0.2",
+    "oxlint": "^1.85.0",
     "rollup": "^4.6.1",
     "rollup-plugin-clear": "^2.0.7",
     "tsc-alias": "^1.8.8",
@@ -91,12 +93,40 @@
   },
   "keywords": [
     "tool",
-    "jl-tool"
+    "jl-tool",
+    "utils",
+    "utilities",
+    "toolkit",
+    "typescript",
+    "zero-dependency",
+    "animation",
+    "scroll-trigger",
+    "scheduler",
+    "websocket",
+    "stream-parser",
+    "sse",
+    "jsonl",
+    "file",
+    "download",
+    "recorder",
+    "media-recorder",
+    "screen-recorder",
+    "pcm",
+    "audio-worklet",
+    "speech-synthesis",
+    "speech-recognition"
   ],
   "author": "CJL <2662442385@qq.com>",
   "license": "MIT",
   "publishConfig": {
     "access": "public"
   },
-  "homepage": "https://github.com/beixiyo/jl-tool"
+  "homepage": "https://github.com/beixiyo/jl-tool#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/beixiyo/jl-tool.git"
+  },
+  "bugs": {
+    "url": "https://github.com/beixiyo/jl-tool/issues"
+  }
 }
