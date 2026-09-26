@@ -1,8 +1,8 @@
-import type { AnalysisConfig, CaptureConfig, RecorderOptions } from './types'
 import { AudioAnalysis } from './AudioAnalysis'
 import { COMMON_FORMATS } from './constants'
 import { MediaCapture } from './MediaCapture'
 import * as output from './output'
+import type { AnalysisConfig, CaptureConfig, RecorderOptions } from './types'
 
 /**
  * 录音门面：组合采集/分析/输出
@@ -20,6 +20,8 @@ export class Recorder {
   analysis: AudioAnalysis
   private config: RecorderOptions
   private initPromise: Promise<void> | null = null
+  private startPromise: Promise<void> | null = null
+  private generation = 0
 
   constructor(options?: RecorderOptions) {
     const defaultOptions: Partial<RecorderOptions> = {
@@ -45,12 +47,19 @@ export class Recorder {
         this.mimeType = this.capture.mimeType
         this.config.onFinish?.(url, chunks)
       },
-      onError: e => this.config.onError?.(e),
+      onError: (e) => this.config.onError?.(e),
+      onDataAvailable: (blob, event) => this.config.onDataAvailable?.(blob, event),
+      onStart: () => this.config.onStart?.(),
+      onPause: () => this.config.onPause?.(),
+      onResume: () => this.config.onResume?.(),
+      onStateChange: (state) => this.config.onStateChange?.(state),
+      onStop: (result) => this.config.onStop?.(result),
     })
     this.analysis = new AudioAnalysis(this.pickAnalysis(this.config))
 
     if (this.config.autoInit) {
-      this.init()
+      /** 自动初始化没有可等待的调用方；错误已由采集层通知 onError */
+      void this.init().catch(() => {})
     }
   }
 
@@ -78,6 +87,13 @@ export class Recorder {
 
   private pickCapture(c: RecorderOptions): CaptureConfig {
     return {
+      source: c.source,
+      audio: c.audio,
+      recorderOptions: c.recorderOptions,
+      timesliceMs: c.timesliceMs,
+      retainChunks: c.retainChunks,
+      finalizeBlob: c.finalizeBlob,
+      environment: c.environment,
       deviceId: c.deviceId,
       preferredMimeTypes: c.preferredMimeTypes,
       echoCancellation: c.echoCancellation,
@@ -96,18 +112,22 @@ export class Recorder {
 
   /** 显式初始化，可重入（合流避免并发） */
   async init() {
-    if (this.initPromise)
-      return this.initPromise
+    if (this.initPromise) return this.initPromise
+    const generation = this.generation
+
     this.initPromise = (async () => {
       await this.capture.init()
+      if (generation !== this.generation) return
       this.mediaRecorder = this.capture.mediaRecorder
       if (this.capture.stream) {
         await this.analysis.detach()
+        if (generation !== this.generation || !this.capture.stream) return
         this.analysis.attach(this.capture.stream)
         this.analyser = this.analysis.analyser
       }
       this.mimeType = this.capture.mimeType
     })()
+
     try {
       await this.initPromise
     }
@@ -118,20 +138,44 @@ export class Recorder {
 
   /** 判定是否已完成所需初始化（采集 + 可选分析） */
   private get isReady() {
-    if (!this.capture.mediaRecorder)
-      return false
-    if (this.config.createAnalyser && !this.analysis.analyser)
-      return false
+    if (!this.capture.mediaRecorder) return false
+    if (this.config.createAnalyser && !this.analysis.analyser) return false
     return true
   }
 
   /** 开始录音 */
-  async start() {
-    if (!this.isReady) {
-      await this.init()
+  async start(timesliceMs?: number) {
+    if (this.startPromise) return this.startPromise
+    this.startPromise = this.startRecording(timesliceMs)
+    try {
+      await this.startPromise
     }
-    await this.capture.start()
+    finally {
+      this.startPromise = null
+    }
+  }
+
+  private async startRecording(timesliceMs?: number) {
+    const generation = this.generation
+    if (!this.isReady) await this.init()
+    if (generation !== this.generation) return
+
+    const previousStream = this.capture.stream
+    await this.capture.start(timesliceMs)
+
+    if (generation !== this.generation) return
+
     this.mediaRecorder = this.capture.mediaRecorder
+    this.mimeType = this.capture.mimeType
+    this.audioUrl = this.capture.audioUrl
+    this.chunks = this.capture.chunks
+
+    if (this.capture.stream && this.capture.stream !== previousStream) {
+      await this.analysis.detach()
+      if (generation !== this.generation || !this.capture.stream) return
+      this.analysis.attach(this.capture.stream)
+      this.analyser = this.analysis.analyser
+    }
   }
 
   /** 停止录音 */
@@ -147,6 +191,16 @@ export class Recorder {
   /** 继续录音 */
   async resume() {
     await this.capture.resume()
+  }
+
+  /** 最终输出与有效时长；stop 完成后可读 */
+  get result() {
+    return this.capture.result
+  }
+
+  /** 主动请求原始分片 */
+  requestData() {
+    this.mediaRecorder?.requestData()
   }
 
   /** 是否在录制 */
@@ -166,9 +220,8 @@ export class Recorder {
 
   /** 下载录音 */
   download(fileName?: string) {
-    if (!this.chunks.length)
-      return this
-    const blob = new Blob(this.chunks, { type: this.mimeType })
+    if (!this.chunks.length) return this
+    const blob = this.result?.blob ?? new Blob(this.chunks, { type: this.mimeType })
     output.download(blob, fileName || '', this.mimeType)
     return this
   }
@@ -176,8 +229,7 @@ export class Recorder {
   /** 播放录音 */
   play(url?: string) {
     const target = url ?? this.audioUrl
-    if (!target)
-      return this
+    if (!target) return this
     output.play(target)
     return this
   }
@@ -192,6 +244,13 @@ export class Recorder {
 
     /** 采集相关变化需要重建 */
     const reinitRelated: (keyof RecorderOptions)[] = [
+      'source',
+      'audio',
+      'recorderOptions',
+      'environment',
+      'timesliceMs',
+      'retainChunks',
+      'finalizeBlob',
       'deviceId',
       'echoCancellation',
       'noiseSuppression',
@@ -199,24 +258,25 @@ export class Recorder {
       'preferredMimeTypes',
       'createAnalyser',
     ]
-    const anyOpts = options as any
-    const willReinit = reinitRelated.some(k => anyOpts[k] !== undefined && anyOpts[k] !== (before as any)[k])
+    const willReinit = reinitRelated.some((k) => k in options && options[k] !== before[k])
 
-    if (willReinit && this.mediaRecorder && (this.mediaRecorder.state === 'recording' || this.mediaRecorder.state === 'paused')) {
-      /** 录制/暂停中不重建，交由调用方在停止后再改 */
+    if (willReinit) this.capture.updateConfig(this.pickCapture(this.config))
+
+    if (willReinit && this.capture.isBusy) {
+      /** 录制、暂停或生成最终输出期间不重建，下一次 start 时应用 */
       return this
     }
 
     if (willReinit) {
-      this.init().catch(e => this.config.onError?.(e))
+      void this.init().catch(() => {})
     }
     return this
   }
 
   /** 销毁：释放所有资源并撤销 URL */
   async destroy() {
-    await this.analysis.detach()
-    await this.capture.release()
+    this.generation++
+    await Promise.all([this.capture.release(), this.analysis.detach()])
     this.mediaRecorder = null
     this.analyser = null
     this.chunks = []

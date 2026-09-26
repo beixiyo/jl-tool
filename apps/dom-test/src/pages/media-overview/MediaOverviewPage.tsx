@@ -5,6 +5,11 @@ import { For } from 'solid-js'
 const MEDIA_PAGES = [
   { path: '/tests/recorder', title: 'Recorder', description: '麦克风录音、音频播放与实时频谱' },
   { path: '/tests/pcm-capture', title: 'PcmCapture', description: 'AudioWorklet 实时采集原始 PCM 帧' },
+  { path: '/tests/media-permission', title: 'MediaPermission', description: '媒体权限状态订阅、输入设备检测与失败归类' },
+  { path: '/tests/microphone-input', title: 'MicrophoneInput', description: '麦克风获取、断开后自动接回与事件' },
+  { path: '/tests/audio-lane-recorder', title: 'AudioLaneRecorder', description: '麦克风与会议声音混音录制、声道数校验' },
+  { path: '/tests/display-audio', title: 'DisplayAudio', description: '屏幕共享只取声音、共享结束检测' },
+  { path: '/tests/audio-studio', title: 'AudioStudio', description: '麦克风、共享声音与检测音任意组合的混音录制台' },
   { path: '/tests/speaker', title: 'Speaker', description: '文字转语音、参数调节与播放控制' },
   { path: '/tests/speak-to-txt', title: 'SpeakToTxt', description: '语音识别、连续识别与临时结果' },
   { path: '/tests/camera', title: 'Camera', description: '摄像头预览与 MediaStream 释放' },
@@ -17,14 +22,17 @@ export function MediaOverviewPage() {
     <PageShell title="媒体 Web API" description="选择一个独立的 Solid 页面测试真实浏览器媒体能力">
       <Panel title="测试页面" description="每个页面都直接使用 JSX 元素承载 API 资源，不通过 iframe 或旧 DOM 初始化脚本复用">
         <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          <For each={MEDIA_PAGES}>
-            {page => (
-              <A href={page.path} class="group rounded-2xl border border-slate-800 bg-slate-950 p-5 transition hover:-translate-y-0.5 hover:border-emerald-400/70">
-                <h2 class="font-semibold text-slate-100 group-hover:text-emerald-300">{page.title}</h2>
-                <p class="mt-2 text-sm leading-6 text-slate-400">{page.description}</p>
-                <code class="mt-4 block text-xs text-emerald-300">{page.path}</code>
+          <For each={ MEDIA_PAGES }>
+            { (page) => (
+              <A
+                href={ page.path }
+                class="group rounded-2xl border border-slate-800 bg-slate-950 p-5 transition hover:-translate-y-0.5 hover:border-emerald-400/70"
+              >
+                <h2 class="font-semibold text-slate-100 group-hover:text-emerald-300">{ page.title }</h2>
+                <p class="mt-2 text-sm leading-6 text-slate-400">{ page.description }</p>
+                <code class="mt-4 block text-xs text-emerald-300">{ page.path }</code>
               </A>
-            )}
+            ) }
           </For>
         </div>
       </Panel>

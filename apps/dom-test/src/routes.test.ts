@@ -3,13 +3,22 @@ import { ROUTE_META } from './routeMeta'
 
 describe('Solid DOM test routes', () => {
   it('每个页面都使用唯一且隔离的测试路由', () => {
-    const paths = ROUTE_META.map(item => item.path)
+    const paths = ROUTE_META.map((item) => item.path)
 
     expect(new Set(paths).size).toBe(paths.length)
-    expect(paths.every(path => path.startsWith('/tests/'))).toBe(true)
+    expect(paths.every((path) => path.startsWith('/tests/'))).toBe(true)
   })
 
   it('每条路由都有首页展示所需的完整元数据', () => {
-    expect(ROUTE_META.every(item => item.title && item.description && item.group)).toBe(true)
+    expect(ROUTE_META.every((item) => item.title && item.description && item.group)).toBe(true)
+  })
+
+  it('parent 要么缺省，要么指向首页或已注册的测试页，避免返回链接指向死路由', () => {
+    const paths = new Set(ROUTE_META.map((item) => item.path))
+
+    ROUTE_META.forEach((item) => {
+      if (!item.parent) return
+      expect(item.parent === '/' || paths.has(item.parent)).toBe(true)
+    })
   })
 })

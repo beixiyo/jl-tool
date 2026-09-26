@@ -1,6 +1,6 @@
+import { Recorder } from '@/webApi/Recorder'
 import { Button, PageShell, Panel, StatusBadge } from '@app/components'
 import { createSignal, onCleanup } from 'solid-js'
-import { Recorder } from '@jl-org/tool'
 
 type RecorderViewState = 'idle' | 'recording' | 'paused' | 'stopped' | 'error'
 
@@ -59,8 +59,7 @@ export function RecorderPage() {
   }
 
   const createRecorder = () => {
-    if (recorder)
-      return recorder
+    if (recorder) return recorder
 
     recorder = new Recorder({
       autoInit: false,
@@ -91,9 +90,11 @@ export function RecorderPage() {
     }
     catch (error) {
       setState('error')
-      setStatus(error instanceof Error
-        ? error.message
-        : '麦克风初始化失败')
+      setStatus(
+        error instanceof Error
+          ? error.message
+          : '麦克风初始化失败',
+      )
     }
   }
 
@@ -108,15 +109,16 @@ export function RecorderPage() {
     }
     catch (error) {
       setState('error')
-      setStatus(error instanceof Error
-        ? error.message
-        : '录音启动失败')
+      setStatus(
+        error instanceof Error
+          ? error.message
+          : '录音启动失败',
+      )
     }
   }
 
   async function stopRecording() {
-    if (!recorder)
-      return
+    if (!recorder) return
 
     try {
       setStatus('正在停止录音…')
@@ -127,9 +129,11 @@ export function RecorderPage() {
     }
     catch (error) {
       setState('error')
-      setStatus(error instanceof Error
-        ? error.message
-        : '录音停止失败')
+      setStatus(
+        error instanceof Error
+          ? error.message
+          : '录音停止失败',
+      )
     }
   }
 
@@ -139,8 +143,7 @@ export function RecorderPage() {
       await recorder.destroy()
       recorder = null
     }
-    if (audioElement)
-      audioElement.src = ''
+    if (audioElement) audioElement.src = ''
     setAudioUrl('')
     setRecordingInfo('')
     setState('idle')
@@ -163,27 +166,28 @@ export function RecorderPage() {
       <div class="grid gap-5 lg:grid-cols-[0.8fr_1.2fr]">
         <Panel title="控制台" description="初始化按钮才会请求麦克风权限">
           <div class="flex flex-wrap gap-3">
-            <Button onClick={initialize} disabled={state() === 'recording' || Boolean(recorder)}>初始化</Button>
-            <Button onClick={startRecording} disabled={state() === 'recording'}>开始录音</Button>
-            <Button onClick={() => void stopRecording()} disabled={state() !== 'recording'}>停止录音</Button>
-            <Button variant="danger" onClick={() => void destroyRecorder()} disabled={!recorder || state() === 'recording'}>释放</Button>
+            <Button onClick={ initialize } disabled={ state() === 'recording' || Boolean(recorder) }>初始化</Button>
+            <Button onClick={ startRecording } disabled={ state() === 'recording' }>开始录音</Button>
+            <Button onClick={ () => void stopRecording() } disabled={ state() !== 'recording' }>停止录音</Button>
+            <Button variant="danger" onClick={ () => void destroyRecorder() } disabled={ !recorder || state() === 'recording' }>释放</Button>
           </div>
           <div class="mt-5 flex items-center gap-3">
-            <StatusBadge tone={state() === 'error'
-              ? 'danger'
-              : state() === 'recording'
+            <StatusBadge
+              tone={ state() === 'error'
+                ? 'danger'
+                : state() === 'recording'
                 ? 'warning'
-                : 'success'}
+                : 'success' }
             >
-              {status()}
+              { status() }
             </StatusBadge>
-            {recordingInfo() && <span class="text-sm text-slate-400">{recordingInfo()}</span>}
+            { recordingInfo() && <span class="text-sm text-slate-400">{ recordingInfo() }</span> }
           </div>
-          <audio ref={audioElement} class="mt-5 w-full" controls src={audioUrl()} />
+          <audio ref={ audioElement } class="mt-5 w-full" controls src={ audioUrl() } />
         </Panel>
 
         <Panel title="实时频谱" description="录音初始化开启 createAnalyser，动画帧仅在录音期间运行">
-          <canvas ref={meterCanvas} width="720" height="180" class="h-44 w-full rounded-xl border border-slate-800 bg-slate-950" />
+          <canvas ref={ meterCanvas } width="720" height="180" class="h-44 w-full rounded-xl border border-slate-800 bg-slate-950" />
         </Panel>
       </div>
     </PageShell>

@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest'
 import { requestDisplayAudio } from '@/webApi/DisplayAudio'
+import { describe, expect, it, vi } from 'vitest'
 
 class FakeTrack {
   readyState: MediaStreamTrackState = 'live'
@@ -20,10 +20,10 @@ function createStream(tracks: FakeTrack[]) {
   let list = [...tracks]
   return {
     getTracks: () => list,
-    getAudioTracks: () => list.filter(t => t.kind === 'audio'),
-    getVideoTracks: () => list.filter(t => t.kind === 'video'),
+    getAudioTracks: () => list.filter((t) => t.kind === 'audio'),
+    getVideoTracks: () => list.filter((t) => t.kind === 'video'),
     removeTrack: (track: FakeTrack) => {
-      list = list.filter(t => t !== track)
+      list = list.filter((t) => t !== track)
     },
   } as unknown as MediaStream
 }
@@ -72,6 +72,30 @@ describe('requestDisplayAudio', () => {
 
     expect(result).toMatchObject({ ok: true, hasAudio: false, surface: 'monitor' })
     expect(video.readyState).toBe('ended')
+  })
+
+  it('整屏开关与本地静音正确透传；完整函数配置优先且回调错误仍返回分类结果', async () => {
+    const getDisplayMedia = vi.fn(async (_options?: DisplayMediaStreamOptions) => createStream([]))
+    const environment = { mediaDevices: { getDisplayMedia, getSupportedConstraints: () => ({}) } }
+    await requestDisplayAudio({
+      preferSurface: 'browser',
+      monitorTypeSurfaces: 'exclude',
+      suppressLocalAudioPlayback: true,
+      displayMediaOptions: (defaults) => ({ ...defaults, preferCurrentTab: true, audio: { suppressLocalAudioPlayback: false, sampleRate: 48000 } }),
+      environment,
+    })
+    expect(getDisplayMedia).toHaveBeenCalledWith(expect.objectContaining({
+      monitorTypeSurfaces: 'exclude',
+      preferCurrentTab: true,
+      audio: { suppressLocalAudioPlayback: false, sampleRate: 48000 },
+    }))
+    const result = await requestDisplayAudio({
+      environment,
+      displayMediaOptions: () => {
+        throw new Error('invalid config')
+      },
+    })
+    expect(result).toMatchObject({ ok: false, failure: 'unknown' })
   })
 
   it('取消选择与系统拒绝分别归类', async () => {

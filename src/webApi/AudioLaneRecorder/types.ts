@@ -1,3 +1,4 @@
+import type { MediaOptions, NativeRecorderOptions, RecordingFinalizer, RecordingResult } from '../recording'
 import type { RecorderMimeType } from '../ScreenRecord/type'
 
 /** {@link AudioLaneRecorder} 的构造参数 */
@@ -18,6 +19,26 @@ export interface AudioLaneRecorderOptions {
   channelCount?: 1 | 2
   /** 音频码率 */
   audioBitsPerSecond?: number
+  /** 完整原生录制参数，覆盖 MIME 和码率快捷项。@default 由 mimeTypes/audioBitsPerSecond 生成 */
+  recorderOptions?: MediaOptions<NativeRecorderOptions>
+  /**
+   * 缓存分片用于 getResult/onStop 的最终 blob；关闭时仅流式输出，blob 为 null，时长仍可读
+   * 默认关闭以保持旧版只交付分片的内存占用
+   * @default false
+   */
+  retainChunks?: boolean
+  /**
+   * 最终 Blob 处理器；stop 等待其完成，原始分片不变
+   * WebM 时长修复需由应用自行安装依赖并注入，示例见 {@link RecordingFinalizer}
+   * @default undefined（原样输出，不内置时长修复）
+   */
+  finalizeBlob?: RecordingFinalizer
+  /** 异步 MediaRecorder 错误；同步方法失败仍抛错 */
+  onError?: (error: Error) => void
+  /** 状态变化；停止完成通知 stopped */
+  onStateChange?: (state: AudioLaneRecorderState) => void
+  /** 最后分片与可选的外部最终文件处理完成 */
+  onStop?: (result: RecordingResult) => void
   /** 每个非空分片 */
   onDataAvailable?: (blob: Blob) => void
   /** 可替换的浏览器环境依赖 */
@@ -42,4 +63,7 @@ export type AudioLaneRecorderState = RecordingState | 'stopped'
 /** 可替换的浏览器环境依赖，供测试或宿主注入 */
 export interface AudioLaneRecorderEnvironment {
   createMediaRecorder?: (stream: MediaStream, options: MediaRecorderOptions) => MediaRecorder
+  isTypeSupported?: (mimeType: string) => boolean
+  /** 单调毫秒时钟。@default performance.now */
+  now?: () => number
 }

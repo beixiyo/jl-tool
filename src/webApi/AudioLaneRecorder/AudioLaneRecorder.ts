@@ -1,8 +1,9 @@
 /** 输入源可热切换的单路音频录制 */
 
+import type { RecordingResult } from '../recording'
+import { finalizeRecording, RecordingClock, resolveMediaOptions } from '../recording'
 import type { RecorderMimeType } from '../ScreenRecord/type'
 import type { AudioLaneInputOptions, AudioLaneRecorderEnvironment, AudioLaneRecorderOptions, AudioLaneRecorderState, AudioLaneSource } from './types'
-import { pickSupportedMimeType } from '../ScreenRecord/utils'
 
 const DEFAULT_MIME_TYPES: RecorderMimeType[] = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4']
 const DEFAULT_INPUT_ID = 'default'
@@ -20,13 +21,21 @@ const DEFAULT_INPUT_ID = 'default'
  */
 export class AudioLaneRecorder {
   constructor(private readonly options: AudioLaneRecorderOptions) {
-    const { context, channelCount = 1 } = options
+    this.options = {
+      ...options,
+      channelCount: options.channelCount ?? 1,
+      retainChunks: options.retainChunks ?? false,
+    }
+
+    this.clock = new RecordingClock(this.environment.now)
+    const { context, channelCount } = this.options
     this.destination = context.createMediaStreamDestination()
+
     /**
-     * 目标节点按规范默认 2 声道：单声道麦克风接进来会被复制成左右两路，录出双声道文件。
+     * 目标节点按规范默认 2 声道：单声道麦克风接进来会被复制成左右两路，录出双声道文件
      * 固定成 explicit 后，任何输入都按 speakers 规则下混 / 上混到指定声道数
      */
-    this.destination.channelCount = channelCount
+    this.destination.channelCount = channelCount!
     this.destination.channelCountMode = 'explicit'
     this.destination.channelInterpretation = 'speakers'
 
@@ -39,12 +48,41 @@ export class AudioLaneRecorder {
 
     const createRecorder = this.environment.createMediaRecorder
       ?? ((stream, recorderOptions) => new MediaRecorder(stream, recorderOptions))
-    this.recorder = createRecorder(this.destination.stream, {
-      mimeType: pickSupportedMimeType(options.mimeTypes ?? DEFAULT_MIME_TYPES),
-      audioBitsPerSecond: options.audioBitsPerSecond,
-    })
+    const supports = this.environment.isTypeSupported
+      ?? ((mime) => globalThis.MediaRecorder?.isTypeSupported(mime) ?? false)
+
+    try {
+      this.recorder = createRecorder(
+        this.destination.stream,
+        resolveMediaOptions({
+          mimeType: (options.mimeTypes ?? DEFAULT_MIME_TYPES).find(supports),
+          audioBitsPerSecond: options.audioBitsPerSecond,
+        }, options.recorderOptions),
+      )
+    }
+    catch (error) {
+      this.cleanup()
+      throw error
+    }
+
     this.recorder.ondataavailable = (event) => {
-      if (event.data.size > 0) this.options.onDataAvailable?.(event.data)
+      if (event.data.size === 0) return
+      if (this.options.retainChunks) this.chunks.push(event.data)
+      this.options.onDataAvailable?.(event.data)
+    }
+    this.recorder.onstart = () => this.options.onStateChange?.('recording')
+    this.recorder.onpause = () => this.options.onStateChange?.('paused')
+    this.recorder.onresume = () => this.options.onStateChange?.('recording')
+    this.recorder.onerror = (event) => {
+      this.options.onError?.(
+        (event as Event & { error?: Error }).error
+          ?? new Error('MediaRecorder error'),
+      )
+    }
+    this.recorder.onstop = () => {
+      this.clock.pause()
+      this.stopPromise ??= this.completion
+      void this.finish().then(this.resolveCompletion, this.rejectCompletion)
     }
   }
 
@@ -54,6 +92,26 @@ export class AudioLaneRecorder {
   private readonly recorder: MediaRecorder
   private readonly inputs = new Map<string, ConnectedInput>()
   private stopPromise: Promise<void> | null = null
+  private readonly clock: RecordingClock
+  private started = false
+  private chunks: Blob[] = []
+  private result: RecordingResult | null = null
+  private resolveCompletion!: () => void
+  private rejectCompletion!: (error: unknown) => void
+  private readonly completion = new Promise<void>((resolve, reject) => {
+    this.resolveCompletion = resolve
+    this.rejectCompletion = reject
+  })
+
+  /** 最终文件与有效时长；await stop() 后读取 */
+  getResult(): RecordingResult | null {
+    return this.result
+  }
+
+  /** 主动请求原始分片 */
+  requestData(): void {
+    this.recorder.requestData()
+  }
 
   /** 录制中的输出流（含切换后的输入），可用于音量分析 */
   get stream(): MediaStream {
@@ -120,37 +178,92 @@ export class AudioLaneRecorder {
   start(): void {
     if (this.stopPromise || this.recorder.state !== 'inactive') return
 
-    this.recorder.start(this.options.timesliceMs)
+    void this.completion.catch(() => {})
+    this.clock.start()
+    this.started = true
+    try {
+      this.recorder.start(this.options.timesliceMs)
+    }
+    catch (error) {
+      this.clock.pause()
+      this.started = false
+      throw error
+    }
   }
 
   pause(): void {
-    if (this.recorder.state === 'recording') this.recorder.pause()
+    if (this.recorder.state === 'recording') {
+      this.recorder.pause()
+      this.clock.pause()
+    }
   }
 
   resume(): void {
-    if (this.recorder.state === 'paused') this.recorder.resume()
+    if (this.recorder.state === 'paused') {
+      this.recorder.resume()
+      this.clock.resume()
+    }
   }
 
   /** 停止录制并等最后一个分片交付，随后断开输入源与内部节点；可重复调用 */
   stop(): Promise<void> {
     if (this.stopPromise) return this.stopPromise
 
-    this.stopPromise = new Promise<void>((resolve) => {
-      if (this.recorder.state === 'inactive') {
-        resolve()
-        return
+    this.stopPromise = this.completion
+    void this.completion.catch(() => {})
+    if (!this.started) {
+      void this.finish().then(this.resolveCompletion, this.rejectCompletion)
+    }
+    else if (this.recorder.state !== 'inactive') {
+      try {
+        this.recorder.stop()
+        this.clock.pause()
       }
-
-      /** stop 事件在最后一次 dataavailable 之后派发，此时分片都已交给调用方 */
-      this.recorder.addEventListener('stop', () => resolve(), { once: true })
-      this.recorder.stop()
-    }).finally(() => {
-      for (const id of [...this.inputs.keys()]) this.disconnectInput(id)
-      this.keepAlive.stop()
-      this.keepAlive.disconnect()
-      this.keepAliveGain.disconnect()
-    })
+      catch (error) {
+        this.cleanup()
+        this.rejectCompletion(error)
+      }
+    }
     return this.stopPromise
+  }
+
+  private finishing: Promise<void> | null = null
+
+  private finish(): Promise<void> {
+    this.finishing ??= this.finalize().catch((error) => {
+      this.options.onError?.(
+        error instanceof Error
+          ? error
+          : new Error(String(error)),
+      )
+      throw error
+    })
+    return this.finishing
+  }
+
+  private async finalize(): Promise<void> {
+    this.clock.pause()
+    this.cleanup()
+    const durationMs = this.clock.durationMs
+    const blob = this.chunks.length
+      ? await finalizeRecording({
+        blob: new Blob(this.chunks, { type: this.mimeType }),
+        durationMs,
+        finalizeBlob: this.options.finalizeBlob,
+      })
+      : null
+    this.chunks = []
+    this.result = { blob, durationMs, mimeType: this.mimeType }
+    this.options.onStateChange?.('stopped')
+    this.options.onStop?.(this.result)
+  }
+
+  private cleanup(): void {
+    for (const id of [...this.inputs.keys()]) this.disconnectInput(id)
+    this.keepAlive.stop()
+    this.keepAlive.disconnect()
+    this.keepAliveGain.disconnect()
+    this.destination.stream.getTracks().forEach((track) => track.stop())
   }
 
   private disconnectInput(id: string): void {

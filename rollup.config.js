@@ -1,8 +1,8 @@
-import { fileURLToPath } from 'node:url'
 import alias from '@rollup/plugin-alias'
 import { nodeResolve } from '@rollup/plugin-node-resolve'
 import terser from '@rollup/plugin-terser'
 import typescript from '@rollup/plugin-typescript'
+import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'rollup'
 import clear from 'rollup-plugin-clear'
 

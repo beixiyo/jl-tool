@@ -11,16 +11,22 @@ export const ROUTE_META = [
   route('/tests/scroll-trigger', 'ScrollTrigger', '纵向滚动触发动画', 'Visual'),
   route('/tests/scroll-trigger-x', 'ScrollTrigger X', '横向滚动触发动画', 'Visual'),
   route('/tests/media', 'Media APIs', '浏览所有浏览器媒体能力', 'Media'),
-  route('/tests/recorder', 'Recorder', '录音、暂停、分析和回放', 'Media'),
-  route('/tests/pcm-capture', 'PcmCapture', 'AudioWorklet、PCM 帧和资源释放', 'Media'),
-  route('/tests/speaker', 'Speaker', '语音合成参数与播放控制', 'Media'),
-  route('/tests/speak-to-txt', 'SpeakToTxt', '浏览器语音识别与实时结果', 'Media'),
-  route('/tests/camera', 'Camera', '摄像头权限、预览和释放', 'Media'),
-  route('/tests/screen-record', 'Screen Recorder', '屏幕捕获、录制和回放', 'Media'),
+  route('/tests/recorder', 'Recorder', '录音、暂停、分析和回放', 'Media', '/tests/media'),
+  route('/tests/pcm-capture', 'PcmCapture', 'AudioWorklet、PCM 帧和资源释放', 'Media', '/tests/media'),
+  route('/tests/media-permission', 'MediaPermission', '媒体权限、输入设备与失败归类', 'Media', '/tests/media'),
+  route('/tests/microphone-input', 'MicrophoneInput', '麦克风获取、断开自动接回与释放', 'Media', '/tests/media'),
+  route('/tests/audio-lane-recorder', 'AudioLaneRecorder', '多路混音录制、热切换与声道数', 'Media', '/tests/media'),
+  route('/tests/display-audio', 'DisplayAudio', '屏幕共享只取声音、视频轨即时停止', 'Media', '/tests/media'),
+  route('/tests/audio-studio', 'AudioStudio', '麦克风、共享声音与检测音任意组合的混音录制台', 'Media', '/tests/media'),
+  route('/tests/speaker', 'Speaker', '语音合成参数与播放控制', 'Media', '/tests/media'),
+  route('/tests/speak-to-txt', 'SpeakToTxt', '浏览器语音识别与实时结果', 'Media', '/tests/media'),
+  route('/tests/camera', 'Camera', '摄像头权限、预览和释放', 'Media', '/tests/media'),
+  route('/tests/screen-record', 'Screen Recorder', '屏幕捕获、录制和回放', 'Media', '/tests/media'),
 ] as const
 
-function route(path: string, title: string, description: string, group: RouteGroup) {
-  return { path, title, description, group }
+/** 上级入口页：媒体功能页返回 /tests/media 总览，其余缺省回首页 */
+function route(path: string, title: string, description: string, group: RouteGroup, parent?: string) {
+  return { path, title, description, group, parent }
 }
 
 export type RouteGroup = 'Animation' | 'Scheduling' | 'Browser' | 'Visual' | 'Media'

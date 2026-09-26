@@ -1,6 +1,6 @@
 # 更新日志
 
-## [Unreleased]
+## [5.2.0] - 2026-09-26
 
 ### 新增
 
@@ -15,6 +15,41 @@
 - 新增 `queryMediaPermission` / `watchMediaPermission` / `hasMediaInputDevice` /
   `classifyMediaAccessError`，读取与订阅站点媒体权限，并把 getUserMedia 失败归为系统拒绝、
   站点已拒绝、刚被拒绝、关闭授权窗口、无设备、设备占用等类别
+- 媒体 API 支持完整原生配置：对象在快捷字段生成的默认值上浅合并，函数接收默认值并返回完整配置；
+  新增公共导出 `resolveMediaOptions`、`MediaOptions`、`NativeRecorderOptions`
+- `Recorder` 新增 `audio`（完整音频约束）、`recorderOptions`、`timesliceMs` / `start(timesliceMs)`、
+  `retainChunks`、`requestData()`、`result`，以及 `onDataAvailable` / `onStart` / `onPause` /
+  `onResume` / `onStateChange` / `onStop` 事件；`source` 可借用已有 `MediaStream`（默认不停止其轨道），
+  `environment` 可注入 getUserMedia、MediaRecorder 工厂、MIME 检测和时钟
+- `AudioLaneRecorder` 新增 `recorderOptions`、`onError` / `onStateChange` / `onStop`、`getResult()`、
+  `requestData()` 与 `retainChunks`（默认 false，保持只交付分片的内存占用）
+- `ScreenRecorder` 的 `video` 支持完整约束，新增 `displayMediaOptions`、`recorderOptions`、
+  `onResult` / `getResult()`
+- `requestDisplayAudio` 新增 `displayMediaOptions`、`monitorTypeSurfaces`、
+  `suppressLocalAudioPlayback` 与 `windowAudio`（默认 `'window'`）
+- `Speaker` 新增 `utteranceOptions`、start/end/pause/resume/boundary/mark/error 事件回调、
+  `onVoicesChanged`、`environment` 注入和幂等 `destroy()`；构造时立即读取已加载的声音列表
+- `SpeakToTxt` 新增 `recognitionOptions`、`maxAlternatives`、`grammars`、错误/nomatch/音频/声音/
+  语音生命周期回调、`environment` 注入、`abort()` 与幂等 `destroy()`
+- 三种录制器新增可选 `finalizeBlob` 最终文件处理器与 `finalizeRecording()`，并交付不含暂停时间的
+  有效时长 `durationMs`。库不内置 WebM 时长修复，也不引入第三方依赖；需要补写 Duration 时由应用
+  自行安装修复库并注入，见 `docs/media-apis.md`
+- DOM 测试应用新增媒体总览、音频工作台、共享声音、麦克风与权限等页面
+
+### 变更
+
+- `Recorder.stop()` 现在等待最后分片与 `finalizeBlob` 完成；原生 `MediaRecorder` 错误或
+  `finalizeBlob` 失败时 `stop()` 会拒绝，并通知 `onError`。此前 `stop()` 不会拒绝
+- `Recorder.updateConfig()` 新增的采集配置在录制中或最终输出尚未交付时不打断当前轮，在下一轮
+  `start()` 生效
+- `ScreenRecorder` 构造时复制配置对象，`updateConfig()` 不再修改调用方传入的对象；录制自然停止
+  （如用户结束共享）同样释放采集资源
+
+### 修复
+
+- 修复 `Recorder.updateConfig()` 未把新的采集配置传给采集层的问题
+- 修复 `Recorder` / `ScreenRecorder` 在初始化或采集尚未完成时销毁，迟到的流和结果仍被使用或发布的问题
+- 修复 `AudioLaneRecorder` 停止时未停止内部输出音轨的问题
 
 ## [5.1.0] - 2026-09-02
 

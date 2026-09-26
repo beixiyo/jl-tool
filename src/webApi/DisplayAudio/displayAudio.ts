@@ -1,10 +1,12 @@
 /** 通过屏幕共享只拿声音：标签页声音 / 系统声音，拿到后立即丢弃视频 */
 
+import { resolveMediaOptions } from '../recording'
 import type {
   DisplayAudioEnvironment,
   DisplayAudioFailure,
   DisplayAudioResult,
   DisplayAudioSurface,
+  NativeDisplayMediaOptions,
   RequestDisplayAudioOptions,
 } from './types'
 
@@ -27,9 +29,11 @@ export function isDisplayAudioSupported(environment: DisplayAudioEnvironment = {
   const mediaDevices = environment.mediaDevices ?? globalThis.navigator?.mediaDevices
   if (typeof mediaDevices?.getDisplayMedia !== 'function') return false
 
-  const supported = mediaDevices.getSupportedConstraints?.() as (MediaTrackSupportedConstraints & {
-    suppressLocalAudioPlayback?: boolean
-  }) | undefined
+  const supported = mediaDevices.getSupportedConstraints?.() as
+    | (MediaTrackSupportedConstraints & {
+      suppressLocalAudioPlayback?: boolean
+    })
+    | undefined
   return supported?.suppressLocalAudioPlayback === true
 }
 
@@ -47,10 +51,13 @@ export async function requestDisplayAudio(options: RequestDisplayAudioOptions = 
   const {
     preferSurface = 'monitor',
     systemAudio = 'include',
+    windowAudio = 'window',
     selfBrowserSurface = 'exclude',
     surfaceSwitching = 'exclude',
     audio = DEFAULT_AUDIO_CONSTRAINTS,
     focusCapturedSurface = false,
+    monitorTypeSurfaces = 'include',
+    suppressLocalAudioPlayback = false,
     environment = {},
   } = options
 
@@ -61,15 +68,18 @@ export async function requestDisplayAudio(options: RequestDisplayAudioOptions = 
 
   let stream: MediaStream
   try {
-    stream = await mediaDevices.getDisplayMedia({
+    const defaults: NativeDisplayMediaOptions = {
       /** 只为满足规范，帧率压到最低；拿到后立即停掉 */
       video: { displaySurface: preferSurface, frameRate: { ideal: 1, max: 1 } },
-      audio,
+      audio: { suppressLocalAudioPlayback, ...audio },
+      monitorTypeSurfaces,
       systemAudio,
+      windowAudio,
       selfBrowserSurface,
       surfaceSwitching,
       controller: createFocusController(focusCapturedSurface),
-    } as DisplayMediaStreamOptions)
+    }
+    stream = await mediaDevices.getDisplayMedia(resolveMediaOptions(defaults, options.displayMediaOptions))
   }
   catch (error) {
     return { ok: false, failure: classifyDisplayMediaError(error), error }
@@ -115,14 +125,16 @@ export function classifyDisplayMediaError(error: unknown): DisplayAudioFailure {
  * `setFocusBehavior` 可以在调用 getDisplayMedia 之前设置；不支持 CaptureController 的浏览器返回 undefined
  */
 function createFocusController(focusCapturedSurface: boolean): unknown {
-  const Controller = (globalThis as { CaptureController?: new () => { setFocusBehavior?: (behavior: string) => void } }).CaptureController
+  const Controller = (globalThis as { CaptureController?: new() => { setFocusBehavior?: (behavior: string) => void } }).CaptureController
   if (!Controller) return undefined
 
   const controller = new Controller()
   try {
-    controller.setFocusBehavior?.(focusCapturedSurface
-      ? 'focus-captured-surface'
-      : 'no-focus-change')
+    controller.setFocusBehavior?.(
+      focusCapturedSurface
+        ? 'focus-captured-surface'
+        : 'no-focus-change',
+    )
   }
   catch {
     /** 旧版 Chromium 不允许在 getDisplayMedia 之前设置：保持浏览器默认行为 */

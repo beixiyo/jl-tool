@@ -153,13 +153,122 @@ yarn add @jl-org/tool
 
 ### 🎬 Media APIs
 
-- [`Recorder`](https://github.com/beixiyo/jl-tool/blob/master/src/webApi/Recorder.ts) - Audio recording
+- [`Recorder`](https://github.com/beixiyo/jl-tool/tree/master/src/webApi/Recorder) - Audio recording with full native constraint/encoder options, chunk events, effective duration and an injectable final-file hook
+- [`PcmCapture`](https://github.com/beixiyo/jl-tool/tree/master/src/webApi/PcmCapture) - Real-time PCM capture on AudioWorklet, from a microphone, MediaStream or AudioNode
+- [`AudioLaneRecorder`](https://github.com/beixiyo/jl-tool/tree/master/src/webApi/AudioLaneRecorder) - Single-lane audio recording whose inputs can be hot-swapped and mixed
+- [`MicrophoneInput`](https://github.com/beixiyo/jl-tool/tree/master/src/webApi/MicrophoneInput) - Microphone acquisition with automatic reconnection after unplugging
+- [`MediaPermission`](https://github.com/beixiyo/jl-tool/tree/master/src/webApi/MediaPermission) - Read and watch media permissions, classify getUserMedia failures
+- [`requestDisplayAudio`](https://github.com/beixiyo/jl-tool/tree/master/src/webApi/DisplayAudio) - Capture only tab/system audio through screen sharing, with classified failures
+- [`finalizeRecording`](https://github.com/beixiyo/jl-tool/blob/master/src/webApi/recording.ts) / [`resolveMediaOptions`](https://github.com/beixiyo/jl-tool/blob/master/src/webApi/recording.ts) - Final recording file processing and native option merging
 - [`Speaker`](https://github.com/beixiyo/jl-tool/blob/master/src/webApi/Speaker.ts) - Speech playback
 - [`SpeakToTxt`](https://github.com/beixiyo/jl-tool/blob/master/src/webApi/SpeakToTxt.ts) - Speech to text
 - [`openCamera`](https://github.com/beixiyo/jl-tool/blob/master/src/webApi/openCamera.ts) - Open camera
-- [`ScreenRecorder`](https://github.com/beixiyo/jl-tool/blob/master/src/webApi/screenRecord/ScreenRecorder.ts) - Screen recording
+- [`ScreenRecorder`](https://github.com/beixiyo/jl-tool/tree/master/src/webApi/ScreenRecord) - Screen recording
 
-[View test cases](https://github.com/beixiyo/jl-tool/blob/master/test/__DOM_TEST__/webApi)
+[Browser test app](https://github.com/beixiyo/jl-tool/tree/master/apps/dom-test) · [Full media options, WebM duration and compatibility notes (Chinese)](./docs/media-apis.md)
+
+#### Real-Time PCM Capture
+
+```ts
+import { PcmCapture } from '@jl-org/tool'
+
+const capture = new PcmCapture({
+  source: {
+    kind: 'microphone',
+    constraints: {
+      channelCount: 1,
+      echoCancellation: true,
+      noiseSuppression: true,
+      autoGainControl: true,
+    },
+  },
+  format: {
+    sampleRate: 16000,
+    channelCount: 1,
+    encoding: 's16le',
+    frameDurationMs: 100,
+  },
+  levelMeter: {
+    intervalMs: 50,
+    gain: 3,
+  },
+  onFrame: ({ data }) => {
+    websocket.send(data)
+  },
+  onLevel: (level) => {
+    console.log('volume:', level)
+  },
+})
+
+await capture.prepare()
+await capture.start()
+
+// stop() waits for the worklet to flush the last partial PCM buffer
+const summary = await capture.stop()
+console.log(summary.durationMs, summary.bytes)
+
+await capture.destroy()
+```
+
+`source` also accepts an existing `MediaStream` or `AudioNode`. External resources are not destroyed by `PcmCapture` by default; transfer ownership explicitly with `stopTracksOnDestroy` or `audioContext.closeOnDestroy`. Custom CSP or build setups can provide a standalone worklet module via `worklet.moduleUrl`
+
+#### Recording with Hot-Swappable Inputs
+
+```ts
+import { AudioLaneRecorder, MicrophoneInput } from '@jl-org/tool'
+
+const context = new AudioContext()
+const lane = new AudioLaneRecorder({
+  context,
+  timesliceMs: 5000,
+  onDataAvailable: blob => chunks.push(blob),
+})
+const mic = new MicrophoneInput({
+  constraints: { audio: { echoCancellation: true } },
+  // Emits null on disconnect (silence is recorded), then the new stream once recovered
+  onStreamChange: stream => lane.setSource(stream),
+  onEvent: (event) => {
+    if (event.type === 'recovered') console.log('switched to', event.deviceLabel)
+  },
+})
+
+const result = await mic.acquire()
+if (!result.ok) {
+  // system-denied / blocked / denied / dismissed / no-device / device-busy / unknown
+  console.log(result.failure)
+}
+else {
+  mic.startWatching()
+  lane.start()
+}
+
+await lane.stop()
+mic.release()
+await context.close()
+```
+
+#### Recorder Options and Final Output
+
+```ts
+import { Recorder } from '@jl-org/tool'
+
+const recorder = new Recorder({
+  autoInit: false,
+  // Objects are shallow-merged into the defaults; functions receive the defaults and return the full options
+  audio: defaults => ({ ...defaults, sampleRate: { ideal: 48000 } }),
+  recorderOptions: { audioBitsPerSecond: 96000 },
+  timesliceMs: 1000,
+  onDataAvailable: blob => uploadChunk(blob),
+  // Optional app-provided final-file hook (e.g. writing the WebM Duration); nothing is built in
+  finalizeBlob: ({ blob, durationMs }) => blob,
+})
+
+await recorder.start()
+await recorder.stop() // waits for the last chunk and finalizeBlob
+console.log(recorder.result) // { blob, durationMs (pauses excluded), mimeType }
+```
+
+WebM files recorded by Chromium carry no Duration metadata by default, so `<audio>` may report Infinity; see the [media API docs](./docs/media-apis.md) for plugging in a fixer. `AudioLaneRecorder` and `ScreenRecorder` also support `finalizeBlob` and results with duration
 
 ### 📦 Data Structures
 

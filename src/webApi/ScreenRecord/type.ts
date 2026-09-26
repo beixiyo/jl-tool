@@ -1,9 +1,13 @@
-export type RecorderState
-  = | 'idle'
-    | 'recording'
-    | 'paused'
-    | 'stopped'
-    | 'error'
+/** 屏幕录制的原生配置和回调契约 */
+import type { NativeDisplayMediaOptions } from '../DisplayAudio/types'
+import type { MediaOptions, NativeRecorderOptions, RecordingFinalizer, RecordingResult } from '../recording'
+
+export type RecorderState =
+  | 'idle'
+  | 'recording'
+  | 'paused'
+  | 'stopped'
+  | 'error'
 
 /**
  * 录制类型
@@ -25,14 +29,14 @@ export type RecorderBlobEvent = {
  * 常见的媒体类型（容器/编码）
  * 注：不同浏览器支持的类型不同，需运行时检测
  */
-export type RecorderMimeType
-  = | 'video/webm;codecs=vp9,opus'
-    | 'video/webm;codecs=vp8,opus'
-    | 'video/webm;codecs=h264,opus'
-    | 'video/webm'
-    | 'video/mp4;codecs=h264,aac'
-    | 'video/mp4'
-    | string
+export type RecorderMimeType =
+  | 'video/webm;codecs=vp9,opus'
+  | 'video/webm;codecs=vp8,opus'
+  | 'video/webm;codecs=h264,opus'
+  | 'video/webm'
+  | 'video/mp4;codecs=h264,aac'
+  | 'video/mp4'
+  | string
 
 /**
  * 屏幕录制回调
@@ -59,7 +63,7 @@ export type ScreenRecorderCallbacks = {
 }
 
 export type DisplayMediaStreamConstraintsLike = {
-  video?: boolean
+  video?: boolean | MediaTrackConstraints
   audio?: boolean | MediaTrackConstraints
 }
 
@@ -71,7 +75,7 @@ export type DisplayMediaConfig = {
    * 视频轨道约束
    * @default true
    */
-  video?: boolean
+  video?: boolean | MediaTrackConstraints
   /**
    * 系统音频（系统播放声音）
    * - 大多数浏览器仅当选择“标签页”或特定窗口时才支持
@@ -112,9 +116,22 @@ export type DesktopSourceConfig = {
 /**
  * ScreenRecorder 初始化选项
  */
-export type ScreenRecorderOptions = DisplayMediaConfig
+export type ScreenRecorderOptions =
+  & DisplayMediaConfig
   & ScreenRecorderCallbacks
   & {
+    /** 完整 getDisplayMedia 配置；desktopSource 路径不使用此项。@default 由 video/systemAudio 生成 */
+    displayMediaOptions?: MediaOptions<NativeDisplayMediaOptions>
+    /** 完整原生编码配置，覆盖 MIME/码率快捷项。@default 由 preferMimeTypes/bitsPerSecond 生成 */
+    recorderOptions?: MediaOptions<NativeRecorderOptions>
+    /**
+     * 最终 Blob 处理器；stop 等待其完成，原始分片不变
+     * WebM 时长修复需由应用自行安装依赖并注入，示例见 {@link RecordingFinalizer}
+     * @default undefined（原样输出，不内置时长修复）
+     */
+    finalizeBlob?: RecordingFinalizer
+    /** 最终文件和时长交付，不替代已有 onStop */
+    onResult?: (result: RecordingResult) => void
     /**
      * 是否仅录制音频（不包含视频）
      * - 若同时开启 systemAudio，将尝试通过 getDisplayMedia 捕获系统音频（无视频）

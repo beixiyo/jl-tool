@@ -1,5 +1,5 @@
-import { fileURLToPath } from 'node:url'
 import tailwindcss from '@tailwindcss/vite'
+import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vite'
 import solidPlugin from 'vite-plugin-solid'
 

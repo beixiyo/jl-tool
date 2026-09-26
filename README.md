@@ -153,17 +153,19 @@ yarn add @jl-org/tool
 
 ### 🎬 媒体API
 
-- [`Recorder`](https://github.com/beixiyo/jl-tool/blob/master/src/webApi/Recorder.ts) - 音频录制
+- [`Recorder`](https://github.com/beixiyo/jl-tool/tree/master/src/webApi/Recorder) - 音频录制，支持完整原生约束/编码配置、分片事件、有效时长与可注入的最终文件处理
 - [`PcmCapture`](https://github.com/beixiyo/jl-tool/tree/master/src/webApi/PcmCapture) - 基于 AudioWorklet 的实时 PCM 采集，支持麦克风、MediaStream 和 AudioNode
 - [`AudioLaneRecorder`](https://github.com/beixiyo/jl-tool/tree/master/src/webApi/AudioLaneRecorder) - 输入源可热切换的单路音频录制
 - [`MicrophoneInput`](https://github.com/beixiyo/jl-tool/tree/master/src/webApi/MicrophoneInput) - 麦克风获取与断开后自动接回
 - [`MediaPermission`](https://github.com/beixiyo/jl-tool/tree/master/src/webApi/MediaPermission) - 媒体权限状态读取、订阅与 getUserMedia 失败归类
+- [`requestDisplayAudio`](https://github.com/beixiyo/jl-tool/tree/master/src/webApi/DisplayAudio) - 通过屏幕共享只取标签页/系统声音，失败分类返回
+- [`finalizeRecording`](https://github.com/beixiyo/jl-tool/blob/master/src/webApi/recording.ts) / [`resolveMediaOptions`](https://github.com/beixiyo/jl-tool/blob/master/src/webApi/recording.ts) - 录制最终文件处理与原生配置合并
 - [`Speaker`](https://github.com/beixiyo/jl-tool/blob/master/src/webApi/Speaker.ts) - 语音播放
 - [`SpeakToTxt`](https://github.com/beixiyo/jl-tool/blob/master/src/webApi/SpeakToTxt.ts) - 语音转文字
 - [`openCamera`](https://github.com/beixiyo/jl-tool/blob/master/src/webApi/openCamera.ts) - 开启摄像头
-- [`ScreenRecorder`](https://github.com/beixiyo/jl-tool/blob/master/src/webApi/screenRecord/ScreenRecorder.ts) - 屏幕录制
+- [`ScreenRecorder`](https://github.com/beixiyo/jl-tool/tree/master/src/webApi/ScreenRecord) - 屏幕录制
 
-[查看浏览器测试项目](https://github.com/beixiyo/jl-tool/tree/master/apps/dom-test)
+[查看浏览器测试项目](https://github.com/beixiyo/jl-tool/tree/master/apps/dom-test) · [完整媒体配置、WebM 时长与兼容说明](./docs/media-apis.md)
 
 #### 实时 PCM 采集
 
@@ -244,6 +246,29 @@ await lane.stop()
 mic.release()
 await context.close()
 ```
+
+#### 录音配置与最终输出
+
+```ts
+import { Recorder } from '@jl-org/tool'
+
+const recorder = new Recorder({
+  autoInit: false,
+  // 对象浅合并到默认约束；函数接收默认值并返回完整配置
+  audio: defaults => ({ ...defaults, sampleRate: { ideal: 48000 } }),
+  recorderOptions: { audioBitsPerSecond: 96000 },
+  timesliceMs: 1000,
+  onDataAvailable: blob => uploadChunk(blob),
+  // 可选：应用自行注入的最终文件处理（例如补写 WebM Duration），库不内置
+  finalizeBlob: ({ blob, durationMs }) => blob,
+})
+
+await recorder.start()
+await recorder.stop() // 等待最后分片与 finalizeBlob 完成
+console.log(recorder.result) // { blob, durationMs（不含暂停）, mimeType }
+```
+
+Chromium 录出的 WebM 默认没有 Duration 元数据，`<audio>` 可能显示 Infinity；接入修复器的方式见 [媒体 API 文档](./docs/media-apis.md)。`AudioLaneRecorder`、`ScreenRecorder` 同样支持 `finalizeBlob` 与带时长的结果
 
 ### 📦 数据结构
 
