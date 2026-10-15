@@ -368,7 +368,7 @@ onChangeTheme(
 ### 图片压缩和调整大小
 
 ```ts
-import { compressImg, resizeImg } from '@jl-org/tool'
+import { compressImg, compressImgToMaxSize, resizeImg } from '@jl-org/tool'
 
 async function processImage(file) {
   /** 压缩图片，转为webp格式 */
@@ -379,7 +379,18 @@ async function processImage(file) {
 
   return resized
 }
+
+async function uploadUnder500KB(file) {
+  /** 压到不超过 500KB：逐级降质，最低质量仍超限时缩小分辨率重试 */
+  const blob = await compressImgToMaxSize(file, { maxBytes: 500 * 1024 })
+  if (!blob) throw new Error('图片无法压缩到目标体积')
+  return blob
+}
 ```
+
+> Safari 不支持通过 Canvas 编码 WebP，传入 `image/webp` 会静默回退为体积更大的 PNG，
+> 因此 `getCvsImg` / `compressImg` / `compressImgToMaxSize` 会自动降级为 `image/jpeg`；
+> 可用 `supportsWebpEncode()` 提前探测当前环境
 
 ### 🎧 WebM 音频转换为 WAV
 
@@ -548,10 +559,13 @@ socket.dispose()
 ### 🖼️ 图片处理工具
 
 ```ts
-import { compressImg, cutImg, resizeImg } from '@jl-org/tool'
+import { compressImg, compressImgToMaxSize, cutImg, resizeImg } from '@jl-org/tool'
 
 /** 压缩图片 */
 const compressed = await compressImg(imageEl, 'base64', 0.7)
+
+/** 压缩到不超过指定体积，达不到时自动缩小分辨率 */
+const under500KB = await compressImgToMaxSize(imageEl, { maxBytes: 500 * 1024 })
 
 /** 缩放图片 */
 const resized = await resizeImg(imageEl, 800, 600)

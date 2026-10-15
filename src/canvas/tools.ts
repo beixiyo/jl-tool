@@ -32,6 +32,26 @@ export function createCvs(
   return { cvs, ctx }
 }
 
+let webpEncodeSupport: boolean | undefined
+
+/**
+ * 检测当前浏览器能否通过 Canvas 编码 WebP
+ *
+ * Safari 至今不支持：`toBlob` / `toDataURL` 传入 `image/webp` 会静默回退为 PNG，
+ * 且 `quality` 参数被完全忽略，照片类图片的 PNG 结果通常比原图更大
+ *
+ * 结果会缓存，重复调用无额外开销
+ */
+export function supportsWebpEncode() {
+  if (webpEncodeSupport !== undefined)
+    return webpEncodeSupport
+
+  const cvs = document.createElement('canvas')
+  cvs.width = cvs.height = 1
+  webpEncodeSupport = cvs.toDataURL('image/webp').startsWith('data:image/webp')
+  return webpEncodeSupport
+}
+
 /**
  * 获取 canvas ImageData 的像素点的索引
  */

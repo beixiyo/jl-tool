@@ -1,11 +1,29 @@
 # 更新日志
 
-## [5.2.0] - 2026-09-26
+## 5.3.0 - 2026-10-15
+
+### 修复
+
+- **Safari 下 Canvas 压缩图片失效。** Safari 不支持通过 Canvas 编码 WebP，
+  `toBlob` / `toDataURL` 传入 `image/webp` 会静默回退为 PNG，且 `quality` 被完全忽略，
+  照片类图片的 PNG 结果几乎必然比原图更大，导致“越压越大”甚至永远压不到目标体积
+  现在 `getCvsImg` 在不支持 WebP 编码的环境自动降级为 `image/jpeg`，
+  `compressImg` / `cutImg` / `resizeImg` 全部受益
+
+### 新增
+
+- 新增 `compressImgToMaxSize`，把图片压缩到不超过指定字节数：
+  先从 `quality` 逐级降到 `minQuality`，仍超限时按 `scaleStep` 缩小分辨率重试，
+  直到 `minScale` 下限；图片只解码一次，同一分辨率下只绘制一次、逐级降质只重新编码；
+  质量与分辨率都用尽仍超限时返回 `null`
+- 新增 `supportsWebpEncode`，检测当前浏览器能否通过 Canvas 编码 WebP（结果缓存）
+
+## 5.2.0 - 2026-09-26
 
 ### 破坏性改动
 
 - **`Recorder.stop()` 可能被拒绝。** 此前 `stop()` 不会拒绝；现在原生 `MediaRecorder` 报错、
-  `finalizeBlob` 失败或原生 `stop()` 同步抛错时，`stop()` 会拒绝并通知 `onError`。
+  `finalizeBlob` 失败或原生 `stop()` 同步抛错时，`stop()` 会拒绝并通知 `onError`
   `await recorder.stop()` 后紧跟 `destroy()` 的代码需要改成 `try { ... } finally { await recorder.destroy() }`，
   否则 `stop()` 被拒绝时执行不到 `destroy()`，麦克风会一直开着
 
@@ -67,7 +85,7 @@
 - 修复 `MicrophoneInput.acquire()` 并发调用时各自请求 getUserMedia、后返回的流把先返回的流停掉的问题，
   同时进行的调用现在合并为一次请求；请求期间调用 `release()` 时，晚到的流会被停掉而不再成为当前流
 
-## [5.1.0] - 2026-09-02
+## 5.1.0 - 2026-09-02
 
 ### 破坏性改动
 
@@ -99,7 +117,7 @@
 - 修复流式下载过早暴露 downloader、没有等待浏览器开始读取、下游消费速度无法约束上游写入，
   以及 Worker 更新期间可能向旧 active 实例发送新协议消息的问题
 
-## [5.0.1] - 2026-08-13
+## 5.0.1 - 2026-08-13
 
 ### 新增
 
@@ -121,7 +139,7 @@
 - 修复屏幕录制、摄像头、扬声器及录音相关 API 的资源释放和错误处理边界
 - 修复 URL、颜色、主题、元素尺寸和运行环境判断的异常输入与兼容性问题
 
-## [5.0.0] - 2026-07-20
+## 5.0.0 - 2026-07-20
 
 ### 破坏性改动
 
@@ -242,7 +260,7 @@
 - `StreamXmlParser` 未声明为数组的标签重复出现时后者覆盖前者，这是有意的默认行为，
   但会告警并提示改用 `arrayTags`。含子节点的父节点其裸文本会被丢弃，混合内容只保留结构
 
-## [4.0.2] - 2026-06-02
+## 4.0.2 - 2026-06-02
 
 ### 修复
 
@@ -257,7 +275,7 @@
 
 - 天然仅限浏览器的模块（`WS`、`autoUpdate`、`domTools/*`、`fileTool/*`、`webApi/*`、`ScrollTrigger`、`theme` 等）不变——它们合理地依赖 DOM / 浏览器 API。在 Node 中导入包仍然安全：没有顶层浏览器全局访问，只有 `typeof window` 防护
 
-## [4.0.1] - 2026-05-29
+## 4.0.1 - 2026-05-29
 
 ### 修复
 
@@ -271,7 +289,7 @@
 - 因为字符串按字面存储，JSON 样式的字符串（`'123'`、`'true'`、`'{"a":1}'`）在读取时仍会解析到对应的 JSON 类型。传入 `autoParseJSON = false` 到 `getLocalStorage` 来保持原始字符串
 - 为 `setLocalStorage` / `getLocalStorage` 添加了回归测试套件（`tests/tools/localStorage.test.ts`）
 
-## [4.0.0] - 2026-05-29
+## 4.0.0 - 2026-05-29
 
 ### `formatDate` 重写——通用 LDML 风格令牌
 
