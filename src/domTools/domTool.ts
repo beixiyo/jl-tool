@@ -46,6 +46,8 @@ export const getSelectedText = () => window.getSelection()?.toString()
 /**
  * 将字符串写入系统剪贴板：优先 `navigator.clipboard`，失败时用隐藏 `textarea` + `execCommand('copy')`
  * @param text 要复制的纯文本
+ * @param options 可选的成功事实观察；不改变返回值或复制策略
+ * @default options undefined
  * @returns `writeText` 的返回值；降级路径无明确返回值（失败时可能在控制台输出错误）
  *
  * @example
@@ -53,9 +55,20 @@ export const getSelectedText = () => window.getSelection()?.toString()
  * await copyToClipboard('Hello')
  * ```
  */
-export async function copyToClipboard(text: string) {
+export async function copyToClipboard(text: string, options?: CopyToClipboardOptions) {
+  let onWriteSucceeded: CopyToClipboardOptions['onWriteSucceeded']
+  try { onWriteSucceeded = options?.onWriteSucceeded }
+  catch { /* 可选观察getter不改变复制。 */ }
+
+  const notifyWriteSucceeded = () => {
+    if (typeof onWriteSucceeded !== 'function') return
+    try { void Promise.resolve(onWriteSucceeded?.()).catch(() => {}) }
+    catch { /* 观察异常不能进入原复制失败分支或重试写入。 */ }
+  }
+
   try {
     const res = await navigator.clipboard.writeText(text)
+    notifyWriteSucceeded()
     return res
   }
   catch {
@@ -81,6 +94,7 @@ export async function copyToClipboard(text: string) {
       if (!successful) {
         console.error('Copy failed')
       }
+      if (successful === true) notifyWriteSucceeded()
     }
     catch (err) {
       console.error('Copy error:', err)
@@ -217,4 +231,11 @@ interface FindByTextOptions {
    * @default document.body
    */
   parentEl?: Element
+}
+
+
+/** 浏览器复制API报告成功的可选观察，不证明其它应用已粘贴或持久保存。 */
+export interface CopyToClipboardOptions {
+  /** writeText fulfilled或execCommand严格true后安全通知；不等待返回值。@default undefined */
+  onWriteSucceeded?: () => void | Promise<void>
 }
