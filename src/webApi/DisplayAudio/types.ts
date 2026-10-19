@@ -36,7 +36,10 @@ export type DisplayAudioFailure = 'cancelled' | 'system-denied' | 'activation-re
 export type DisplayAudioResult =
   | {
     ok: true
-    /** 只含音轨的流（视频轨已停掉并移除）；`hasAudio` 为 false 时为空流 */
+    /**
+     * 只含音轨的流（视频轨已停掉并移除）；`hasAudio` 为 false 时为空流，
+     * 开启 `keepSharingWithoutAudio` 时则只含仍在共享的视频轨
+     */
     stream: MediaStream
     /** 用户是否分享了声音 */
     hasAudio: boolean
@@ -90,6 +93,15 @@ export interface RequestDisplayAudioOptions {
    * @default false
    */
   focusCapturedSurface?: boolean
+  /**
+   * 用户选了来源但没勾选分享音频时，是否让这次屏幕共享继续
+   *
+   * 共享的存续取决于流里是否还有活着的轨道：默认（false）停掉唯一的视频轨，共享随即结束、提示条消失；
+   * 开启后保留视频轨（不用于录制，仍是最低帧率），共享持续到调用方 stop 它或用户在提示条上停止共享（此时它会 ended）。
+   * 适合需要如实展示「正在共享画面但没有声音」的场景；分享了声音时总会停掉视频轨，共享靠音轨维持
+   * @default false
+   */
+  keepSharingWithoutAudio?: boolean
   /** 可替换的浏览器环境依赖 */
   environment?: DisplayAudioEnvironment
 }

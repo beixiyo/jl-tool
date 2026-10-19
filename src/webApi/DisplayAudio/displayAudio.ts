@@ -42,7 +42,8 @@ export function isDisplayAudioSupported(environment: DisplayAudioEnvironment = {
  *
  * - 规范要求必须请求视频，只要音频会直接被拒；拿到后立刻停掉视频轨，只留音轨
  *   浏览器的「正在共享」提示条会保留到音轨也停止为止
- * - 用户选了来源但没勾选分享音频时，返回 `hasAudio: false`，此时视频轨已停、共享已结束
+ * - 用户选了来源但没勾选分享音频时，返回 `hasAudio: false`，此时视频轨已停、共享已结束；
+ *   开启 `keepSharingWithoutAudio` 则保留视频轨让共享继续，直到调用方停止它或用户在提示条上停止共享
  * - 失败不抛错：取消选择、系统拒绝屏幕录制、浏览器不支持分别归类
  *
  * 返回的音轨由调用方持有并负责 stop；用户在提示条上停止共享时音轨会 ended
@@ -58,6 +59,7 @@ export async function requestDisplayAudio(options: RequestDisplayAudioOptions = 
     focusCapturedSurface = false,
     monitorTypeSurfaces = 'include',
     suppressLocalAudioPlayback = false,
+    keepSharingWithoutAudio = false,
     environment = {},
   } = options
 
@@ -88,15 +90,18 @@ export async function requestDisplayAudio(options: RequestDisplayAudioOptions = 
   const videoTrack = stream.getVideoTracks()[0]
   /** 必须在停掉视频轨之前读，停了之后 settings 可能为空 */
   const surface = readSurface(videoTrack)
-  stream.getVideoTracks().forEach((track) => {
-    track.stop()
-    stream.removeTrack(track)
-  })
+  const hasAudio = stream.getAudioTracks().length > 0
+  if (hasAudio || !keepSharingWithoutAudio) {
+    stream.getVideoTracks().forEach((track) => {
+      track.stop()
+      stream.removeTrack(track)
+    })
+  }
 
   return {
     ok: true,
     stream,
-    hasAudio: stream.getAudioTracks().length > 0,
+    hasAudio,
     surface,
   }
 }

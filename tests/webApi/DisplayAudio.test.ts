@@ -74,6 +74,28 @@ describe('requestDisplayAudio', () => {
     expect(video.readyState).toBe('ended')
   })
 
+  it('keepSharingWithoutAudio：没勾选音频时保留视频轨让共享持续；勾选了音频仍停掉视频轨', async () => {
+    const silentVideo = new FakeTrack('video', { displaySurface: 'monitor' } as MediaTrackSettings)
+    const silent = await requestDisplayAudio({
+      keepSharingWithoutAudio: true,
+      environment: envReturning(createStream([silentVideo])),
+    })
+
+    expect(silent).toMatchObject({ ok: true, hasAudio: false, surface: 'monitor' })
+    expect(silentVideo.readyState).toBe('live')
+    if (silent.ok) expect(silent.stream.getVideoTracks()).toEqual([silentVideo])
+
+    const video = new FakeTrack('video', { displaySurface: 'browser' } as MediaTrackSettings)
+    const audio = new FakeTrack('audio')
+    const shared = await requestDisplayAudio({
+      keepSharingWithoutAudio: true,
+      environment: envReturning(createStream([video, audio])),
+    })
+
+    expect(shared).toMatchObject({ ok: true, hasAudio: true, surface: 'browser' })
+    expect(video.readyState).toBe('ended')
+  })
+
   it('整屏开关与本地静音正确透传；完整函数配置优先且回调错误仍返回分类结果', async () => {
     const getDisplayMedia = vi.fn(async (_options?: DisplayMediaStreamOptions) => createStream([]))
     const environment = { mediaDevices: { getDisplayMedia, getSupportedConstraints: () => ({}) } }
