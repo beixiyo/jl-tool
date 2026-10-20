@@ -1,5 +1,24 @@
 # 更新日志
 
+## 5.4.0 - 2026-10-20
+
+### 新增
+
+- `typewriterEffect` 支持流式文本：新增 `streaming` 选项与返回值 `update(content)` / `end()` / `flush()`。
+  `streaming: true` 时追上已收到的文本也不结束，`update` 追加后接着打（空闲很久再追加也不会一次蹦出），
+  `end()` 后打完剩余字符 `promise` 才完成，`flush()` 立即显示全部；新文本不是旧文本延续时回退到相同前缀
+- `typewriterEffect` 新增 `maxLag`（默认 `200`，仅流式模式生效）：已收到但未打出的字符超过该值时直接跳过多余部分，
+  避免服务端出字比打字快时越落越远；设为 `Infinity` 关闭，固定文本不受影响
+
+### 修复
+
+- `typewriterEffect` 在 `continueFromIndex` 不小于文本长度或文本为空时抛 `ReferenceError`
+  （首次 `update` 在 `interval` 初始化前就执行了 `clearInterval`），现已立即完成
+
+### 变更
+
+- `typewriterEffect` 的 `onUpdate` 只在进度变化时回调，不再每个 tick 都重复回调相同文本
+
 ## 5.3.2 - 2026-10-19
 
 ### 新增

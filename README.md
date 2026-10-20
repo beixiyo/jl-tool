@@ -645,6 +645,19 @@ typewriterEffect({
 })
 ```
 
+流式文本（如 LLM 输出）：`streaming: true` 后随到随用 `update` 追加，文本全部到达后调用 `end()`，剩余字符打完 `promise` 才完成；需要立刻显示全部用 `flush()`
+
+服务端出字比打字快时，落后超过 `maxLag`（默认 200 个字符）会自动跳过多余部分，设为 `Infinity` 关闭
+
+```ts
+const t = typewriterEffect({ content: '', streaming: true, onUpdate: render })
+
+t.update('你好')
+t.update('你好，世界')
+t.end()
+await t.promise
+```
+
 ### 🗄️ LRU缓存
 
 ```ts

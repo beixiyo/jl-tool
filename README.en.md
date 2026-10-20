@@ -631,6 +631,19 @@ typewriterEffect({
 })
 ```
 
+Streaming text (e.g. LLM output): set `streaming: true` and feed text with `update` as it arrives. Call `end()` once everything has arrived; `promise` resolves after the remaining characters are typed. Use `flush()` to show everything immediately. 
+
+When text arrives faster than it is typed, anything more than `maxLag` characters behind (default 200) is skipped automatically; set `Infinity` to disable
+
+```ts
+const t = typewriterEffect({ content: '', streaming: true, onUpdate: render })
+
+t.update('Hello')
+t.update('Hello, world')
+t.end()
+await t.promise
+```
+
 ### 🗄️ LRU Cache
 
 ```ts
