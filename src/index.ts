@@ -39,7 +39,7 @@ export * from '@/tools/timer'
 export * from '@/tools/tools'
 export * from '@/tools/typewriterEffect'
 export * from '@/tools/urlTools'
-export * from '@/tools/workerTools'
+export * from '@/tools/workerTask'
 
 /***************************************************
  *                    Tools

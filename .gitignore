@@ -27,3 +27,6 @@ public
 *.njsproj
 *.sln
 *.sw?
+
+# AI
+.pi

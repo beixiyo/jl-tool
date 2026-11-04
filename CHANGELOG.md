@@ -1,10 +1,21 @@
 # 更新日志
 
+## 6.0.0 - 2026-11-05
+
+### 破坏性改动
+
+- 移除 `splitWorkerTask` 改用 `createWorkerTask`
+- 完整示例见 `src/tools/workerTask/README.md`
+
+### 新增
+
+- `isPromiseLike`
+
 ## 5.4.0 - 2026-10-20
 
 ### 新增
 
-- `typewriterEffect` 支持流式文本：新增 `streaming` 选项与返回值 `update(content)` / `end()` / `flush()`。
+- `typewriterEffect` 支持流式文本：新增 `streaming` 选项与返回值 `update(content)` / `end()` / `flush()`
   `streaming: true` 时追上已收到的文本也不结束，`update` 追加后接着打（空闲很久再追加也不会一次蹦出），
   `end()` 后打完剩余字符 `promise` 才完成，`flush()` 立即显示全部；新文本不是旧文本延续时回退到相同前缀
 - `typewriterEffect` 新增 `maxLag`（默认 `200`，仅流式模式生效）：已收到但未打出的字符超过该值时直接跳过多余部分，
@@ -352,9 +363,9 @@
    - 任何使用旧字段名的自定义格式化器必须更新：
      ```ts
      // 前
-     formatDate(info => `${info.yyyy}`)
+     formatDate((info) => `${info.yyyy}`)
      // 后
-     formatDate(info => `${info.year}`)
+     formatDate((info) => `${info.year}`)
      ```
 
 2. **单字母令牌现在有效**，所以格式字符串中的字面字母被解释为令牌，必须用单引号转义：

@@ -5,6 +5,7 @@ export const ROUTE_META = [
   route('/tests/debounce', 'Debounce / Throttle', '对比高频输入的执行节奏', 'Scheduling'),
   route('/tests/disable-debug', 'disableDebug', '测试开发者工具限制与检测回调', 'Browser'),
   route('/tests/schedule-task', 'scheduleTask', '对比同步阻塞与时间片调度的主线程流畅度', 'Scheduling'),
+  route('/tests/worker-task', 'Worker Task', '观察 Worker 并发任务、事件与生命周期', 'Scheduling'),
   route('/tests/preload', 'Preload', '测试图片预加载和失败反馈', 'Browser'),
   route('/tests/stream-downloader', 'Stream Downloader', '测试流式写入和下载状态', 'Browser'),
   route('/tests/canvas', 'Canvas Tools', '图片裁剪、压缩和像素处理', 'Visual'),

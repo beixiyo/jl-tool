@@ -21,6 +21,7 @@ import { SpeakToTxtPage } from '@app/pages/speak-to-txt/SpeakToTxtPage'
 import { SpeakerPage } from '@app/pages/speaker/SpeakerPage'
 import { StreamDownloaderPage } from '@app/pages/stream-downloader/StreamDownloaderPage'
 import { TypewriterEffectPage } from '@app/pages/typewriter-effect/TypewriterEffectPage'
+import { WorkerTaskPage } from '@app/pages/worker-task/WorkerTaskPage'
 import type { Component } from 'solid-js'
 import { ROUTE_META } from './routeMeta'
 
@@ -31,6 +32,7 @@ const PAGE_COMPONENTS: readonly Component[] = [
   DebouncePage,
   DisableDebugPage,
   ScheduleTaskPage,
+  WorkerTaskPage,
   PreloadPage,
   StreamDownloaderPage,
   CanvasPage,

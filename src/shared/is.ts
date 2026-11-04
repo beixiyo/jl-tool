@@ -1,3 +1,5 @@
+/** 通用值类型、普通记录对象与 PromiseLike 的运行时判断 */
+
 /**
  * 判断是否能强转成数字
  * @param value 判断的值
@@ -39,11 +41,19 @@ export const isArr = <T>(data: any): data is Array<T> => Array.isArray(data)
  * @returns 值是可用字符串键访问的普通对象
  */
 export function isRecord(value: unknown): value is Record<string, unknown> {
-  if (!isObj(value) || Array.isArray(value))
-    return false
+  if (!isObj(value) || Array.isArray(value)) return false
 
   const prototype = Object.getPrototypeOf(value)
   return prototype === Object.prototype || prototype === null
+}
+
+/**
+ * 判断值是否具有可调用的 then，支持原生 Promise、跨上下文 Promise 及对象/函数形式的 thenable
+ */
+export function isPromiseLike(value: unknown): value is PromiseLike<unknown> {
+  return (isObj(value) || isFn(value))
+    && 'then' in value
+    && typeof value.then === 'function'
 }
 
 /** Object.is */
