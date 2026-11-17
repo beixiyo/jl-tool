@@ -43,6 +43,10 @@ yarn add @jl-org/tool
 
 ## 📚 Tool Categories
 
+### IndexedDB
+
+Use `defineDatabase` to declare databases, query indexes, and run transactions. Existing localForage IndexedDB data can also be used in place. See the [IndexedDB guide](./src/indexedDB/README.md) for details.
+
 ### 🧰 Common Utilities
 
 | Function | Description |
@@ -631,7 +635,7 @@ typewriterEffect({
 })
 ```
 
-Streaming text (e.g. LLM output): set `streaming: true` and feed text with `update` as it arrives. Call `end()` once everything has arrived; `promise` resolves after the remaining characters are typed. Use `flush()` to show everything immediately. 
+Streaming text (e.g. LLM output): set `streaming: true` and feed text with `update` as it arrives. Call `end()` once everything has arrived; `promise` resolves after the remaining characters are typed. Use `flush()` to show everything immediately.
 
 When text arrives faster than it is typed, anything more than `maxLag` characters behind (default 200) is skipped automatically; set `Infinity` to disable
 

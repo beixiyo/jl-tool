@@ -12,6 +12,7 @@ export * from '@/deep'
 export * from '@/domTools'
 export * from '@/fileTool'
 export * from '@/markdown'
+export * from '@/indexedDB'
 
 export * from '@/math'
 export * from '@/net'

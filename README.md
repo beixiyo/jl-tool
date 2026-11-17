@@ -43,6 +43,10 @@ yarn add @jl-org/tool
 
 ## 📚 工具分类
 
+### IndexedDB
+
+使用 `defineDatabase` 声明数据库、查询索引和执行事务；支持接管 localForage 的 IndexedDB 数据。详见 [IndexedDB 使用说明](./src/indexedDB/README.md)
+
 ### 🧰 常用工具
 
 | 函数 | 说明 |
